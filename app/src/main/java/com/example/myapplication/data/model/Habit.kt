@@ -15,10 +15,14 @@ data class Habit(
     val name: String,
     val description: String? = null,
     val frequency: HabitFrequency = HabitFrequency.DAILY,
-    val goal: Int = 1,
-    val streak: Int = 0,
-    val lastCompletedDate: Date? = null,
-    val createdDate: Date = Date()
+    val goal: Int = 1, // e.g., complete 1 time for daily, 3 times for weekly
+    var goalProgress: Int = 0, // How many times completed in the current frequency period
+    var streak: Int = 0,
+    var lastCompletedDate: Date? = null,
+    val createdDate: Date = Date(),
+    var completionHistory: List<Date> = emptyList(), // History of all completion dates
+    var isEnabled: Boolean = true, // To allow pausing a habit
+    var reminderTime: String? = null // For notifications, e.g., "09:00"
 )
 
 enum class HabitFrequency {
