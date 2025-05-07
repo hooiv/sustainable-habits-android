@@ -1,5 +1,6 @@
 package com.example.myapplication.features.habits
 
+import android.util.Log // Import Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.model.Habit
@@ -27,6 +28,7 @@ class HabitViewModel @Inject constructor(
         )
 
     fun addHabit(name: String, description: String?, frequency: HabitFrequency) {
+        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Freq: $frequency") // Add log statement
         viewModelScope.launch {
             val newHabit = Habit(
                 name = name,
@@ -34,6 +36,7 @@ class HabitViewModel @Inject constructor(
                 frequency = frequency,
                 createdDate = Date()
             )
+            Log.d("HabitViewModel", "Inserting new habit: $newHabit") // Add log statement
             repository.insertHabit(newHabit) // Use repository to insert habit
         }
     }

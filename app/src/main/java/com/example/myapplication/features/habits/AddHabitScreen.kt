@@ -1,5 +1,6 @@
 package com.example.myapplication.features.habits
 
+import android.util.Log // Import Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,6 +22,7 @@ fun AddHabitScreen(
     navController: NavController,
     viewModel: HabitViewModel = hiltViewModel()
 ) {
+    Log.d("AddHabitScreen", "AddHabitScreen composable entered") // Add log statement
     var habitName by remember { mutableStateOf("") }
     var habitDescription by remember { mutableStateOf("") }
     var selectedFrequency by remember { mutableStateOf(HabitFrequency.DAILY) }
@@ -104,6 +106,7 @@ fun AddHabitScreen(
             Button(
                 onClick = {
                     if (habitName.isNotBlank()) {
+                        Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency") // Add log statement
                         viewModel.addHabit(
                             name = habitName,
                             description = habitDescription,

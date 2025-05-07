@@ -1,5 +1,6 @@
 package com.example.myapplication.features.habits
 
+import android.util.Log // Import Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,7 +44,10 @@ fun HabitListScreen(
             )
         },
         floatingActionButton = { 
-            FloatingActionButton(onClick = { navController.navigate(NavRoutes.ADD_HABIT) }) { // Navigate to AddHabitScreen
+            FloatingActionButton(onClick = {
+                Log.d("HabitListScreen", "FAB clicked, navigating to ADD_HABIT") // Add log statement
+                navController.navigate(NavRoutes.ADD_HABIT)
+            }) { // Navigate to AddHabitScreen
                 Icon(Icons.Filled.Add, "Add new habit")
             }
         }

@@ -1,5 +1,6 @@
 package com.example.myapplication.navigation
 
+import android.util.Log // Import Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,7 @@ fun AppNavigation() {
             HabitListScreen(navController = navController)
         }
         composable(NavRoutes.ADD_HABIT) {
+            Log.d("AppNavigation", "Navigating to AddHabitScreen") // Add log statement
             AddHabitScreen(navController = navController)
         }
         composable(
