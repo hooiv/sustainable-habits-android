@@ -78,23 +78,8 @@ class HabitViewModel @Inject constructor(
     fun markHabitCompleted(habitId: String) {
         Log.d("HabitViewModel", "Marking habit as completed: $habitId")
         viewModelScope.launch {
-            repository.getHabitById(habitId).collect { habit -> 
-                habit?.let {
-                    val completionDate = Date()
-                    // Create a new mutable list with the existing dates, then add the new one
-                    val updatedHistory = it.completionHistory.toMutableList().apply {
-                        add(completionDate)
-                    }
-                    repository.updateHabit(
-                        it.copy(
-                            goalProgress = it.goalProgress + 1,
-                            streak = it.streak + 1,
-                            lastCompletedDate = completionDate,
-                            completionHistory = updatedHistory
-                        )
-                    )
-                }
-            }
+            // Use the repository's markHabitCompleted function which has the proper logic
+            repository.markHabitCompleted(habitId)
         }
     }
     

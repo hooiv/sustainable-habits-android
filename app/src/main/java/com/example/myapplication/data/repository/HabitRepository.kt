@@ -40,31 +40,115 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
     suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date()) {
         val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
-
-        val updatedHabit = habit.copy(
-            goalProgress = habit.goalProgress + 1,
-            lastCompletedDate = completionDate,
-            completionHistory = (habit.completionHistory + completionDate).toMutableList()
-        )
-
-        val (newStreak, newGoalProgress) = calculateStreakAndProgress(updatedHabit, completionDate)
-
-        // Badge milestones
-        val badgeMilestones = listOf(7, 30, 100)
-        val newUnlockedBadges = habit.unlockedBadges.toMutableList()
-        for (milestone in badgeMilestones) {
-            if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
-                newUnlockedBadges.add(milestone)
+        
+        // Check if habit is enabled
+        if (!habit.isEnabled) {
+            return
+        }
+        
+        // First, check if we've already completed this habit in the current period
+        if (isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency) && 
+            habit.lastCompletedDate != null) {
+            // If already completed in same period, just increment progress
+            val updatedHabit = habit.copy(
+                goalProgress = habit.goalProgress + 1,
+                lastCompletedDate = completionDate,
+                completionHistory = (habit.completionHistory + completionDate).toMutableList()
+            )
+            
+            // Calculate streak only when goal is reached
+            if (updatedHabit.goalProgress >= updatedHabit.goal) {
+                val newStreak = habit.streak + 1
+                
+                // Badge milestones
+                val badgeMilestones = listOf(7, 30, 100)
+                val newUnlockedBadges = habit.unlockedBadges.toMutableList()
+                for (milestone in badgeMilestones) {
+                    if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
+                        newUnlockedBadges.add(milestone)
+                    }
+                }
+                
+                habitDao.updateHabit(
+                    updatedHabit.copy(
+                        streak = newStreak,
+                        goalProgress = 0, // Reset progress after reaching goal
+                        unlockedBadges = newUnlockedBadges
+                    )
+                )
+            } else {
+                habitDao.updateHabit(updatedHabit)
+            }
+        } else {
+            // Different period or first completion
+            val updatedHabit = habit.copy(
+                goalProgress = 1, // Start with 1, not incrementing
+                lastCompletedDate = completionDate,
+                completionHistory = (habit.completionHistory + completionDate).toMutableList()
+            )
+            
+            // Check if goal is reached in one go
+            if (updatedHabit.goalProgress >= updatedHabit.goal) {
+                val newStreak = calculateNewStreak(habit, completionDate)
+                
+                // Badge milestones
+                val badgeMilestones = listOf(7, 30, 100)
+                val newUnlockedBadges = habit.unlockedBadges.toMutableList()
+                for (milestone in badgeMilestones) {
+                    if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
+                        newUnlockedBadges.add(milestone)
+                    }
+                }
+                
+                habitDao.updateHabit(
+                    updatedHabit.copy(
+                        streak = newStreak,
+                        goalProgress = 0, // Reset progress after reaching goal
+                        unlockedBadges = newUnlockedBadges
+                    )
+                )
+            } else {
+                habitDao.updateHabit(updatedHabit)
             }
         }
+    }
 
-        habitDao.updateHabit(
-            updatedHabit.copy(
-                streak = newStreak,
-                goalProgress = newGoalProgress,
-                unlockedBadges = newUnlockedBadges
-            )
-        )
+    // Helper function to calculate new streak based on correct consecutive check
+    private fun calculateNewStreak(habit: Habit, completionDate: Date): Int {
+        // If this is the first completion ever, start with streak 1
+        if (habit.lastCompletedDate == null) {
+            return 1
+        }
+        
+        return when (habit.frequency) {
+            HabitFrequency.DAILY -> {
+                if (isConsecutiveDay(habit.lastCompletedDate, completionDate)) {
+                    habit.streak + 1
+                } else if (isSameDay(habit.lastCompletedDate, completionDate)) {
+                    habit.streak // Don't change streak for same day completions
+                } else {
+                    1 // Reset streak if days not consecutive
+                }
+            }
+            HabitFrequency.WEEKLY -> {
+                if (isConsecutiveWeek(habit.lastCompletedDate, completionDate)) {
+                    habit.streak + 1
+                } else if (isSameWeek(habit.lastCompletedDate, completionDate)) {
+                    habit.streak // Don't change streak for same week completions
+                } else {
+                    1 // Reset streak if weeks not consecutive
+                }
+            }
+            HabitFrequency.MONTHLY -> {
+                if (isConsecutiveMonth(habit.lastCompletedDate, completionDate)) {
+                    habit.streak + 1
+                } else if (isSameMonth(habit.lastCompletedDate, completionDate)) {
+                    habit.streak // Don't change streak for same month completions
+                } else {
+                    1 // Reset streak if months not consecutive
+                }
+            }
+        }
     }
 
     private fun calculateStreakAndProgress(habit: Habit, completionDate: Date): Pair<Int, Int> {

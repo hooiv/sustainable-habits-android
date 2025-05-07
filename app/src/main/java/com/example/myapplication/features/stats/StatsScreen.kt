@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.example.myapplication.navigation.NavRoutes
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.data.model.Habit
 import androidx.compose.ui.viewinterop.AndroidView
@@ -36,7 +36,8 @@ import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewModel()) {
+fun StatsScreen(navController: NavController) {
+    val viewModel: HabitViewModel = hiltViewModel()
     val habits by viewModel.habits.collectAsState(emptyList())
     val completedCount = habits.count { it.goalProgress >= it.goal }
     val totalCount = habits.size

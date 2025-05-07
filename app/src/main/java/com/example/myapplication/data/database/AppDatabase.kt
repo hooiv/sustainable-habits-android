@@ -7,8 +7,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.myapplication.data.model.Habit
 
-// Increased version number from 1 to 2
-@Database(entities = [Habit::class], version = 2, exportSchema = false)
+// Increased version number from 2 to 3
+@Database(entities = [Habit::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -26,6 +26,14 @@ abstract class AppDatabase : RoomDatabase() {
                 // In a production app, you would add the appropriate ALTER TABLE statements here.
             }
         }
+        
+        // Migration from version 2 to 3
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // This migration just updates the version number to resolve schema mismatch
+                // without making schema changes.
+            }
+        }
 
         fun getInstance(context: android.content.Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -34,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_database"
                 )
-                .addMigrations(MIGRATION_1_2) // Add migration
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // Add both migrations
                 .fallbackToDestructiveMigration() // As a last resort, recreate the database
                 .build()
                 INSTANCE = instance

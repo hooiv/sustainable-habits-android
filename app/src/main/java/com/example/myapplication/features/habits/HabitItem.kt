@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -140,6 +141,7 @@ fun HabitItem(
                 .animateContentSize()
                 .alpha(contentAlpha),
             elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),
+            shape = RoundedCornerShape(16.dp), // Using explicit RoundedCornerShape with consistent rounding
             onClick = onItemClick
         ) {
             Column(
@@ -250,11 +252,17 @@ fun HabitItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Toggle enabled button
-                    IconButton(onClick = onToggleEnabled) {
+                    IconButton(
+                        onClick = onToggleEnabled,
+                        enabled = !isCompletedToday // Disable toggle button when habit is completed
+                    ) {
                         Icon(
                             imageVector = if (habit.isEnabled) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
                             contentDescription = if (habit.isEnabled) "Pause habit" else "Resume habit",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (isCompletedToday) 
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f) 
+                            else 
+                                MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
