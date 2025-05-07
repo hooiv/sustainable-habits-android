@@ -1,19 +1,24 @@
 package com.example.myapplication.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.myapplication.data.database.Converters // Import Converters
 import java.util.UUID
-
-// Using java.util.Date for simplicity, can be replaced with kotlinx-datetime later if needed
 import java.util.Date
 
+@Entity(tableName = "habits") // Annotate as an entity with table name
+@TypeConverters(Converters::class) // Specify TypeConverters for this entity
 data class Habit(
-    val id: String = UUID.randomUUID().toString(), // Unique ID for each habit
-    val name: String, // Name of the habit, e.g., "Used reusable coffee cup"
-    val description: String? = null, // Optional longer description
-    val frequency: HabitFrequency = HabitFrequency.DAILY, // How often the habit is tracked
-    val goal: Int = 1, // Target number of times per frequency period (e.g., 1 time per day)
-    val streak: Int = 0, // Current streak of completing the habit
-    val lastCompletedDate: Date? = null, // Last date the habit was marked as completed
-    val createdDate: Date = Date() // Date the habit was created
+    @PrimaryKey // Mark id as the primary key
+    val id: String = UUID.randomUUID().toString(),
+    val name: String,
+    val description: String? = null,
+    val frequency: HabitFrequency = HabitFrequency.DAILY,
+    val goal: Int = 1,
+    val streak: Int = 0,
+    val lastCompletedDate: Date? = null,
+    val createdDate: Date = Date()
 )
 
 enum class HabitFrequency {
