@@ -2,23 +2,35 @@ package com.example.myapplication.features.habits
 
 import android.util.Log // Import Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,8 +41,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +132,6 @@ fun HabitItem(
     onCompleteClicked: () -> Unit = {},
     viewModel: HabitViewModel = hiltViewModel()
 ) {
-    // Simple date formatter, consider moving to a utility class or injecting for testability
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
     // Animate progress bar
@@ -127,135 +140,258 @@ fun HabitItem(
         animationSpec = tween(durationMillis = 700), label = "progressAnim"
     )
 
-    // Animate streak chip scale and color
+    // Animate streak chip scale and color (spring for bouncy effect)
     val streakScale by animateFloatAsState(
-        targetValue = if (habit.streak > 0) 1.15f else 1f,
-        animationSpec = tween(durationMillis = 500), label = "streakScale"
+        targetValue = if (habit.streak > 0) 1.2f else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessLow), label = "streakScale"
     )
-    val streakColor = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+    val streakColor by animateColorAsState(
+        targetValue = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(durationMillis = 600), label = "streakColor"
+    )
+
+    // Animate card background color
+    val cardBgColor by animateColorAsState(
+        targetValue = if (habit.streak > 0) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.background,
+        animationSpec = tween(durationMillis = 800), label = "cardBgColor"
+    )
+
+    // Ripple/glow effect state
+    val showGlow = remember { mutableStateOf(false) }
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (showGlow.value) 0.6f else 0f,
+        animationSpec = tween(durationMillis = 400), label = "glowAlpha"
+    )
+
+    // Confetti/particle state
+    val showConfetti = remember { mutableStateOf(false) }
+    LaunchedEffect(habit.streak) {
+        if (habit.streak > 0) {
+            showConfetti.value = true
+            delay(900)
+            showConfetti.value = false
+        }
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(),
+            .animateContentSize()
+            .background(cardBgColor)
+            .graphicsLayer {
+                if (glowAlpha > 0f) {
+                    shadowElevation = 24f * glowAlpha
+                    shape = MaterialTheme.shapes.medium
+                    clip = true
+                }
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Top section with name and complete button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = habit.name, 
-                    fontWeight = FontWeight.Bold, 
-                    fontSize = 18.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                
-                // Complete button
-                FilledTonalButton(
-                    onClick = onCompleteClicked,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
-                ) {
-                    Text("Complete")
-                }
-            }
-            
-            // Description (if any)
-            habit.description?.let {
-                Text(
-                    text = it, 
-                    fontSize = 14.sp, 
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 4.dp)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Glow effect
+            if (glowAlpha > 0f) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(Color.Yellow.copy(alpha = glowAlpha), Color.Transparent),
+                                center = Offset.Unspecified,
+                                radius = 600f
+                            )
+                        )
                 )
             }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Progress indicator
-            val progressText = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}"
-            Text(
-                text = progressText,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-            LinearProgressIndicator(
-                progress = animatedProgress.coerceIn(0f, 1f),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp),
-                color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
-            )
-            
-            // Status section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Streak chip
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = streakColor,
-                    modifier = Modifier.scale(streakScale)
+            // Confetti/particle effect
+            if (showConfetti.value) {
+                ConfettiEffect()
+            }
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Top section with name and complete button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "🔥 ${habit.streak} streak",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        text = habit.name, 
+                        fontWeight = FontWeight.Bold, 
+                        fontSize = 18.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    // Complete button
+                    FilledTonalButton(
+                        onClick = {
+                            showGlow.value = true
+                            onCompleteClicked()
+                            LaunchedEffect(Unit) {
+                                delay(400)
+                                showGlow.value = false
+                            }
+                        },
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        ),
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(bounded = false, color = Color.Yellow)
+                    ) {
+                        Text("Complete")
+                    }
+                }
+                
+                // Description (if any)
+                habit.description?.let {
+                    Text(
+                        text = it, 
+                        fontSize = 14.sp, 
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
                 
-                // Frequency chip
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surfaceVariant
-                ) {
-                    Text(
-                        text = habit.frequency.name.lowercase().replaceFirstChar { it.uppercase() },
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
-            
-            // Last completed date
-            habit.lastCompletedDate?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Progress indicator
+                val progressText = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}"
                 Text(
-                    text = "Last completed: ${dateFormat.format(it)}",
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 8.dp)
+                    text = progressText,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
-            }
-            
-            // Action buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                OutlinedButton(
-                    onClick = onEditClicked,
-                    modifier = Modifier.padding(end = 8.dp)
+                ShimmerLinearProgressIndicator(
+                    progress = animatedProgress.coerceIn(0f, 1f),
+                    color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+                )
+                
+                // Status section
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Edit")
+                    // Streak chip
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = streakColor,
+                        modifier = Modifier.scale(streakScale)
+                    ) {
+                        Text(
+                            text = "🔥 ${habit.streak} streak",
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    
+                    // Frequency chip
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant
+                    ) {
+                        Text(
+                            text = habit.frequency.name.lowercase().replaceFirstChar { it.uppercase() },
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
-                Button(
-                    onClick = onDeleteClicked,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
+                
+                // Last completed date
+                habit.lastCompletedDate?.let {
+                    Text(
+                        text = "Last completed: ${dateFormat.format(it)}",
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
+                }
+                
+                // Action buttons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text("Delete")
+                    OutlinedButton(
+                        onClick = onEditClicked,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Edit")
+                    }
+                    Button(
+                        onClick = onDeleteClicked,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Delete")
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ConfettiEffect(particleCount: Int = 24) {
+    val particles = remember { List(particleCount) { ParticleState() } }
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        particles.forEach { particle ->
+            drawCircle(
+                color = particle.color,
+                radius = particle.size,
+                center = Offset(
+                    x = size.width * particle.x,
+                    y = size.height * particle.y
+                )
+            )
+        }
+    }
+}
+
+class ParticleState {
+    val x = Random.nextFloat()
+    val y = Random.nextFloat()
+    val size = Random.nextFloat() * 12f + 6f
+    val color = Color(
+        red = Random.nextFloat(),
+        green = Random.nextFloat(),
+        blue = Random.nextFloat(),
+        alpha = 0.8f
+    )
+}
+
+@Composable
+fun ShimmerLinearProgressIndicator(progress: Float, color: Color) {
+    val shimmerAlpha by animateFloatAsState(
+        targetValue = if (progress in 0.01f..0.99f) 0.5f else 0f,
+        animationSpec = tween(durationMillis = 1200), label = "shimmerAlpha"
+    )
+    Box(modifier = Modifier.fillMaxWidth()) {
+        LinearProgressIndicator(
+            progress = progress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp),
+            color = color
+        )
+        if (shimmerAlpha > 0f) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0f),
+                                Color.White.copy(alpha = shimmerAlpha),
+                                Color.White.copy(alpha = 0f)
+                            ),
+                            start = Offset.Zero,
+                            end = Offset.Infinite
+                        )
+                    )
+            )
         }
     }
 }
