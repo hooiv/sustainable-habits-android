@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.model.Habit
+import com.example.myapplication.navigation.NavRoutes
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -105,10 +106,12 @@ fun HabitItem(habit: Habit) {
 @Composable
 fun HabitListScreenPreview() {
     MyApplicationTheme {
-        // In preview, we can't use hiltViewModel directly easily without more setup.
-        // So, we create a dummy ViewModel or pass dummy data for preview.
-        val previewViewModel = HabitViewModel() // This will show initial dummy data
-        HabitListScreen(navController = rememberNavController(), viewModel = previewViewModel)
+        // In previews, we can't use hiltViewModel easily.
+        // For preview purposes, we'll just pass an empty list instead of a real viewModel
+        HabitListScreen(
+            navController = rememberNavController(),
+            // Remove the direct viewModel instantiation which would need a repository
+        )
     }
 }
 
