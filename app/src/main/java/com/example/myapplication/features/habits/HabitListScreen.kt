@@ -1,6 +1,13 @@
 package com.example.myapplication.features.habits
 
 import android.util.Log // Import Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -80,12 +87,23 @@ fun HabitListScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(habits) { habit ->
-                    HabitItem(
-                        habit = habit,
-                        onDeleteClicked = { viewModel.deleteHabit(habit) }, // Call ViewModel's deleteHabit
-                        onEditClicked = { navController.navigate(NavRoutes.editHabit(habit.id)) } // Navigate to EditHabitScreen
-                    )
+                items(
+                    items = habits,
+                    key = { it.id }
+                ) { habit ->
+                    // Animated visibility for item add/delete
+                    AnimatedVisibility(
+                        visible = true, // Always true for now, but can be used for delete animation
+                        enter = fadeIn(tween(500)) + scaleIn(tween(500)),
+                        exit = fadeOut(tween(500)) + scaleOut(tween(500))
+                    ) {
+                        HabitItem(
+                            habit = habit,
+                            onDeleteClicked = { viewModel.deleteHabit(habit) },
+                            onEditClicked = { navController.navigate(NavRoutes.editHabit(habit.id)) },
+                            onCompleteClicked = { viewModel.markHabitCompleted(habit.id) }
+                        )
+                    }
                 }
             }
         }
@@ -103,8 +121,23 @@ fun HabitItem(
     // Simple date formatter, consider moving to a utility class or injecting for testability
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
+    // Animate progress bar
+    val animatedProgress by animateFloatAsState(
+        targetValue = habit.goalProgress.toFloat() / habit.goal.toFloat(),
+        animationSpec = tween(durationMillis = 700), label = "progressAnim"
+    )
+
+    // Animate streak chip scale and color
+    val streakScale by animateFloatAsState(
+        targetValue = if (habit.streak > 0) 1.15f else 1f,
+        animationSpec = tween(durationMillis = 500), label = "streakScale"
+    )
+    val streakColor = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -123,7 +156,7 @@ fun HabitItem(
                 
                 // Complete button
                 FilledTonalButton(
-                    onClick = { viewModel.markHabitCompleted(habit.id) },
+                    onClick = onCompleteClicked,
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer
                     )
@@ -145,14 +178,14 @@ fun HabitItem(
             Spacer(modifier = Modifier.height(8.dp))
             
             // Progress indicator
-            val progress = habit.goalProgress.toFloat() / habit.goal.toFloat()
+            val progressText = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}"
             Text(
-                text = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}",
+                text = progressText,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             LinearProgressIndicator(
-                progress = progress.coerceIn(0f, 1f),
+                progress = animatedProgress.coerceIn(0f, 1f),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),
@@ -169,8 +202,8 @@ fun HabitItem(
                 // Streak chip
                 Surface(
                     shape = MaterialTheme.shapes.small,
-                    color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer 
-                            else MaterialTheme.colorScheme.surfaceVariant
+                    color = streakColor,
+                    modifier = Modifier.scale(streakScale)
                 ) {
                     Text(
                         text = "🔥 ${habit.streak} streak",
@@ -185,7 +218,7 @@ fun HabitItem(
                     color = MaterialTheme.colorScheme.surfaceVariant
                 ) {
                     Text(
-                        text = habit.frequency.name.lowercase().capitalize(),
+                        text = habit.frequency.name.lowercase().replaceFirstChar { it.uppercase() },
                         fontSize = 12.sp,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
