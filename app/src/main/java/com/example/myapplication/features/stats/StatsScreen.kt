@@ -22,6 +22,9 @@ import androidx.compose.ui.geometry.Size
 import kotlin.math.roundToInt
 import com.tehras.charts.piechart.PieChart
 import com.tehras.charts.linechart.LineChart
+import com.tehras.charts.bar.BarChart
+import com.tehras.charts.bar.BarChartData
+import com.tehras.charts.bar.BarChartEntry
 
 @Composable
 fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewModel()) {
@@ -136,6 +139,31 @@ fun HabitStatsScreen() {
         )
         LineChart(
             lineChartData = listOf(1f, 2f, 3f, 4f, 5f), // Example data
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Bar Chart for Weekly Completion Trends
+        val weeklyData = listOf(
+            BarChartEntry(1f, 3f), // Example data: Day 1, 3 completions
+            BarChartEntry(2f, 5f), // Day 2, 5 completions
+            BarChartEntry(3f, 2f), // Day 3, 2 completions
+            BarChartEntry(4f, 4f), // Day 4, 4 completions
+            BarChartEntry(5f, 6f), // Day 5, 6 completions
+            BarChartEntry(6f, 1f), // Day 6, 1 completion
+            BarChartEntry(7f, 3f)  // Day 7, 3 completions
+        )
+
+        Text(
+            text = "Weekly Completion Trends",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        BarChart(
+            barChartData = BarChartData(entries = weeklyData),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)

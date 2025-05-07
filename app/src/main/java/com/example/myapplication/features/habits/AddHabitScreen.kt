@@ -1,15 +1,23 @@
 package com.example.myapplication.features.habits
 
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +44,23 @@ fun AddHabitScreen(
     var reminderTime by remember { mutableStateOf<LocalTime?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
     var goal by remember { mutableStateOf("1") }
+
+    val context = LocalContext.current
+    val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+    }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val data = result.data
+        val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+        if (!matches.isNullOrEmpty()) {
+            habitName = matches[0] // Pre-fill the habit name with the first result
+        } else {
+            Toast.makeText(context, "No speech input detected", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     // Show time picker dialog when requested
     if (showTimePicker) {
@@ -79,13 +104,23 @@ fun AddHabitScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = habitName,
-                onValueChange = { habitName = it },
-                label = { Text("Habit Name") },
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = habitName,
+                    onValueChange = { habitName = it },
+                    label = { Text("Habit Name") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+                IconButton(onClick = {
+                    launcher.launch(intent)
+                }) {
+                    Icon(Icons.Default.Mic, contentDescription = "Voice Input")
+                }
+            }
 
             OutlinedTextField(
                 value = habitDescription,

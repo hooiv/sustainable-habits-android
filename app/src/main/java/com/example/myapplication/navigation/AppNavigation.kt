@@ -17,6 +17,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import com.example.myapplication.features.stats.StatsScreen
+import com.example.myapplication.features.calendar.HabitCalendarScreen
+import com.example.myapplication.features.settings.SettingsScreen
+import java.time.LocalDate
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -73,6 +76,19 @@ fun AppNavigationGraph(navController: NavHostController) {
             }
         ) {
             StatsScreen(navController)
+        }
+
+        composable(
+            route = NavRoutes.CALENDAR,
+            arguments = listOf(navArgument("habitName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val habitName = backStackEntry.arguments?.getString("habitName") ?: "Unknown Habit"
+            val completionHistory = listOf<LocalDate>() // Replace with actual data fetching logic
+            HabitCalendarScreen(habitName = habitName, completionHistory = completionHistory)
+        }
+
+        composable(route = NavRoutes.SETTINGS) {
+            SettingsScreen(context = navController.context)
         }
     }
 }

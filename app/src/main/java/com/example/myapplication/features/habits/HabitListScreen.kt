@@ -18,6 +18,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,6 +73,51 @@ fun HabitListScreen(
 ) {
     val habits by viewModel.habits.collectAsState() // Collect habits as state
 
+    // Add a dropdown for category filtering
+    var selectedCategory by remember { mutableStateOf("All") }
+    val categories = listOf("All") + habits.mapNotNull { it.category }.distinct()
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text("Filter by Category:", style = MaterialTheme.typography.bodyLarge)
+
+        ExposedDropdownMenuBox(
+            expanded = isDropdownExpanded,
+            onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
+        ) {
+            OutlinedTextField(
+                value = selectedCategory,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Category") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false }
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(category) },
+                        onClick = {
+                            selectedCategory = category
+                            isDropdownExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    // Filter habits based on the selected category
+    val filteredHabits = if (selectedCategory == "All") habits else habits.filter { it.category == selectedCategory }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,7 +151,7 @@ fun HabitListScreen(
             }
         }
     ) { innerPadding ->
-        if (habits.isEmpty()) {
+        if (filteredHabits.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -125,7 +171,7 @@ fun HabitListScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
-                    items = habits,
+                    items = filteredHabits,
                     key = { it.id }
                 ) { habit ->
                     // Animated visibility for item add/delete
@@ -138,7 +184,8 @@ fun HabitListScreen(
                             habit = habit,
                             onDeleteClicked = { viewModel.deleteHabit(habit) },
                             onEditClicked = { navController.navigate(NavRoutes.editHabit(habit.id)) },
-                            onCompleteClicked = { viewModel.markHabitCompleted(habit.id) }
+                            onCompleteClicked = { viewModel.markHabitCompleted(habit.id) },
+                            modifier = Modifier.animateContentSize()
                         )
                     }
                 }
