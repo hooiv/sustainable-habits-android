@@ -1,6 +1,7 @@
 package com.example.myapplication.features.habits
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +37,7 @@ fun EditHabitScreen(
     var goal by remember { mutableStateOf("1") }
     var reminderTime by remember { mutableStateOf<LocalTime?>(null) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var habitCategory by remember { mutableStateOf("") }
 
     // Fetch the habit details when the screen is launched
     LaunchedEffect(habitId) {
@@ -46,6 +49,7 @@ fun EditHabitScreen(
                     habitDescription = habit.description ?: ""
                     selectedFrequency = habit.frequency
                     goal = habit.goal.toString()
+                    habitCategory = habit.category ?: ""
                     
                     // Parse reminder time if it exists
                     habit.reminderTime?.let {
@@ -170,6 +174,15 @@ fun EditHabitScreen(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
                 )
             )
+
+            // Category input
+            TextField(
+                value = habitCategory,
+                onValueChange = { habitCategory = it },
+                label = { Text("Category") },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            )
             
             // Reminder time picker
             Row(
@@ -252,7 +265,8 @@ fun EditHabitScreen(
                             description = habitDescription.takeIf { it.isNotBlank() },
                             frequency = selectedFrequency,
                             goal = goalValue,
-                            reminderTime = reminderTimeString
+                            reminderTime = reminderTimeString,
+                            category = habitCategory.takeIf { it.isNotBlank() }
                         )
                         viewModel.updateHabit(updatedHabit)
                         navController.popBackStack() // Go back after saving

@@ -7,6 +7,8 @@ import com.google.gson.reflect.TypeToken
 import java.util.Date
 
 class Converters {
+    private val gson = Gson()
+
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }
@@ -27,25 +29,25 @@ class Converters {
         return frequency?.name
     }
     
-    // Convert List<Date> to String for storage
     @TypeConverter
-    fun fromDateList(dateList: List<Date>?): String? {
-        if (dateList == null) {
-            return null
-        }
-        // Convert the list of dates to a list of timestamps
-        val dateTimestamps = dateList.map { it.time }
-        return Gson().toJson(dateTimestamps)
+    fun fromDateList(value: List<Date>?): String {
+        return gson.toJson(value)
     }
-    
-    // Convert String back to List<Date>
+
     @TypeConverter
-    fun toDateList(dateListString: String?): List<Date> {
-        if (dateListString.isNullOrEmpty()) {
-            return emptyList()
-        }
-        val listType = object : TypeToken<List<Long>>() {}.type
-        val timestamps: List<Long> = Gson().fromJson(dateListString, listType)
-        return timestamps.map { Date(it) }
+    fun toDateList(value: String): List<Date> {
+        val listType = object : TypeToken<List<Date>>() {}.type
+        return gson.fromJson(value, listType) ?: emptyList()
+    }
+
+    @TypeConverter
+    fun fromIntList(value: List<Int>?): String {
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun toIntList(value: String): List<Int> {
+        val listType = object : TypeToken<List<Int>>() {}.type
+        return gson.fromJson(value, listType) ?: emptyList()
     }
 }

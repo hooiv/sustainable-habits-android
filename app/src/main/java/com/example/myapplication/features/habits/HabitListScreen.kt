@@ -1,6 +1,7 @@
 package com.example.myapplication.features.habits
 
 import android.util.Log // Import Log
+import android.view.MotionEvent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateColorAsState
@@ -40,24 +41,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.input.pointer.consumeAllChanges
-import androidx.compose.ui.input.pointer.pointerMoveFilter
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.awaitPointerEventScope
-import androidx.compose.ui.input.pointer.awaitPointerEvent
-import androidx.compose.ui.input.pointer.changedToDown
-import androidx.compose.ui.input.pointer.changedToUp
-import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.input.pointer.isOutOfBounds
-import androidx.compose.ui.input.pointer.isConsumed
-import androidx.compose.ui.input.pointer.position
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.pointer.pointerMoveFilter
+import androidx.compose.foundation.pointer.pointerInput
+import androidx.compose.foundation.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -255,13 +249,77 @@ fun HabitItem(
         animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "popElevation"
     )
 
+    // State: rotation, scale, and translation
+    val (rotationXState, setRotationX) = remember { mutableStateOf(0f) }
+    val (rotationYState, setRotationY) = remember { mutableStateOf(0f) }
+    val (scaleState, setScale) = remember { mutableStateOf(1f) }
+    val (translation, setTranslation) = remember { mutableStateOf(Offset.Zero) }
+
+    var cardSize by remember { mutableStateOf(IntSize.Zero) }
+    val center = remember(cardSize) { Offset(cardSize.width / 2f, cardSize.height / 2f) }
+    val maxTilt = 15f
+
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .background(cardBgColor)
+            .onGloballyPositioned { coords -> cardSize = coords.size }
+            .graphicsLayer {
+                rotationX = rotationXState
+                rotationY = rotationYState
+                scaleX = scaleState
+                scaleY = scaleState
+                translationX = translation.x
+                translationY = translation.y
+                rotationX = tiltAnimX
+                rotationY = tiltAnimY + tilt // tilt is the infinite animation for subtle movement
+                cameraDistance = 32 * density
+            }
+            // Handle raw pointer events and custom drag gestures
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val changes = event.changes
+                        if (changes.size >= 2) {
+                            val (c1, c2) = changes
+                            val currentDist = (c1.position - c2.position).getDistance()
+                            val prevDist = (c1.previousPosition - c2.previousPosition).getDistance()
+                            val scaleChange = currentDist / prevDist
+                            setScale((scaleState * scaleChange).coerceIn(0.5f, 2f))
+                            c1.consumeAllChanges(); c2.consumeAllChanges()
+                        } else {
+                            val change = changes.first()
+                            val pos = change.position
+                            setRotationX((pos.y - center.y) / center.y * maxTilt)
+                            setRotationY((center.x - pos.x) / center.x * maxTilt)
+                            val delta = change.positionChange()
+                            if (delta != Offset.Zero) {
+                                setTranslation(translation + delta)
+                                change.consumeAllChanges()
+                            }
+                            if (change.changedToUp()) {
+                                setRotationX(0f); setRotationY(0f);
+                                setScale(1f); setTranslation(Offset.Zero)
+                            }
+                        }
+                    }
+                }
+            }
+            // Handle native Android MotionEvent streams
+            .pointerInteropFilter { motionEvent ->
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_MOVE -> {
+                        // native move handling
+                    }
+                    MotionEvent.ACTION_OUTSIDE -> {
+                        // outside touch handling
+                    }
+                }
+                true // consume all native events
+            }
+            // Existing hover-based tilt handling
             .pointerMoveFilter(
-                onMove = { offset ->
+                onMove = { event: PointerEvent ->
+                    val offset = event.position
                     // Map pointer position to tilt
                     val centerX = 180f // Approximate card width/2 in dp
                     val centerY = 60f  // Approximate card height/2 in dp
@@ -269,27 +327,12 @@ fun HabitItem(
                     tiltY = -((offset.x - centerX) / centerX) * 10f // -10 to 10 deg
                     false
                 },
-                onExit = {
+                onExit = { _: PointerEvent ->
                     tiltX = 0f
                     tiltY = 0f
                     false
                 }
             )
-            .graphicsLayer {
-                rotationX = tiltAnimX
-                rotationY = tiltAnimY + tilt // tilt is the infinite animation for subtle movement
-                cameraDistance = 32 * density
-                scaleX = popScale
-                scaleY = popScale
-                shadowElevation = popElevation
-                translationX = shadowOffsetX
-                translationY = shadowOffsetY
-                if (glowAlpha > 0f) {
-                    shadowElevation = 24f * glowAlpha
-                    shape = MaterialTheme.shapes.medium
-                    clip = true
-                }
-            }
             .then(
                 if (borderPulseWidth > 0f) Modifier.border(
                     width = borderPulseWidth.dp,

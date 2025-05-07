@@ -20,6 +20,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import kotlin.math.roundToInt
+import com.tehras.charts.piechart.PieChart
+import com.tehras.charts.linechart.LineChart
 
 @Composable
 fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewModel()) {
@@ -93,6 +95,50 @@ fun CompletionPieChart(completed: Int, total: Int) {
             useCenter = true,
             topLeft = Offset.Zero,
             size = Size(size.width, size.height)
+        )
+    }
+}
+
+@Composable
+fun HabitStatsScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Habit Statistics",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Pie Chart for Completion Rate
+        Text(
+            text = "Completion Rate",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        PieChart(
+            pieChartData = listOf(0.7f, 0.3f), // Example data
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Line Chart for Streak History
+        Text(
+            text = "Streak History",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        LineChart(
+            lineChartData = listOf(1f, 2f, 3f, 4f, 5f), // Example data
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
         )
     }
 }

@@ -2,6 +2,7 @@ package com.example.myapplication.features.habits
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +30,7 @@ fun AddHabitScreen(
     Log.d("AddHabitScreen", "AddHabitScreen composable entered")
     var habitName by remember { mutableStateOf("") }
     var habitDescription by remember { mutableStateOf("") }
+    var habitCategory by remember { mutableStateOf("") }
     var selectedFrequency by remember { mutableStateOf(HabitFrequency.DAILY) }
     var isFrequencyDropdownExpanded by remember { mutableStateOf(false) }
     var reminderTime by remember { mutableStateOf<LocalTime?>(null) }
@@ -90,6 +93,14 @@ fun AddHabitScreen(
                 label = { Text("Description (Optional)") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
+            )
+
+            OutlinedTextField(
+                value = habitCategory,
+                onValueChange = { habitCategory = it },
+                label = { Text("Category") },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             )
 
             // Frequency Dropdown
@@ -186,7 +197,7 @@ fun AddHabitScreen(
             Button(
                 onClick = {
                     if (habitName.isNotBlank()) {
-                        Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency")
+                        Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
                         
                         val goalValue = goal.toIntOrNull() ?: 1
                         val reminderTimeString = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
@@ -194,6 +205,7 @@ fun AddHabitScreen(
                         viewModel.addHabit(
                             name = habitName,
                             description = habitDescription,
+                            category = habitCategory,
                             frequency = selectedFrequency,
                             goal = goalValue,
                             reminderTime = reminderTimeString
