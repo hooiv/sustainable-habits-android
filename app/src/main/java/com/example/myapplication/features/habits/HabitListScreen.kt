@@ -45,8 +45,13 @@ fun HabitListScreen(
         },
         floatingActionButton = { 
             FloatingActionButton(onClick = {
-                Log.d("HabitListScreen", "FAB clicked, navigating to ADD_HABIT") // Add log statement
-                navController.navigate(NavRoutes.ADD_HABIT)
+                Log.d("HabitListScreen", "FAB clicked, navigating to ADD_HABIT route: ${NavRoutes.ADD_HABIT}")
+                try {
+                    navController.navigate(NavRoutes.ADD_HABIT)
+                    Log.d("HabitListScreen", "Navigation executed successfully")
+                } catch (e: Exception) {
+                    Log.e("HabitListScreen", "Navigation error: ${e.message}", e)
+                }
             }) { // Navigate to AddHabitScreen
                 Icon(Icons.Filled.Add, "Add new habit")
             }

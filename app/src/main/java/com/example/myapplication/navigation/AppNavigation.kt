@@ -14,12 +14,19 @@ import com.example.myapplication.features.habits.HabitListScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    
+    // Add debug logging for navigation events
+    navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        Log.d("Navigation", "Navigating to: ${destination.route}, arguments: $arguments")
+    }
+    
     NavHost(navController = navController, startDestination = NavRoutes.HABIT_LIST) {
         composable(NavRoutes.HABIT_LIST) {
+            Log.d("AppNavigation", "Setting up HabitListScreen")
             HabitListScreen(navController = navController)
         }
         composable(NavRoutes.ADD_HABIT) {
-            Log.d("AppNavigation", "Navigating to AddHabitScreen") // Add log statement
+            Log.d("AppNavigation", "Setting up AddHabitScreen") 
             AddHabitScreen(navController = navController)
         }
         composable(
@@ -27,6 +34,7 @@ fun AppNavigation() {
             arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) { type = NavType.StringType })
         ) {
             val habitId = it.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
+            Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
             EditHabitScreen(navController = navController, habitId = habitId)
         }
     }
