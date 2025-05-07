@@ -70,7 +70,8 @@ fun HabitListScreen(
                 items(habits) { habit ->
                     HabitItem(
                         habit = habit,
-                        onDeleteClicked = { viewModel.deleteHabit(habit) } // Call ViewModel's deleteHabit
+                        onDeleteClicked = { viewModel.deleteHabit(habit) }, // Call ViewModel's deleteHabit
+                        onEditClicked = { navController.navigate(NavRoutes.editHabit(habit.id)) } // Navigate to EditHabitScreen
                     )
                 }
             }
@@ -79,7 +80,7 @@ fun HabitListScreen(
 }
 
 @Composable
-fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit) { // Added onDeleteClicked callback
+fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit, onEditClicked: () -> Unit) { // Added onEditClicked callback
     // Simple date formatter, consider moving to a utility class or injecting for testability
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
@@ -102,11 +103,22 @@ fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit) { // Added onDeleteClic
             Text(text = "Created: ${dateFormat.format(habit.createdDate)}", fontSize = 12.sp)
             // TODO: Add buttons for completing a habit, editing, deleting etc.
             Spacer(modifier = Modifier.height(8.dp)) // Added spacer for button
-            Button(
-                onClick = onDeleteClicked, // Call the callback when clicked
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Use error color for delete
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End // Align buttons to the end
             ) {
-                Text("Delete")
+                Button(
+                    onClick = onEditClicked, // Call the callback when clicked
+                    modifier = Modifier.padding(end = 8.dp) // Add some spacing between buttons
+                ) {
+                    Text("Edit")
+                }
+                Button(
+                    onClick = onDeleteClicked, // Call the callback when clicked
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Use error color for delete
+                ) {
+                    Text("Delete")
+                }
             }
         }
     }
@@ -129,6 +141,10 @@ fun HabitListScreenPreview() {
 @Composable
 fun HabitItemPreview() {
     MyApplicationTheme {
-        HabitItem(habit = Habit(name = "Preview Habit", description = "This is a test habit for preview."), onDeleteClicked = {}) // Added empty lambda for preview
+        HabitItem(
+            habit = Habit(name = "Preview Habit", description = "This is a test habit for preview."), 
+            onDeleteClicked = {}, 
+            onEditClicked = {} // Added empty lambda for preview
+        )
     }
 }
