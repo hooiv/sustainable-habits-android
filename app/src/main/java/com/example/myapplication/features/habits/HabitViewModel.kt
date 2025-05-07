@@ -36,5 +36,17 @@ class HabitViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    // TODO: Add functions to add, update, delete, and complete habits
+    fun addHabit(name: String, description: String?, frequency: HabitFrequency) {
+        viewModelScope.launch {
+            val newHabit = Habit(
+                name = name,
+                description = description?.takeIf { it.isNotBlank() }, // Store null if description is blank
+                frequency = frequency,
+                createdDate = Date() // Set current date as creation date
+            )
+            _habits.value = _habits.value + newHabit // Add new habit to the list
+        }
+    }
+
+    // TODO: Add functions to update, delete, and complete habits
 }

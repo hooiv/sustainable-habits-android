@@ -42,7 +42,7 @@ fun HabitListScreen(
             )
         },
         floatingActionButton = { 
-            FloatingActionButton(onClick = { /* TODO: Navigate to add habit screen */ }) {
+            FloatingActionButton(onClick = { navController.navigate(NavRoutes.ADD_HABIT) }) { // Navigate to AddHabitScreen
                 Icon(Icons.Filled.Add, "Add new habit")
             }
         }
