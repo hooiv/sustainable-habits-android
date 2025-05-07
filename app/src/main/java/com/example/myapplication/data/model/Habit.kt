@@ -22,7 +22,8 @@ data class Habit(
     val createdDate: Date = Date(),
     var completionHistory: List<Date> = emptyList(), // History of all completion dates
     var isEnabled: Boolean = true, // To allow pausing a habit
-    var reminderTime: String? = null // For notifications, e.g., "09:00"
+    var reminderTime: String? = null, // For notifications, e.g., "09:00"
+    var unlockedBadges: List<Int> = emptyList() // List of streak milestones for which badges are unlocked
 )
 
 enum class HabitFrequency {
