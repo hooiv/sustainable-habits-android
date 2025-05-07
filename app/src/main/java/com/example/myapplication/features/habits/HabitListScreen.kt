@@ -68,7 +68,10 @@ fun HabitListScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(habits) { habit ->
-                    HabitItem(habit = habit)
+                    HabitItem(
+                        habit = habit,
+                        onDeleteClicked = { viewModel.deleteHabit(habit) } // Call ViewModel's deleteHabit
+                    )
                 }
             }
         }
@@ -76,7 +79,7 @@ fun HabitListScreen(
 }
 
 @Composable
-fun HabitItem(habit: Habit) {
+fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit) { // Added onDeleteClicked callback
     // Simple date formatter, consider moving to a utility class or injecting for testability
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
@@ -98,6 +101,13 @@ fun HabitItem(habit: Habit) {
             }
             Text(text = "Created: ${dateFormat.format(habit.createdDate)}", fontSize = 12.sp)
             // TODO: Add buttons for completing a habit, editing, deleting etc.
+            Spacer(modifier = Modifier.height(8.dp)) // Added spacer for button
+            Button(
+                onClick = onDeleteClicked, // Call the callback when clicked
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Use error color for delete
+            ) {
+                Text("Delete")
+            }
         }
     }
 }
@@ -119,6 +129,6 @@ fun HabitListScreenPreview() {
 @Composable
 fun HabitItemPreview() {
     MyApplicationTheme {
-        HabitItem(habit = Habit(name = "Preview Habit", description = "This is a test habit for preview."))
+        HabitItem(habit = Habit(name = "Preview Habit", description = "This is a test habit for preview."), onDeleteClicked = {}) // Added empty lambda for preview
     }
 }

@@ -38,11 +38,9 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    // TODO: Add functions to update, delete, and complete habits using the repository
-    // Example for delete:
-    // fun deleteHabit(habit: Habit) {
-    //     viewModelScope.launch {
-    //         repository.deleteHabit(habit)
-    //     }
-    // }
+    fun deleteHabit(habit: Habit) {
+        viewModelScope.launch {
+            repository.deleteHabit(habit)
+        }
+    }
 }
