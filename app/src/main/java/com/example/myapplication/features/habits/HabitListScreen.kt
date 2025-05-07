@@ -37,9 +37,24 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerMoveFilter
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.awaitPointerEventScope
+import androidx.compose.ui.input.pointer.awaitPointerEvent
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.input.pointer.isOutOfBounds
+import androidx.compose.ui.input.pointer.isConsumed
+import androidx.compose.ui.input.pointer.position
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,6 +66,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -201,13 +217,42 @@ fun HabitItem(
         animationSpec = tween(durationMillis = 800), label = "borderPulseWidth"
     )
 
+    // --- ADVANCED: Interactive 3D tilt based on pointer position ---
+    var tiltX by remember { mutableStateOf(0f) }
+    var tiltY by remember { mutableStateOf(0f) }
+    val tiltAnimX by animateFloatAsState(
+        targetValue = tiltX,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "tiltAnimX"
+    )
+    val tiltAnimY by animateFloatAsState(
+        targetValue = tiltY,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "tiltAnimY"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize()
             .background(cardBgColor)
+            .pointerMoveFilter(
+                onMove = { offset ->
+                    // Map pointer position to tilt
+                    val centerX = 180f // Approximate card width/2 in dp
+                    val centerY = 60f  // Approximate card height/2 in dp
+                    tiltX = ((offset.y - centerY) / centerY) * 10f // -10 to 10 deg
+                    tiltY = -((offset.x - centerX) / centerX) * 10f // -10 to 10 deg
+                    false
+                },
+                onExit = {
+                    tiltX = 0f
+                    tiltY = 0f
+                    false
+                }
+            )
             .graphicsLayer {
-                rotationY = tilt
+                rotationX = tiltAnimX
+                rotationY = tiltAnimY + tilt // tilt is the infinite animation for subtle movement
+                cameraDistance = 24 * density
                 if (glowAlpha > 0f) {
                     shadowElevation = 24f * glowAlpha
                     shape = MaterialTheme.shapes.medium
