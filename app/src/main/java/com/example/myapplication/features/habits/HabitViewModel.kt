@@ -43,4 +43,14 @@ class HabitViewModel @Inject constructor(
             repository.deleteHabit(habit)
         }
     }
+
+    fun getHabitById(habitId: String): kotlinx.coroutines.flow.Flow<Habit?> {
+        return repository.getHabitById(habitId)
+    }
+
+    fun updateHabit(habit: Habit) {
+        viewModelScope.launch {
+            repository.updateHabit(habit)
+        }
+    }
 }
