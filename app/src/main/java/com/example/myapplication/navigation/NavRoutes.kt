@@ -9,4 +9,6 @@ object NavRoutes {
     
     // Helper function for parameterized routes
     fun editHabit(habitId: String) = "$EDIT_HABIT_ROUTE/$habitId"
+
+    const val STATS = "stats"
 }

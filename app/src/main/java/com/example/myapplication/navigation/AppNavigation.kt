@@ -11,7 +11,14 @@ import androidx.navigation.navArgument
 import com.example.myapplication.features.habits.AddHabitScreen
 import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import com.example.myapplication.features.stats.StatsScreen
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -49,6 +56,23 @@ fun AppNavigationGraph(navController: NavHostController) {
             val habitId = it.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
             Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
             EditHabitScreen(navController = navController, habitId = habitId)
+        }
+
+        composable(NavRoutes.STATS,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(500)
+                )
+            }
+        ) {
+            StatsScreen(navController)
         }
     }
 }
