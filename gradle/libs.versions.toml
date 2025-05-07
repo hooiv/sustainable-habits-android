@@ -1,6 +1,6 @@
 [versions]
 agp = "8.9.1"
-kotlin = "2.0.21"
+kotlin = "1.9.22" # Downgraded from 2.0.21 to 1.9.22
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -11,12 +11,10 @@ constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 hilt = "2.51.1"
-composeBom = "2024.06.00" # Added Compose BOM version
-activityCompose = "1.9.0" # Added Activity Compose version
-composeNavigation = "2.8.0-beta05" # Added Compose Navigation version
-room = "2.6.1"  # Added Room version
-ksp = "1.0.21" # Simplified KSP version
-composeCompiler = "1.5.14" # Added Compose Compiler version
+composeBom = "2024.06.00"
+activityCompose = "1.9.0"
+composeNavigation = "2.8.0-beta05"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +58,4 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" } # Added KSP plugin
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composeCompiler" } # Updated Compose Compiler plugin ID
 
