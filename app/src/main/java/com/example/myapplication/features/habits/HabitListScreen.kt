@@ -93,7 +93,13 @@ fun HabitListScreen(
 }
 
 @Composable
-fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit, onEditClicked: () -> Unit) { // Added onEditClicked callback
+fun HabitItem(
+    habit: Habit, 
+    onDeleteClicked: () -> Unit, 
+    onEditClicked: () -> Unit,
+    onCompleteClicked: () -> Unit = {},
+    viewModel: HabitViewModel = hiltViewModel()
+) {
     // Simple date formatter, consider moving to a utility class or injecting for testability
     val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
@@ -102,33 +108,117 @@ fun HabitItem(habit: Habit, onDeleteClicked: () -> Unit, onEditClicked: () -> Un
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = habit.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            habit.description?.let {
-                Text(text = it, fontSize = 14.sp, style = MaterialTheme.typography.bodyMedium)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Frequency: ${habit.frequency}", fontSize = 12.sp)
-            Text(text = "Goal: ${habit.goal} per ${habit.frequency.name.lowercase()}", fontSize = 12.sp)
-            Text(text = "Streak: ${habit.streak}", fontSize = 12.sp)
-            habit.lastCompletedDate?.let {
-                Text(text = "Last completed: ${dateFormat.format(it)}", fontSize = 12.sp)
-            }
-            Text(text = "Created: ${dateFormat.format(habit.createdDate)}", fontSize = 12.sp)
-            // TODO: Add buttons for completing a habit, editing, deleting etc.
-            Spacer(modifier = Modifier.height(8.dp)) // Added spacer for button
+            // Top section with name and complete button
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End // Align buttons to the end
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = onEditClicked, // Call the callback when clicked
-                    modifier = Modifier.padding(end = 8.dp) // Add some spacing between buttons
+                Text(
+                    text = habit.name, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 18.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // Complete button
+                FilledTonalButton(
+                    onClick = { viewModel.markHabitCompleted(habit.id) },
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Text("Complete")
+                }
+            }
+            
+            // Description (if any)
+            habit.description?.let {
+                Text(
+                    text = it, 
+                    fontSize = 14.sp, 
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Progress indicator
+            val progress = habit.goalProgress.toFloat() / habit.goal.toFloat()
+            Text(
+                text = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}",
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            LinearProgressIndicator(
+                progress = progress.coerceIn(0f, 1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
+                color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+            )
+            
+            // Status section
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Streak chip
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer 
+                            else MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = "🔥 ${habit.streak} streak",
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                
+                // Frequency chip
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = habit.frequency.name.lowercase().capitalize(),
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            
+            // Last completed date
+            habit.lastCompletedDate?.let {
+                Text(
+                    text = "Last completed: ${dateFormat.format(it)}",
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            
+            // Action buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                OutlinedButton(
+                    onClick = onEditClicked,
+                    modifier = Modifier.padding(end = 8.dp)
                 ) {
                     Text("Edit")
                 }
                 Button(
-                    onClick = onDeleteClicked, // Call the callback when clicked
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) // Use error color for delete
+                    onClick = onDeleteClicked,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
                 ) {
                     Text("Delete")
                 }
