@@ -1,8 +1,12 @@
 package com.example.myapplication.features.habits
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -10,14 +14,78 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitFrequency
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.sin
+
+@Composable
+fun ParallaxBackground(
+    scrollOffset: Float,
+    modifier: Modifier = Modifier
+) {
+    // Simulate 3 parallax layers with different speeds
+    val colors = listOf(
+        listOf(Color(0xFFB3E5FC), Color(0xFFE1F5FE)), // Layer 1
+        listOf(Color(0xFF81D4FA), Color(0xFFB3E5FC)), // Layer 2
+        listOf(Color(0xFF0288D1), Color(0xFF81D4FA))  // Layer 3
+    )
+    val speeds = listOf(0.2f, 0.5f, 1.0f)
+    Box(modifier = modifier) {
+        colors.forEachIndexed { i, colorList ->
+            Canvas(modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer {
+                    translationY = scrollOffset * speeds[i]
+                }
+            ) {
+                drawRect(
+                    brush = Brush.verticalGradient(colorList),
+                    size = size
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FloatingIconsAnimation(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "floatingIcons")
+    val yOffsets = List(3) { i ->
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 20f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2000 + i * 500, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ), label = "iconY$i"
+        )
+    }
+    val xOffsets = listOf(30.dp, 120.dp, 220.dp)
+    val iconColors = listOf(Color(0xFFFFF176), Color(0xFF80DEEA), Color(0xFFFF8A65))
+    Box(modifier = modifier.fillMaxSize()) {
+        xOffsets.forEachIndexed { i, x ->
+            Box(
+                modifier = Modifier
+                    .offset(x, 10.dp + yOffsets[i].value.dp)
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(iconColors[i].copy(alpha = 0.5f))
+            )
+        }
+    }
+}
 
 @Composable
 fun HabitItem(
@@ -50,156 +118,171 @@ fun HabitItem(
     val cardElevation = if (habit.isEnabled) 2.dp else 0.dp
     val contentAlpha = if (habit.isEnabled) 1f else 0.4f
     
-    Card(
+    // Simulate scrollOffset for parallax (could be passed from parent in a real scrollable list)
+    val scrollOffset = remember { mutableStateOf(0f) }
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize()
-            .alpha(contentAlpha),
-        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),
-        onClick = onItemClick
+            .height(IntrinsicSize.Min)
+            .pointerInput(Unit) {
+                detectVerticalDragGestures { _, dragAmount ->
+                    scrollOffset.value += dragAmount
+                }
+            }
     ) {
-        Column(
+        ParallaxBackground(scrollOffset = scrollOffset.value, modifier = Modifier.matchParentSize())
+        FloatingIconsAnimation(modifier = Modifier.matchParentSize())
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .animateContentSize()
+                .alpha(contentAlpha),
+            elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),
+            onClick = onItemClick
         ) {
-            // Title row with frequency and indicators
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = habit.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        textDecoration = if (isCompletedToday) TextDecoration.LineThrough else TextDecoration.None
-                    )
-                    
-                    // Show habit frequency
-                    Text(
-                        text = when (habit.frequency) {
-                            HabitFrequency.DAILY -> " • Daily"
-                            HabitFrequency.WEEKLY -> " • Weekly"
-                            HabitFrequency.MONTHLY -> " • Monthly"
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                // Show reminder and streak indicator
-                Row {
-                    if (habit.reminderTime != null) {
-                        Icon(
-                            Icons.Default.Alarm,
-                            contentDescription = "Reminder set",
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    
-                    if (habit.streak > 0) {
-                        Icon(
-                            Icons.Default.LocalFireDepartment,
-                            contentDescription = "Streak",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color(0xFFF57C00) // Orange
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "${habit.streak}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color(0xFFF57C00)
-                        )
-                    }
-                }
-            }
-            
-            // Description if available
-            if (!habit.description.isNullOrEmpty()) {
-                Text(
-                    text = habit.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-            
-            // Progress indicator if there's a goal
-            if (habit.goalCount > 0) {
-                Column(modifier = Modifier.padding(top = 8.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Progress",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        Text(
-                            text = "${habit.goalProgress}/${habit.goalCount}",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                    
-                    LinearProgressIndicator(
-                        progress = { animatedProgress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
-                            .height(8.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                }
-            }
-            
-            // Action buttons
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(16.dp)
             ) {
-                // Toggle enabled button
-                IconButton(onClick = onToggleEnabled) {
-                    Icon(
-                        imageVector = if (habit.isEnabled) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
-                        contentDescription = if (habit.isEnabled) "Pause habit" else "Resume habit",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                // Delete button
-                IconButton(onClick = onDeleteClick) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete habit",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-                
-                // Complete button
-                Button(
-                    onClick = onCompletedClick,
-                    enabled = !isCompletedToday && habit.isEnabled,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isCompletedToday) 
-                            MaterialTheme.colorScheme.surfaceVariant 
-                        else 
-                            MaterialTheme.colorScheme.primary
-                    )
+                // Title row with frequency and indicators
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isCompletedToday) Icons.Default.CheckCircle else Icons.Default.Done,
-                        contentDescription = "Mark as completed"
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = habit.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            textDecoration = if (isCompletedToday) TextDecoration.LineThrough else TextDecoration.None
+                        )
+                        
+                        // Show habit frequency
+                        Text(
+                            text = when (habit.frequency) {
+                                HabitFrequency.DAILY -> " • Daily"
+                                HabitFrequency.WEEKLY -> " • Weekly"
+                                HabitFrequency.MONTHLY -> " • Monthly"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Show reminder and streak indicator
+                    Row {
+                        if (habit.reminderTime != null) {
+                            Icon(
+                                Icons.Default.Alarm,
+                                contentDescription = "Reminder set",
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        
+                        if (habit.streak > 0) {
+                            Icon(
+                                Icons.Default.LocalFireDepartment,
+                                contentDescription = "Streak",
+                                modifier = Modifier.size(20.dp),
+                                tint = Color(0xFFF57C00) // Orange
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "${habit.streak}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFFF57C00)
+                            )
+                        }
+                    }
+                }
+                
+                // Description if available
+                if (!habit.description.isNullOrEmpty()) {
+                    Text(
+                        text = habit.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = if (isCompletedToday) "Completed" else "Complete")
+                }
+                
+                // Progress indicator if there's a goal
+                if (habit.goalCount > 0) {
+                    Column(modifier = Modifier.padding(top = 8.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Progress",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = "${habit.goalProgress}/${habit.goalCount}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        
+                        LinearProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp)
+                                .height(8.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    }
+                }
+                
+                // Action buttons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Toggle enabled button
+                    IconButton(onClick = onToggleEnabled) {
+                        Icon(
+                            imageVector = if (habit.isEnabled) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
+                            contentDescription = if (habit.isEnabled) "Pause habit" else "Resume habit",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    // Delete button
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete habit",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    
+                    // Complete button
+                    Button(
+                        onClick = onCompletedClick,
+                        enabled = !isCompletedToday && habit.isEnabled,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isCompletedToday) 
+                                MaterialTheme.colorScheme.surfaceVariant 
+                            else 
+                                MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = if (isCompletedToday) Icons.Default.CheckCircle else Icons.Default.Done,
+                            contentDescription = "Mark as completed"
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = if (isCompletedToday) "Completed" else "Complete")
+                    }
                 }
             }
         }
