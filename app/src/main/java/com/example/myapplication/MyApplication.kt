@@ -1,9 +1,20 @@
 package com.example.myapplication
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MyApplication : Application() {
-    // You can add custom application-level logic here if needed
+class MyApplication : Application(), Configuration.Provider {
+    
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+    
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+    }
 }

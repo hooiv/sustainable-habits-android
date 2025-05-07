@@ -69,7 +69,7 @@ fun AddHabitScreen(
             initialMinute = reminderTime?.minute ?: 0
         )
         
-        TimePickerDialog(
+        AddHabitTimePickerDialog(
             onDismissRequest = { showTimePicker = false },
             onConfirm = {
                 reminderTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
@@ -240,7 +240,7 @@ fun AddHabitScreen(
                         viewModel.addHabit(
                             name = habitName,
                             description = habitDescription,
-                            category = habitCategory,
+                            category = habitCategory.takeIf { it.isNotBlank() } ?: "Uncategorized",
                             frequency = selectedFrequency,
                             goal = goalValue,
                             reminderTime = reminderTimeString
@@ -257,8 +257,9 @@ fun AddHabitScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(
+fun AddHabitTimePickerDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     timePickerState: TimePickerState

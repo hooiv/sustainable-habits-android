@@ -1,5 +1,8 @@
 package com.example.myapplication.features.stats
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.*
@@ -12,24 +15,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.example.myapplication.navigation.NavRoutes
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.data.model.Habit
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.viewinterop.AndroidView
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import kotlin.math.roundToInt
-import com.tehras.charts.piechart.PieChart
-import com.tehras.charts.linechart.LineChart
-import com.tehras.charts.bar.BarChart
-import com.tehras.charts.bar.BarChartData
-import com.tehras.charts.bar.BarChartEntry
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.runtime.collectAsState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewModel()) {
-    val habits by viewModel.habits.observeAsState(emptyList())
-    val completedCount = habits.count { it.isCompleted }
+    val habits by viewModel.habits.collectAsState(emptyList())
+    val completedCount = habits.count { it.goalProgress >= it.goal }
     val totalCount = habits.size
     val completionRate = if (totalCount > 0) completedCount * 100f / totalCount else 0f
 
@@ -39,7 +48,7 @@ fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewMo
                 title = { Text("Habit Statistics", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -79,26 +88,18 @@ fun StatsScreen(navController: NavController, viewModel: HabitViewModel = viewMo
 
 @Composable
 fun CompletionPieChart(completed: Int, total: Int) {
-    val sweepAngle = if (total > 0) 360f * completed / total else 0f
-    Canvas(modifier = Modifier.size(160.dp)) {
-        // Background circle
-        drawArc(
-            color = Color.LightGray,
-            startAngle = 0f,
-            sweepAngle = 360f,
-            useCenter = true,
-            topLeft = Offset.Zero,
-            size = Size(size.width, size.height)
+    AndroidView(
+        factory = { context -> PieChart(context) },
+        modifier = Modifier.size(200.dp)
+    ) { pieChart ->
+        val entries = listOf(
+            PieEntry(completed.toFloat(), "Completed"),
+            PieEntry((total - completed).toFloat(), "Remaining")
         )
-        // Completed arc
-        drawArc(
-            color = Color(0xFF388E3C),
-            startAngle = -90f,
-            sweepAngle = sweepAngle,
-            useCenter = true,
-            topLeft = Offset.Zero,
-            size = Size(size.width, size.height)
-        )
+        val dataSet = PieDataSet(entries, "Completion Rate")
+        dataSet.colors = listOf(Color(0xFF388E3C).toArgb(), Color.LightGray.toArgb())
+        pieChart.data = PieData(dataSet)
+        pieChart.invalidate()
     }
 }
 
@@ -122,39 +123,19 @@ fun HabitStatsScreen() {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        PieChart(
-            pieChartData = listOf(0.7f, 0.3f), // Example data
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Line Chart for Streak History
-        Text(
-            text = "Streak History",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        LineChart(
-            lineChartData = listOf(1f, 2f, 3f, 4f, 5f), // Example data
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
+        CompletionPieChart(completed = 7, total = 10)
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Bar Chart for Weekly Completion Trends
         val weeklyData = listOf(
-            BarChartEntry(1f, 3f), // Example data: Day 1, 3 completions
-            BarChartEntry(2f, 5f), // Day 2, 5 completions
-            BarChartEntry(3f, 2f), // Day 3, 2 completions
-            BarChartEntry(4f, 4f), // Day 4, 4 completions
-            BarChartEntry(5f, 6f), // Day 5, 6 completions
-            BarChartEntry(6f, 1f), // Day 6, 1 completion
-            BarChartEntry(7f, 3f)  // Day 7, 3 completions
+            BarEntry(1f, 3f),
+            BarEntry(2f, 5f),
+            BarEntry(3f, 2f),
+            BarEntry(4f, 4f),
+            BarEntry(5f, 6f),
+            BarEntry(6f, 1f),
+            BarEntry(7f, 3f)
         )
 
         Text(
@@ -162,11 +143,16 @@ fun HabitStatsScreen() {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        BarChart(
-            barChartData = BarChartData(entries = weeklyData),
+        AndroidView(
+            factory = { context -> BarChart(context) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-        )
+        ) { barChart ->
+            val dataSet = BarDataSet(weeklyData, "Weekly Trends")
+            dataSet.colors = listOf(Color(0xFF388E3C).toArgb())
+            barChart.data = BarData(dataSet)
+            barChart.invalidate()
+        }
     }
 }

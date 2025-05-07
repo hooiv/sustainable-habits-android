@@ -1,0 +1,4 @@
+<resources>
+    <item name="widget_title" type="id" />
+    <item name="widget_placeholder" type="id" />
+</resources>

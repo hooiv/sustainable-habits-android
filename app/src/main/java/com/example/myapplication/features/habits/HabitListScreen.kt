@@ -1,122 +1,36 @@
 package com.example.myapplication.features.habits
 
-import android.util.Log // Import Log
-import android.view.MotionEvent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateColorAsState
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.foundation.pointer.pointerMoveFilter
-import androidx.compose.foundation.pointer.pointerInput
-import androidx.compose.foundation.pointer.pointerInteropFilter
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.unit.IntSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
-import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.delay
-import java.text.SimpleDateFormat
-import java.util.Locale
-import kotlin.math.roundToInt
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitListScreen(
     navController: NavController,
-    viewModel: HabitViewModel = hiltViewModel() // Inject ViewModel
+    viewModel: HabitViewModel = hiltViewModel()
 ) {
-    val habits by viewModel.habits.collectAsState() // Collect habits as state
+    val habits by viewModel.habits.collectAsState(initial = emptyList())
 
     // Add a dropdown for category filtering
     var selectedCategory by remember { mutableStateOf("All") }
     val categories = listOf("All") + habits.mapNotNull { it.category }.distinct()
     var isDropdownExpanded by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("Filter by Category:", style = MaterialTheme.typography.bodyLarge)
-
-        ExposedDropdownMenuBox(
-            expanded = isDropdownExpanded,
-            onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
-        ) {
-            OutlinedTextField(
-                value = selectedCategory,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Category") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
-                modifier = Modifier.menuAnchor()
-            )
-            ExposedDropdownMenu(
-                expanded = isDropdownExpanded,
-                onDismissRequest = { isDropdownExpanded = false }
-            ) {
-                categories.forEach { category ->
-                    DropdownMenuItem(
-                        text = { Text(category) },
-                        onClick = {
-                            selectedCategory = category
-                            isDropdownExpanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    // Filter habits based on the selected category
-    val filteredHabits = if (selectedCategory == "All") habits else habits.filter { it.category == selectedCategory }
 
     Scaffold(
         topBar = {
@@ -135,608 +49,90 @@ fun HabitListScreen(
         },
         floatingActionButton = { 
             FloatingActionButton(onClick = {
-                Log.d("HabitListScreen", "FAB clicked, navigating to ADD_HABIT route: ${NavRoutes.ADD_HABIT}")
-                try {
-                    // Use navigate(route) instead of navigate(route_string) to avoid deep link interpretation
-                    navController.navigate(NavRoutes.ADD_HABIT) {
-                        // Add navigation options to ensure proper navigation behavior
-                        launchSingleTop = true
-                    }
-                    Log.d("HabitListScreen", "Navigation executed successfully")
-                } catch (e: Exception) {
-                    Log.e("HabitListScreen", "Navigation error: ${e.message}", e)
-                }
-            }) { // Navigate to AddHabitScreen
+                Log.d("HabitListScreen", "FAB clicked, navigating to ADD_HABIT route")
+                navController.navigate(NavRoutes.ADD_HABIT)
+            }) {
                 Icon(Icons.Filled.Add, "Add new habit")
             }
         }
     ) { innerPadding ->
-        if (filteredHabits.isEmpty()) {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            // Category filter dropdown
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+                    .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("No habits yet. Tap the + button to add one!")
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = filteredHabits,
-                    key = { it.id }
-                ) { habit ->
-                    // Animated visibility for item add/delete
-                    AnimatedVisibility(
-                        visible = true, // Always true for now, but can be used for delete animation
-                        enter = fadeIn(tween(500)) + scaleIn(tween(500)),
-                        exit = fadeOut(tween(500)) + scaleOut(tween(500))
+                Text("Filter by Category:", style = MaterialTheme.typography.bodyLarge)
+
+                ExposedDropdownMenuBox(
+                    expanded = isDropdownExpanded,
+                    onExpandedChange = { isDropdownExpanded = !isDropdownExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = selectedCategory,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false }
                     ) {
-                        HabitItem(
-                            habit = habit,
-                            onDeleteClicked = { viewModel.deleteHabit(habit) },
-                            onEditClicked = { navController.navigate(NavRoutes.editHabit(habit.id)) },
-                            onCompleteClicked = { viewModel.markHabitCompleted(habit.id) },
-                            modifier = Modifier.animateContentSize()
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HabitItem(
-    habit: Habit, 
-    onDeleteClicked: () -> Unit, 
-    onEditClicked: () -> Unit,
-    onCompleteClicked: () -> Unit = {},
-    viewModel: HabitViewModel = hiltViewModel()
-) {
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-
-    // Animate progress bar
-    val animatedProgress by animateFloatAsState(
-        targetValue = habit.goalProgress.toFloat() / habit.goal.toFloat(),
-        animationSpec = tween(durationMillis = 700), label = "progressAnim"
-    )
-
-    // Animate streak chip scale and color (spring for bouncy effect)
-    val streakScale by animateFloatAsState(
-        targetValue = if (habit.streak > 0) 1.2f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessLow), label = "streakScale"
-    )
-    val streakColor by animateColorAsState(
-        targetValue = if (habit.streak > 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-        animationSpec = tween(durationMillis = 600), label = "streakColor"
-    )
-
-    // Animate card background color
-    val cardBgColor by animateColorAsState(
-        targetValue = if (habit.streak > 0) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.background,
-        animationSpec = tween(durationMillis = 800), label = "cardBgColor"
-    )
-
-    // Ripple/glow effect state
-    val showGlow = remember { mutableStateOf(false) }
-    val glowAlpha by animateFloatAsState(
-        targetValue = if (showGlow.value) 0.6f else 0f,
-        animationSpec = tween(durationMillis = 400), label = "glowAlpha"
-    )
-
-    // Confetti/particle state
-    val showConfetti = remember { mutableStateOf(false) }
-    LaunchedEffect(habit.streak) {
-        if (habit.streak > 0) {
-            showConfetti.value = true
-            delay(900)
-            showConfetti.value = false
-        }
-    }
-
-    // 3D tilt effect on card hover/tap (simulate with infinite animation for demo)
-    val infiniteTransition = rememberInfiniteTransition(label = "tilt")
-    val tilt by infiniteTransition.animateFloat(
-        initialValue = -2f,
-        targetValue = 2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1800, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "tiltAnim"
-    )
-
-    // Animated border color pulse when streak is high
-    val borderPulseColor by animateColorAsState(
-        targetValue = if (habit.streak >= 7) Color(0xFFFFD700) else Color.Transparent,
-        animationSpec = tween(durationMillis = 800), label = "borderPulse"
-    )
-    val borderPulseWidth by animateFloatAsState(
-        targetValue = if (habit.streak >= 7) 4f else 0f,
-        animationSpec = tween(durationMillis = 800), label = "borderPulseWidth"
-    )
-
-    // --- ADVANCED: Interactive 3D tilt based on pointer position ---
-    var tiltX by remember { mutableStateOf(0f) }
-    var tiltY by remember { mutableStateOf(0f) }
-    val tiltAnimX by animateFloatAsState(
-        targetValue = tiltX,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "tiltAnimX"
-    )
-    val tiltAnimY by animateFloatAsState(
-        targetValue = tiltY,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "tiltAnimY"
-    )
-
-    // --- ADVANCED: Parallax background layer ---
-    val parallaxOffsetX = tiltAnimY * 8f
-    val parallaxOffsetY = tiltAnimX * 8f
-
-    // --- ADVANCED: Dynamic shadow based on tilt ---
-    val shadowOffsetX = tiltAnimY * 2f
-    val shadowOffsetY = tiltAnimX * 2f
-    val shadowBlur = 16f + (kotlin.math.abs(tiltAnimX) + kotlin.math.abs(tiltAnimY)) * 2f
-
-    // --- ADVANCED: Card pop effect on hover/tap ---
-    val isPopped = (tiltAnimX != 0f || tiltAnimY != 0f)
-    val popScale by animateFloatAsState(
-        targetValue = if (isPopped) 1.04f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "popScale"
-    )
-    val popElevation by animateFloatAsState(
-        targetValue = if (isPopped) 16f else 2f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "popElevation"
-    )
-
-    // State: rotation, scale, and translation
-    val (rotationXState, setRotationX) = remember { mutableStateOf(0f) }
-    val (rotationYState, setRotationY) = remember { mutableStateOf(0f) }
-    val (scaleState, setScale) = remember { mutableStateOf(1f) }
-    val (translation, setTranslation) = remember { mutableStateOf(Offset.Zero) }
-
-    var cardSize by remember { mutableStateOf(IntSize.Zero) }
-    val center = remember(cardSize) { Offset(cardSize.width / 2f, cardSize.height / 2f) }
-    val maxTilt = 15f
-
-    Card(
-        modifier = Modifier
-            .onGloballyPositioned { coords -> cardSize = coords.size }
-            .graphicsLayer {
-                rotationX = rotationXState
-                rotationY = rotationYState
-                scaleX = scaleState
-                scaleY = scaleState
-                translationX = translation.x
-                translationY = translation.y
-                rotationX = tiltAnimX
-                rotationY = tiltAnimY + tilt // tilt is the infinite animation for subtle movement
-                cameraDistance = 32 * density
-            }
-            // Handle raw pointer events and custom drag gestures
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val changes = event.changes
-                        if (changes.size >= 2) {
-                            val (c1, c2) = changes
-                            val currentDist = (c1.position - c2.position).getDistance()
-                            val prevDist = (c1.previousPosition - c2.previousPosition).getDistance()
-                            val scaleChange = currentDist / prevDist
-                            setScale((scaleState * scaleChange).coerceIn(0.5f, 2f))
-                            c1.consumeAllChanges(); c2.consumeAllChanges()
-                        } else {
-                            val change = changes.first()
-                            val pos = change.position
-                            setRotationX((pos.y - center.y) / center.y * maxTilt)
-                            setRotationY((center.x - pos.x) / center.x * maxTilt)
-                            val delta = change.positionChange()
-                            if (delta != Offset.Zero) {
-                                setTranslation(translation + delta)
-                                change.consumeAllChanges()
-                            }
-                            if (change.changedToUp()) {
-                                setRotationX(0f); setRotationY(0f);
-                                setScale(1f); setTranslation(Offset.Zero)
-                            }
+                        categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category) },
+                                onClick = {
+                                    selectedCategory = category
+                                    isDropdownExpanded = false
+                                }
+                            )
                         }
                     }
                 }
             }
-            // Handle native Android MotionEvent streams
-            .pointerInteropFilter { motionEvent ->
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_MOVE -> {
-                        // native move handling
-                    }
-                    MotionEvent.ACTION_OUTSIDE -> {
-                        // outside touch handling
-                    }
-                }
-                true // consume all native events
-            }
-            // Existing hover-based tilt handling
-            .pointerMoveFilter(
-                onMove = { event: PointerEvent ->
-                    val offset = event.position
-                    // Map pointer position to tilt
-                    val centerX = 180f // Approximate card width/2 in dp
-                    val centerY = 60f  // Approximate card height/2 in dp
-                    tiltX = ((offset.y - centerY) / centerY) * 10f // -10 to 10 deg
-                    tiltY = -((offset.x - centerX) / centerX) * 10f // -10 to 10 deg
-                    false
-                },
-                onExit = { _: PointerEvent ->
-                    tiltX = 0f
-                    tiltY = 0f
-                    false
-                }
-            )
-            .then(
-                if (borderPulseWidth > 0f) Modifier.border(
-                    width = borderPulseWidth.dp,
-                    color = borderPulseColor,
-                    shape = MaterialTheme.shapes.medium
-                ) else Modifier
-            ),
-        elevation = CardDefaults.cardElevation(defaultElevation = popElevation.dp)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            // Parallax background layer
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .graphicsLayer {
-                        translationX = parallaxOffsetX
-                        translationY = parallaxOffsetY
-                    }
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFFB3E5FC).copy(alpha = 0.18f),
-                                Color(0xFF81D4FA).copy(alpha = 0.12f),
-                                Color(0xFF0288D1).copy(alpha = 0.10f)
-                            ),
-                            start = Offset.Zero,
-                            end = Offset.Infinite,
-                            tileMode = TileMode.Clamp
-                        )
-                    )
-            )
-            // Dynamic shadow (simulated with a blurred colored overlay)
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .graphicsLayer {
-                        translationX = shadowOffsetX * 2
-                        translationY = shadowOffsetY * 2
-                        alpha = 0.18f
-                        shadowElevation = shadowBlur
-                    }
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(Color.Black.copy(alpha = 0.18f), Color.Transparent),
-                            center = Offset(180f + shadowOffsetX * 8, 60f + shadowOffsetY * 8),
-                            radius = 320f + shadowBlur * 2
-                        )
-                    )
-            )
-            // Shine/reflection overlay
-            ShineOverlay(tiltAnimY)
-            // Glow effect
-            if (glowAlpha > 0f) {
-                Box(
+
+            // Filter habits based on the selected category
+            val filteredHabits = if (selectedCategory == "All") habits else habits.filter { it.category == selectedCategory }
+
+            if (filteredHabits.isEmpty()) {
+                Column(
                     modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(Color.Yellow.copy(alpha = glowAlpha), Color.Transparent),
-                                center = Offset.Unspecified,
-                                radius = 600f
-                            )
-                        )
-                )
-            }
-            // Confetti/particle effect
-            if (showConfetti.value) {
-                ConfettiEffect()
-            }
-            // Add a floating sparkle effect when streak is high
-            if (habit.streak >= 7) {
-                SparkleEffect()
-            }
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Top section with name and complete button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = habit.name, 
-                        fontWeight = FontWeight.Bold, 
-                        fontSize = 18.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    // Complete button
-                    FilledTonalButton(
-                        onClick = {
-                            showGlow.value = true
-                            onCompleteClicked()
-                            LaunchedEffect(Unit) {
-                                delay(400)
-                                showGlow.value = false
-                            }
-                        },
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        ),
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = false, color = Color.Yellow)
-                    ) {
-                        Text("Complete")
-                    }
+                    Text("No habits yet. Tap the + button to add one!")
                 }
-                
-                // Description (if any)
-                habit.description?.let {
-                    Text(
-                        text = it, 
-                        fontSize = 14.sp, 
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Progress indicator
-                val progressText = "Progress: ${habit.goalProgress}/${habit.goal} ${habit.frequency.name.lowercase()}"
-                Text(
-                    text = progressText,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                ShimmerLinearProgressIndicator(
-                    progress = animatedProgress.coerceIn(0f, 1f),
-                    color = if (habit.streak > 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
-                )
-                
-                // Status section
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Streak chip
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = streakColor,
-                        modifier = Modifier.scale(streakScale)
-                    ) {
-                        Text(
-                            text = "🔥 ${habit.streak} streak",
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    items(
+                        items = filteredHabits,
+                        key = { it.id }
+                    ) { habit ->
+                        HabitItem(
+                            habit = habit,
+                            onItemClick = { navController.navigate(NavRoutes.editHabit(habit.id)) },
+                            onCompletedClick = { viewModel.markHabitCompleted(habit.id) },
+                            onDeleteClick = { viewModel.deleteHabit(habit) },
+                            onToggleEnabled = { viewModel.toggleHabitEnabled(habit) }
                         )
-                    }
-                    
-                    // Frequency chip
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colorScheme.surfaceVariant
-                    ) {
-                        Text(
-                            text = habit.frequency.name.lowercase().replaceFirstChar { it.uppercase() },
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-                
-                // Last completed date
-                habit.lastCompletedDate?.let {
-                    Text(
-                        text = "Last completed: ${dateFormat.format(it)}",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-                
-                // Action buttons
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    OutlinedButton(
-                        onClick = onEditClicked,
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Text("Edit")
-                    }
-                    Button(
-                        onClick = onDeleteClicked,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text("Delete")
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ShineOverlay(tiltY: Float) {
-    // Shine moves horizontally with tilt
-    val shineOffsetX by animateFloatAsState(
-        targetValue = 0.5f + (tiltY / 20f),
-        animationSpec = tween(durationMillis = 400), label = "shineOffsetX"
-    )
-    Box(
-        modifier = Modifier
-            .matchParentSize()
-            .graphicsLayer {
-                alpha = 0.18f
-            }
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val width = size.width
-            val height = size.height
-            val shineWidth = width * 0.22f
-            val shineStart = width * shineOffsetX - shineWidth / 2
-            drawRect(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        Color.White.copy(alpha = 0.7f),
-                        Color.Transparent
-                    ),
-                    start = Offset(shineStart, 0f),
-                    end = Offset(shineStart + shineWidth, height)
-                ),
-                topLeft = Offset(shineStart, 0f),
-                size = androidx.compose.ui.geometry.Size(shineWidth, height)
-            )
-        }
-    }
-}
-
-@Composable
-fun ConfettiEffect(particleCount: Int = 24) {
-    val particles = remember { List(particleCount) { ParticleState() } }
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        particles.forEach { particle ->
-            drawCircle(
-                color = particle.color,
-                radius = particle.size,
-                center = Offset(
-                    x = size.width * particle.x,
-                    y = size.height * particle.y
-                )
-            )
-        }
-    }
-}
-
-class ParticleState {
-    val x = Random.nextFloat()
-    val y = Random.nextFloat()
-    val size = Random.nextFloat() * 12f + 6f
-    val color = Color(
-        red = Random.nextFloat(),
-        green = Random.nextFloat(),
-        blue = Random.nextFloat(),
-        alpha = 0.8f
-    )
-}
-
-@Composable
-fun SparkleEffect(sparkleCount: Int = 8) {
-    val infiniteTransition = rememberInfiniteTransition(label = "sparkle")
-    for (i in 0 until sparkleCount) {
-        val angle = 360f / sparkleCount * i
-        val sparkleAlpha by infiniteTransition.animateFloat(
-            initialValue = 0.2f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis = 1200
-                    0.2f at 0
-                    1f at 600
-                    0.2f at 1200
-                },
-                repeatMode = RepeatMode.Restart
-            ), label = "sparkleAlpha$i"
-        )
-        Canvas(modifier = Modifier
-            .fillMaxSize()
-            .graphicsLayer(
-                rotationZ = angle,
-                alpha = sparkleAlpha
-            )
-        ) {
-            drawCircle(
-                color = Color.White.copy(alpha = sparkleAlpha),
-                radius = 8f,
-                center = Offset(
-                    x = size.width / 2 + 60 * kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat(),
-                    y = size.height / 2 + 60 * kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat()
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun ShimmerLinearProgressIndicator(progress: Float, color: Color) {
-    val shimmerAlpha by animateFloatAsState(
-        targetValue = if (progress in 0.01f..0.99f) 0.5f else 0f,
-        animationSpec = tween(durationMillis = 1200), label = "shimmerAlpha"
-    )
-    Box(modifier = Modifier.fillMaxWidth()) {
-        LinearProgressIndicator(
-            progress = progress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp),
-            color = color
-        )
-        if (shimmerAlpha > 0f) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0f),
-                                Color.White.copy(alpha = shimmerAlpha),
-                                Color.White.copy(alpha = 0f)
-                            ),
-                            start = Offset.Zero,
-                            end = Offset.Infinite
-                        )
-                    )
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HabitListScreenPreview() {
-    MyApplicationTheme {
-        // In previews, we can't use hiltViewModel easily.
-        // For preview purposes, we'll just pass an empty list instead of a real viewModel
-        HabitListScreen(
-            navController = rememberNavController(),
-            // Remove the direct viewModel instantiation which would need a repository
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HabitItemPreview() {
-    MyApplicationTheme {
-        HabitItem(
-            habit = Habit(name = "Preview Habit", description = "This is a test habit for preview."), 
-            onDeleteClicked = {}, 
-            onEditClicked = {} // Added empty lambda for preview
-        )
     }
 }

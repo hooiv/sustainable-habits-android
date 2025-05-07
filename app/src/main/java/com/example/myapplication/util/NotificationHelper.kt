@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Habit
+import com.example.myapplication.receivers.HabitActionReceiver
 import java.time.LocalTime
 import java.util.Calendar
 import javax.inject.Inject
@@ -57,7 +58,8 @@ class NotificationHelper @Inject constructor(
         
         try {
             // Parse the reminder time (format: "HH:mm")
-            val timeParts = habit.reminderTime.split(":")
+            val reminderTimeString = habit.reminderTime ?: return
+            val timeParts = reminderTimeString.split(":")
             val hour = timeParts[0].toInt()
             val minute = timeParts[1].toInt()
             

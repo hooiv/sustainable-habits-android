@@ -44,7 +44,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
         val updatedHabit = habit.copy(
             goalProgress = habit.goalProgress + 1,
             lastCompletedDate = completionDate,
-            completionHistory = habit.completionHistory + completionDate
+            completionHistory = (habit.completionHistory + completionDate).toMutableList()
         )
 
         val (newStreak, newGoalProgress) = calculateStreakAndProgress(updatedHabit, completionDate)
@@ -74,20 +74,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
         if (habit.lastCompletedDate == null) {
             currentStreak = if (currentGoalProgress >= habit.goal) 1 else 0
         } else {
-            val calendar = Calendar.getInstance()
-            calendar.time = habit.lastCompletedDate
-            val lastCompletionDay = calendar.get(Calendar.DAY_OF_YEAR)
-            val lastCompletionYear = calendar.get(Calendar.YEAR)
-
-            calendar.time = completionDate
-            val previousCompletionDay = calendar.get(Calendar.DAY_OF_YEAR)
-            val previousCompletionYear = calendar.get(Calendar.YEAR)
-
-            val expectedPreviousDayForStreak: Calendar = Calendar.getInstance().apply {
-                time = completionDate
-                add(Calendar.DAY_OF_YEAR, -1)
-            }
-
+            // Simplify streak calculation logic by directly calling the helper methods
             if (currentGoalProgress >= habit.goal) {
                 when (habit.frequency) {
                     HabitFrequency.DAILY -> {
@@ -198,5 +185,10 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                 habitDao.updateHabit(habit.copy(goalProgress = 0))
             }
         }
+    }
+
+    // Fetch habits for the current day
+    fun getTodayHabits(): Flow<List<Habit>> {
+        return habitDao.getTodayHabits()
     }
 }

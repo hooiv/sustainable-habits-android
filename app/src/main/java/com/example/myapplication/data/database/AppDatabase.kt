@@ -13,4 +13,21 @@ abstract class AppDatabase : RoomDatabase() {
 
     // You can add a companion object for a singleton instance if not using Hilt for DB provider
     // For Hilt, we will provide this via a Hilt module later.
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        fun getInstance(context: android.content.Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = androidx.room.Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "habit_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 }

@@ -30,21 +30,23 @@ class HabitViewModel @Inject constructor(
     fun addHabit(
         name: String, 
         description: String?, 
+        category: String?,
         frequency: HabitFrequency,
         goal: Int = 1,
         reminderTime: String? = null
     ) {
-        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Freq: $frequency, Goal: $goal, Reminder: $reminderTime") // Add log statement
+        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Category: $category, Freq: $frequency, Goal: $goal, Reminder: $reminderTime") // Add log statement
         viewModelScope.launch {
             val newHabit = Habit(
                 name = name,
                 description = description?.takeIf { it.isNotBlank() },
+                category = category,
                 frequency = frequency,
                 createdDate = Date(),
                 goal = goal,
                 goalProgress = 0,
                 streak = 0,
-                completionHistory = emptyList(),
+                completionHistory = mutableListOf(), // Changed from emptyList() to mutableListOf()
                 isEnabled = true,
                 reminderTime = reminderTime
             )
@@ -76,7 +78,23 @@ class HabitViewModel @Inject constructor(
     fun markHabitCompleted(habitId: String) {
         Log.d("HabitViewModel", "Marking habit as completed: $habitId")
         viewModelScope.launch {
-            repository.markHabitCompleted(habitId)
+            repository.getHabitById(habitId).collect { habit -> 
+                habit?.let {
+                    val completionDate = Date()
+                    // Create a new mutable list with the existing dates, then add the new one
+                    val updatedHistory = it.completionHistory.toMutableList().apply {
+                        add(completionDate)
+                    }
+                    repository.updateHabit(
+                        it.copy(
+                            goalProgress = it.goalProgress + 1,
+                            streak = it.streak + 1,
+                            lastCompletedDate = completionDate,
+                            completionHistory = updatedHistory
+                        )
+                    )
+                }
+            }
         }
     }
     
@@ -104,7 +122,7 @@ class HabitViewModel @Inject constructor(
      */
     fun updateHabitReminder(habitId: String, reminderTime: String?) {
         viewModelScope.launch {
-            repository.getHabitById(habitId).collect { habit ->
+            repository.getHabitById(habitId).collect { habit -> 
                 habit?.let {
                     repository.updateHabit(it.copy(reminderTime = reminderTime))
                 }

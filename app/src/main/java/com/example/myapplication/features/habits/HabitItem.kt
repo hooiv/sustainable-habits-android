@@ -95,18 +95,20 @@ fun HabitItem(
     onDeleteClick: () -> Unit,
     onToggleEnabled: () -> Unit
 ) {
-    val today = Calendar.getInstance().timeInMillis
+    // Get current date for comparison and formatting
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
     val isCompletedToday = remember(habit) {
         habit.lastCompletedDate?.let {
-            dateFormat.format(Date(it)) == dateFormat.format(Date(today))
+            dateFormat.format(it) == dateFormat.format(Date())
         } ?: false
     }
     
     // Calculate progress percentage
-    val progress = if (habit.goalCount > 0) {
-        habit.goalProgress.toFloat() / habit.goalCount.toFloat()
-    } else 0f
+    val progress = if (habit.goal > 0) {
+        habit.goalProgress.toFloat() / habit.goal.toFloat()
+    } else {
+        0f
+    }
     
     // Animate progress
     val animatedProgress by animateFloatAsState(
@@ -212,7 +214,7 @@ fun HabitItem(
                 }
                 
                 // Progress indicator if there's a goal
-                if (habit.goalCount > 0) {
+                if (habit.goal > 0) {
                     Column(modifier = Modifier.padding(top = 8.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -223,7 +225,7 @@ fun HabitItem(
                                 style = MaterialTheme.typography.bodySmall
                             )
                             Text(
-                                text = "${habit.goalProgress}/${habit.goalCount}",
+                                text = "${habit.goalProgress}/${habit.goal}",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }

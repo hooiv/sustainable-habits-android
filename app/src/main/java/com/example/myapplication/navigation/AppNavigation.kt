@@ -11,23 +11,18 @@ import androidx.navigation.navArgument
 import com.example.myapplication.features.habits.AddHabitScreen
 import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import com.example.myapplication.features.stats.StatsScreen
-import com.example.myapplication.features.calendar.HabitCalendarScreen
-import com.example.myapplication.features.settings.SettingsScreen
 import java.time.LocalDate
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     
     // Add debug logging for navigation events
-    navController.addOnDestinationChangedListener { controller, destination, arguments ->
+    navController.addOnDestinationChangedListener { _, destination, arguments ->
         Log.d("Navigation", "Navigating to: ${destination.route}, arguments: $arguments")
     }
     
@@ -55,40 +50,28 @@ fun AppNavigationGraph(navController: NavHostController) {
             arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) { 
                 type = NavType.StringType 
             })
-        ) {
-            val habitId = it.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
             Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
             EditHabitScreen(navController = navController, habitId = habitId)
         }
 
-        composable(NavRoutes.STATS,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(500)
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(500)
-                )
-            }
-        ) {
+        composable(NavRoutes.STATS) {
             StatsScreen(navController)
         }
 
+        // For now, commenting out screens that aren't implemented yet
+        // to avoid errors about missing composables
+        /*
         composable(
-            route = NavRoutes.CALENDAR,
-            arguments = listOf(navArgument("habitName") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val habitName = backStackEntry.arguments?.getString("habitName") ?: "Unknown Habit"
-            val completionHistory = listOf<LocalDate>() // Replace with actual data fetching logic
-            HabitCalendarScreen(habitName = habitName, completionHistory = completionHistory)
+            route = NavRoutes.CALENDAR
+        ) {
+            // Placeholder for calendar screen
         }
 
         composable(route = NavRoutes.SETTINGS) {
-            SettingsScreen(context = navController.context)
+            // Placeholder for settings screen
         }
+        */
     }
 }

@@ -75,7 +75,7 @@ fun EditHabitScreen(
             initialMinute = reminderTime?.minute ?: 0
         )
         
-        TimePickerDialog(
+        EditHabitTimePickerDialog(
             onDismissRequest = { showTimePicker = false },
             onConfirm = {
                 reminderTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
@@ -281,8 +281,9 @@ fun EditHabitScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(
+fun EditHabitTimePickerDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     timePickerState: TimePickerState

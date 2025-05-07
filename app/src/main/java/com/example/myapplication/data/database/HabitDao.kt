@@ -31,5 +31,13 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE frequency = :frequency ORDER BY createdDate DESC")
     fun getHabitsByFrequency(frequency: String): Flow<List<Habit>>
 
+    // Query to get today's habits
+    @Query("SELECT * FROM habits WHERE date(createdDate) = date('now')")
+    fun getTodayHabits(): Flow<List<Habit>>
+
+    // Mark a habit as complete
+    @Query("UPDATE habits SET goalProgress = goalProgress + 1 WHERE id = :habitId")
+    suspend fun markHabitComplete(habitId: String)
+
     // You can add more specific queries as needed, e.g., for searching by name, etc.
 }
