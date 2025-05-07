@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -81,6 +82,11 @@ fun HabitListScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Sustainable Habits") },
+                actions = {
+                    IconButton(onClick = { navController.navigate(NavRoutes.STATS) }) {
+                        Icon(Icons.Default.BarChart, contentDescription = "Stats")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
