@@ -56,4 +56,47 @@ class HabitViewModel @Inject constructor(
             repository.updateHabit(habit)
         }
     }
+    
+    /**
+     * Mark a habit as completed for the current day.
+     * This will update the habit's completion status, progress, and streak.
+     */
+    fun markHabitCompleted(habitId: String) {
+        Log.d("HabitViewModel", "Marking habit as completed: $habitId")
+        viewModelScope.launch {
+            repository.markHabitCompleted(habitId)
+        }
+    }
+    
+    /**
+     * Reset habit progress if needed based on the time period (daily, weekly, monthly)
+     * This is typically called when the app starts or when viewing habits
+     */
+    fun checkAndResetHabitProgress(habitId: String) {
+        viewModelScope.launch {
+            repository.resetHabitProgressIfNeeded(habitId)
+        }
+    }
+    
+    /**
+     * Toggle the enabled status of a habit
+     */
+    fun toggleHabitEnabled(habit: Habit) {
+        viewModelScope.launch {
+            repository.updateHabit(habit.copy(isEnabled = !habit.isEnabled))
+        }
+    }
+    
+    /**
+     * Update reminder time for a habit
+     */
+    fun updateHabitReminder(habitId: String, reminderTime: String?) {
+        viewModelScope.launch {
+            repository.getHabitById(habitId).collect { habit ->
+                habit?.let {
+                    repository.updateHabit(it.copy(reminderTime = reminderTime))
+                }
+            }
+        }
+    }
 }
