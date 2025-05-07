@@ -21,9 +21,10 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
-            "sustainable_habits_db" // Name for the database file
+            "habit_database" // Changed to match the name used in AppDatabase.getInstance()
         )
-        // .fallbackToDestructiveMigration() // Optional: if you want to allow destructive migrations
+        .addMigrations(AppDatabase.MIGRATION_1_2) // Add migration strategy
+        .fallbackToDestructiveMigration() // Allow destructive migrations as a last resort
         .build()
     }
 
