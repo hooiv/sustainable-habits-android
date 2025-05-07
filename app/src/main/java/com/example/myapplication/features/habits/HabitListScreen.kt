@@ -37,7 +37,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
@@ -229,6 +229,26 @@ fun HabitItem(
         animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "tiltAnimY"
     )
 
+    // --- ADVANCED: Parallax background layer ---
+    val parallaxOffsetX = tiltAnimY * 8f
+    val parallaxOffsetY = tiltAnimX * 8f
+
+    // --- ADVANCED: Dynamic shadow based on tilt ---
+    val shadowOffsetX = tiltAnimY * 2f
+    val shadowOffsetY = tiltAnimX * 2f
+    val shadowBlur = 16f + (kotlin.math.abs(tiltAnimX) + kotlin.math.abs(tiltAnimY)) * 2f
+
+    // --- ADVANCED: Card pop effect on hover/tap ---
+    val isPopped = (tiltAnimX != 0f || tiltAnimY != 0f)
+    val popScale by animateFloatAsState(
+        targetValue = if (isPopped) 1.04f else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "popScale"
+    )
+    val popElevation by animateFloatAsState(
+        targetValue = if (isPopped) 16f else 2f,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium), label = "popElevation"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,7 +272,12 @@ fun HabitItem(
             .graphicsLayer {
                 rotationX = tiltAnimX
                 rotationY = tiltAnimY + tilt // tilt is the infinite animation for subtle movement
-                cameraDistance = 24 * density
+                cameraDistance = 32 * density
+                scaleX = popScale
+                scaleY = popScale
+                shadowElevation = popElevation
+                translationX = shadowOffsetX
+                translationY = shadowOffsetY
                 if (glowAlpha > 0f) {
                     shadowElevation = 24f * glowAlpha
                     shape = MaterialTheme.shapes.medium
@@ -266,9 +291,50 @@ fun HabitItem(
                     shape = MaterialTheme.shapes.medium
                 ) else Modifier
             ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = popElevation.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
+            // Parallax background layer
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer {
+                        translationX = parallaxOffsetX
+                        translationY = parallaxOffsetY
+                    }
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFB3E5FC).copy(alpha = 0.18f),
+                                Color(0xFF81D4FA).copy(alpha = 0.12f),
+                                Color(0xFF0288D1).copy(alpha = 0.10f)
+                            ),
+                            start = Offset.Zero,
+                            end = Offset.Infinite,
+                            tileMode = TileMode.Clamp
+                        )
+                    )
+            )
+            // Dynamic shadow (simulated with a blurred colored overlay)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer {
+                        translationX = shadowOffsetX * 2
+                        translationY = shadowOffsetY * 2
+                        alpha = 0.18f
+                        shadowElevation = shadowBlur
+                    }
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(Color.Black.copy(alpha = 0.18f), Color.Transparent),
+                            center = Offset(180f + shadowOffsetX * 8, 60f + shadowOffsetY * 8),
+                            radius = 320f + shadowBlur * 2
+                        )
+                    )
+            )
+            // Shine/reflection overlay
+            ShineOverlay(tiltAnimY)
             // Glow effect
             if (glowAlpha > 0f) {
                 Box(
@@ -414,6 +480,42 @@ fun HabitItem(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ShineOverlay(tiltY: Float) {
+    // Shine moves horizontally with tilt
+    val shineOffsetX by animateFloatAsState(
+        targetValue = 0.5f + (tiltY / 20f),
+        animationSpec = tween(durationMillis = 400), label = "shineOffsetX"
+    )
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .graphicsLayer {
+                alpha = 0.18f
+            }
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+            val shineWidth = width * 0.22f
+            val shineStart = width * shineOffsetX - shineWidth / 2
+            drawRect(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.White.copy(alpha = 0.7f),
+                        Color.Transparent
+                    ),
+                    start = Offset(shineStart, 0f),
+                    end = Offset(shineStart + shineWidth, height)
+                ),
+                topLeft = Offset(shineStart, 0f),
+                size = androidx.compose.ui.geometry.Size(shineWidth, height)
+            )
         }
     }
 }
