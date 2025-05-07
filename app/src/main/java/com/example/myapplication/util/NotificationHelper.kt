@@ -157,7 +157,20 @@ class NotificationHelper @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-        
+
+        // Add 'Done' action button to mark habit complete
+        val actionIntent = Intent(context, HabitActionReceiver::class.java).apply {
+            action = "MARK_HABIT_COMPLETE"
+            putExtra("habit_id", habit.id)
+        }
+        val actionPendingIntent = PendingIntent.getBroadcast(
+            context,
+            uniqueRequestCode + 1,
+            actionIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        builder.addAction(R.drawable.ic_done, "Done", actionPendingIntent)
+
         val notificationManager = ContextCompat.getSystemService(
             context,
             NotificationManager::class.java
