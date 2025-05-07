@@ -49,7 +49,22 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
         val (newStreak, newGoalProgress) = calculateStreakAndProgress(updatedHabit, completionDate)
 
-        habitDao.updateHabit(updatedHabit.copy(streak = newStreak, goalProgress = newGoalProgress))
+        // Badge milestones
+        val badgeMilestones = listOf(7, 30, 100)
+        val newUnlockedBadges = habit.unlockedBadges.toMutableList()
+        for (milestone in badgeMilestones) {
+            if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
+                newUnlockedBadges.add(milestone)
+            }
+        }
+
+        habitDao.updateHabit(
+            updatedHabit.copy(
+                streak = newStreak,
+                goalProgress = newGoalProgress,
+                unlockedBadges = newUnlockedBadges
+            )
+        )
     }
 
     private fun calculateStreakAndProgress(habit: Habit, completionDate: Date): Pair<Int, Int> {
