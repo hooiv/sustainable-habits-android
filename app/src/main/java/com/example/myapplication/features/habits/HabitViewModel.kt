@@ -27,14 +27,26 @@ class HabitViewModel @Inject constructor(
             initialValue = emptyList() // Initial value while the flow is loading
         )
 
-    fun addHabit(name: String, description: String?, frequency: HabitFrequency) {
-        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Freq: $frequency") // Add log statement
+    fun addHabit(
+        name: String, 
+        description: String?, 
+        frequency: HabitFrequency,
+        goal: Int = 1,
+        reminderTime: String? = null
+    ) {
+        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Freq: $frequency, Goal: $goal, Reminder: $reminderTime") // Add log statement
         viewModelScope.launch {
             val newHabit = Habit(
                 name = name,
                 description = description?.takeIf { it.isNotBlank() },
                 frequency = frequency,
-                createdDate = Date()
+                createdDate = Date(),
+                goal = goal,
+                goalProgress = 0,
+                streak = 0,
+                completionHistory = emptyList(),
+                isEnabled = true,
+                reminderTime = reminderTime
             )
             Log.d("HabitViewModel", "Inserting new habit: $newHabit") // Add log statement
             repository.insertHabit(newHabit) // Use repository to insert habit
