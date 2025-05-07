@@ -15,7 +15,7 @@ composeBom = "2024.06.00" # Added Compose BOM version
 activityCompose = "1.9.0" # Added Activity Compose version
 composeNavigation = "2.8.0-beta05" # Added Compose Navigation version
 room = "2.6.1"  # Added Room version
-ksp = "2.0.21-1.0.21" # Added KSP version, matching Kotlin
+ksp = "2.0.0-1.0.21" # Changed KSP version
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
