@@ -7,12 +7,19 @@ import androidx.compose.animation.core.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -173,18 +180,47 @@ fun HabitItem(
         }
     }
 
+    // 3D tilt effect on card hover/tap (simulate with infinite animation for demo)
+    val infiniteTransition = rememberInfiniteTransition(label = "tilt")
+    val tilt by infiniteTransition.animateFloat(
+        initialValue = -2f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "tiltAnim"
+    )
+
+    // Animated border color pulse when streak is high
+    val borderPulseColor by animateColorAsState(
+        targetValue = if (habit.streak >= 7) Color(0xFFFFD700) else Color.Transparent,
+        animationSpec = tween(durationMillis = 800), label = "borderPulse"
+    )
+    val borderPulseWidth by animateFloatAsState(
+        targetValue = if (habit.streak >= 7) 4f else 0f,
+        animationSpec = tween(durationMillis = 800), label = "borderPulseWidth"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize()
             .background(cardBgColor)
             .graphicsLayer {
+                rotationY = tilt
                 if (glowAlpha > 0f) {
                     shadowElevation = 24f * glowAlpha
                     shape = MaterialTheme.shapes.medium
                     clip = true
                 }
-            },
+            }
+            .then(
+                if (borderPulseWidth > 0f) Modifier.border(
+                    width = borderPulseWidth.dp,
+                    color = borderPulseColor,
+                    shape = MaterialTheme.shapes.medium
+                ) else Modifier
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -205,6 +241,10 @@ fun HabitItem(
             // Confetti/particle effect
             if (showConfetti.value) {
                 ConfettiEffect()
+            }
+            // Add a floating sparkle effect when streak is high
+            if (habit.streak >= 7) {
+                SparkleEffect()
             }
             Column(modifier = Modifier.padding(16.dp)) {
                 // Top section with name and complete button
@@ -360,6 +400,43 @@ class ParticleState {
         blue = Random.nextFloat(),
         alpha = 0.8f
     )
+}
+
+@Composable
+fun SparkleEffect(sparkleCount: Int = 8) {
+    val infiniteTransition = rememberInfiniteTransition(label = "sparkle")
+    for (i in 0 until sparkleCount) {
+        val angle = 360f / sparkleCount * i
+        val sparkleAlpha by infiniteTransition.animateFloat(
+            initialValue = 0.2f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = keyframes {
+                    durationMillis = 1200
+                    0.2f at 0
+                    1f at 600
+                    0.2f at 1200
+                },
+                repeatMode = RepeatMode.Restart
+            ), label = "sparkleAlpha$i"
+        )
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer(
+                rotationZ = angle,
+                alpha = sparkleAlpha
+            )
+        ) {
+            drawCircle(
+                color = Color.White.copy(alpha = sparkleAlpha),
+                radius = 8f,
+                center = Offset(
+                    x = size.width / 2 + 60 * kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat(),
+                    y = size.height / 2 + 60 * kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat()
+                )
+            )
+        }
+    }
 }
 
 @Composable
