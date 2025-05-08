@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn // Added import for scaleIn
+import androidx.compose.animation.scaleOut // Added import for scaleOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,6 +19,7 @@ import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
 import com.example.myapplication.features.stats.StatsScreen
 import java.time.LocalDate
+import kotlin.math.pow // Ensure pow is imported
 
 @Composable
 fun AppNavigation() {
@@ -180,5 +183,5 @@ fun AppNavigationGraph(navController: NavHostController) {
 }
 
 // Custom easing curves for more interesting animations
-private val EaseOutQuint = Easing { fraction -> 1 - (1 - fraction).pow(5) }
-private val EaseInQuint = Easing { fraction -> fraction.pow(5) }
+private val EaseOutQuint = Easing { fraction -> (1f - (1f - fraction).pow(5)).toFloat() }
+private val EaseInQuint = Easing { fraction -> fraction.pow(5).toFloat() }

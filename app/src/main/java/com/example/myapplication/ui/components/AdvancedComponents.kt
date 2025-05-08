@@ -91,7 +91,7 @@ fun FloatingAnimatedCard(
         label = "floatingOffset"
     )
     
-    val rotationZ by infiniteTransition.animateFloat(
+    val animatedRotationZ by infiniteTransition.animateFloat(
         initialValue = -1f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -101,8 +101,10 @@ fun FloatingAnimatedCard(
         label = "floatingRotation"
     )
     
-    val clickModifier = if (onClick != null) {
-        Modifier.clickable { onClick() }
+    // Use remember for the clickModifier to avoid recomposition issues
+    val rememberedOnClick = rememberUpdatedState(onClick)
+    val clickModifier = if (rememberedOnClick.value != null) {
+        Modifier.clickable { rememberedOnClick.value?.invoke() }
     } else {
         Modifier
     }
@@ -111,12 +113,12 @@ fun FloatingAnimatedCard(
         modifier = modifier
             .graphicsLayer {
                 translationY = offsetY
-                rotationZ = rotationZ
+                rotationZ = animatedRotationZ
             }
             .then(clickModifier),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 6.dp,
-            pressedElevation = 8.dp
+            defaultElevation = MaterialTheme.animatedTheme.animatedElevation.card.dp, // Convert Float to Dp
+            pressedElevation = MaterialTheme.animatedTheme.animatedElevation.pressed.dp // Convert Float to Dp
         )
     ) {
         content()

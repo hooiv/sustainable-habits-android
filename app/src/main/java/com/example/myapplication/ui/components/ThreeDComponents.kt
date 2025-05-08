@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
 import com.example.myapplication.ui.animation.flipCard
 import com.example.myapplication.ui.animation.threeDCard
 import kotlin.math.abs

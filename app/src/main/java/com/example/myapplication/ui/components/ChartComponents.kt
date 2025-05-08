@@ -155,6 +155,11 @@ fun CompletionPieChart(
         label = "pieProgress"
     )
     
+    // Fetch colors from MaterialTheme in the Composable context
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Box(
         modifier = modifier
             .padding(16.dp)
@@ -165,7 +170,7 @@ fun CompletionPieChart(
         Canvas(modifier = Modifier.fillMaxSize()) {
             // Background circle
             drawCircle(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = surfaceVariantColor, // Use pre-fetched color
                 radius = size.minDimension / 2.5f
             )
             
@@ -174,7 +179,7 @@ fun CompletionPieChart(
                 val sweepAngle = 360f * animatedProgress
                 
                 drawArc(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor, // Use pre-fetched color
                     startAngle = -90f,
                     sweepAngle = sweepAngle,
                     useCenter = true,
@@ -199,12 +204,12 @@ fun CompletionPieChart(
             Text(
                 text = "$completed of $total",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = onSurfaceColor.copy(alpha = 0.7f) // Use pre-fetched color
             )
             Text(
                 text = "Completed",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = onSurfaceColor.copy(alpha = 0.5f), // Use pre-fetched color
                 textAlign = TextAlign.Center
             )
         }

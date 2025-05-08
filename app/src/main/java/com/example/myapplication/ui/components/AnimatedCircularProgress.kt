@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 /**
  * An animated circular progress indicator with customizable appearance
@@ -296,9 +298,9 @@ fun SegmentedCircularProgress(
     // Start staggered animations
     LaunchedEffect(validProgress) {
         staggeredAnimations.forEachIndexed { index, anim ->
-            kotlinx.coroutines.launch {
-                val delay = index * (animationDuration / segments / 3L)
-                kotlinx.coroutines.delay(delay)
+            launch {
+                val delayDuration = index * (animationDuration / segments / 3L)
+                delay(delayDuration)
                 anim.animateTo(
                     targetValue = 1f,
                     animationSpec = tween(

@@ -539,6 +539,16 @@ fun AnimatedCircularProgress(
         label = "rotation"
     )
     
+    // Hoist color definitions
+    val scheme = MaterialTheme.colorScheme
+    val primaryColor = scheme.primary
+    val tertiaryColor = scheme.tertiary
+    val primaryContainerAlpha03Color = scheme.primaryContainer.copy(alpha = 0.3f)
+    val surfaceVariantAlpha01Color = scheme.surfaceVariant.copy(alpha = 0.1f)
+    val surfaceVariantAlpha03Color = scheme.surfaceVariant.copy(alpha = 0.3f)
+    val onBackgroundColor = scheme.onBackground
+    val onBackgroundAlpha07Color = scheme.onBackground.copy(alpha = 0.7f)
+    
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -551,8 +561,8 @@ fun AnimatedCircularProgress(
             drawCircle(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f)
+                        primaryContainerAlpha03Color, // Use hoisted color
+                        surfaceVariantAlpha01Color    // Use hoisted color
                     ),
                     start = Offset(size.width / 2, 0f),
                     end = Offset(size.width / 2, size.height)
@@ -565,7 +575,7 @@ fun AnimatedCircularProgress(
         Canvas(modifier = Modifier.matchParentSize()) {
             // Draw empty background circle
             drawArc(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                color = surfaceVariantAlpha03Color, // Use hoisted color
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -578,8 +588,8 @@ fun AnimatedCircularProgress(
             drawArc(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.tertiary
+                        primaryColor,  // Use hoisted color
+                        tertiaryColor  // Use hoisted color
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(size.width, size.height)
@@ -601,12 +611,12 @@ fun AnimatedCircularProgress(
                 text = "$currentValue%",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = onBackgroundColor // Use hoisted color
             )
             Text(
                 text = "Completion Rate",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                color = onBackgroundAlpha07Color // Use hoisted color
             )
         }
         
@@ -628,7 +638,7 @@ fun AnimatedCircularProgress(
                     val y = center.y + sin(angle * PI.toFloat() / 180f) * radius
                     
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = primaryColor, // Use hoisted color
                         radius = particleRadius,
                         center = Offset(x, y)
                     )
@@ -645,14 +655,28 @@ fun CompletionPieChart(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    
+    // Explicitly resolve Compose Colors first
+    val scheme = MaterialTheme.colorScheme
+    val onSurfaceComposeColor = scheme.onSurface
+    val primaryComposeColor = scheme.primary
+    val surfaceVariantComposeColor = scheme.surfaceVariant
+    val transparentComposeColor = Color.Transparent // Constant
+    val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
+    val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
+
+    // Convert to ARGB Ints for MPAndroidChart
+    val onSurfaceArgb = onSurfaceComposeColor.toArgb()
+    val primaryArgb = primaryComposeColor.toArgb()
+    val surfaceVariantArgb = surfaceVariantComposeColor.toArgb()
+    val transparentArgb = transparentComposeColor.toArgb()
+
     if (total == 0) {
-        // No data to display
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    surfaceVariantAlpha02ComposeColor, // Use Compose Color for Compose Modifier
                     shape = MaterialTheme.shapes.medium
                 ),
             contentAlignment = Alignment.Center
@@ -666,13 +690,13 @@ fun CompletionPieChart(
                     modifier = Modifier
                         .size(48.dp)
                         .alpha(0.5f),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    tint = onSurfaceVariantAlpha05ComposeColor // Use Compose Color
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "No habit data to display",
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = onSurfaceVariantAlpha07ComposeColor // Use Compose Color
                 )
             }
         }
@@ -681,47 +705,43 @@ fun CompletionPieChart(
             factory = { PieChart(context) },
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+                .background(surfaceVariantAlpha02ComposeColor) // Use Compose Color for Compose Modifier
                 .padding(8.dp)
         ) { pieChart ->
-            // Configure chart appearance
             pieChart.apply {
                 description.isEnabled = false
                 isDrawHoleEnabled = true
-                setHoleColor(Color.Transparent.toArgb())
+                setHoleColor(transparentArgb) // Use ARGB Int
                 holeRadius = 58f
                 transparentCircleRadius = 61f
                 setDrawCenterText(true)
                 centerText = "${(completed * 100f / total).roundToInt()}%\nCompleted"
                 setCenterTextSize(14f)
-                setCenterTextColor(MaterialTheme.colorScheme.onSurface.toArgb())
+                setCenterTextColor(onSurfaceArgb) // Use ARGB Int
                 legend.isEnabled = true
                 legend.textSize = 12f
-                legend.textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                legend.textColor = onSurfaceArgb // Use ARGB Int
                 setDrawEntryLabels(false)
                 animateY(1400, Easing.EaseInOutQuad)
             }
             
-            // Create data entries
             val entries = listOf(
                 PieEntry(completed.toFloat(), "Completed"),
                 PieEntry((total - completed).toFloat(), "Remaining")
             )
             
-            // Create dataset and style it
             val dataSet = PieDataSet(entries, "")
             dataSet.apply {
                 colors = listOf(
-                    MaterialTheme.colorScheme.primary.toArgb(),
-                    MaterialTheme.colorScheme.surfaceVariant.toArgb()
+                    primaryArgb,         // Use ARGB Int
+                    surfaceVariantArgb   // Use ARGB Int
                 )
                 valueTextSize = 14f
-                valueTextColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                valueTextColor = onSurfaceArgb // Use ARGB Int
                 valueFormatter = com.github.mikephil.charting.formatter.PercentFormatter(pieChart)
                 setDrawValues(true)
             }
             
-            // Apply data to chart
             pieChart.data = PieData(dataSet)
             pieChart.invalidate()
         }
@@ -734,8 +754,22 @@ fun HabitCategoryBarChart(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    
-    // Group habits by category
+    // Explicitly resolve Compose Colors first
+    val scheme = MaterialTheme.colorScheme
+    val onSurfaceComposeColor = scheme.onSurface
+    val primaryComposeColor = scheme.primary
+    val surfaceVariantComposeColor = scheme.surfaceVariant
+    val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
+    val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
+    val gridLinesComposeColor = scheme.onSurface.copy(alpha = 0.1f)
+
+    // Convert to ARGB Ints for MPAndroidChart
+    val onSurfaceArgb = onSurfaceComposeColor.toArgb()
+    val primaryArgb = primaryComposeColor.toArgb()
+    val surfaceVariantArgb = surfaceVariantComposeColor.toArgb()
+    val gridLinesArgb = gridLinesComposeColor.toArgb()
+
     val categoryCounts = habits
         .filter { !it.category.isNullOrEmpty() }
         .groupBy { it.category ?: "Uncategorized" }
@@ -743,13 +777,12 @@ fun HabitCategoryBarChart(
             habitList.count { it.isEnabled } to habitList.count { !it.isEnabled }
         }
     
-    // Check if there's data to display
     if (categoryCounts.isEmpty()) {
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    surfaceVariantAlpha02ComposeColor, // Use Compose Color
                     shape = MaterialTheme.shapes.medium
                 ),
             contentAlignment = Alignment.Center
@@ -763,13 +796,13 @@ fun HabitCategoryBarChart(
                     modifier = Modifier
                         .size(48.dp)
                         .alpha(0.5f),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    tint = onSurfaceVariantAlpha05ComposeColor // Use Compose Color
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "No category data available",
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = onSurfaceVariantAlpha07ComposeColor // Use Compose Color
                 )
             }
         }
@@ -778,16 +811,15 @@ fun HabitCategoryBarChart(
             factory = { BarChart(context) },
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+                .background(surfaceVariantAlpha02ComposeColor) // Use Compose Color
                 .padding(8.dp)
         ) { barChart ->
-            // Setup chart appearance
             barChart.apply {
                 description.isEnabled = false
                 legend.apply {
                     isEnabled = true
                     textSize = 12f
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
                     horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
                 }
@@ -795,36 +827,29 @@ fun HabitCategoryBarChart(
                 setDrawGridBackground(false)
                 setDrawBarShadow(false)
                 
-                // X-axis styling
                 xAxis.apply {
                     position = XAxis.XAxisPosition.BOTTOM
                     granularity = 1f
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     textSize = 10f
                     valueFormatter = IndexAxisValueFormatter(categoryCounts.keys.toList())
                     setDrawGridLines(false)
                 }
                 
-                // Left Y-axis styling
                 axisLeft.apply {
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     textSize = 10f
                     axisMinimum = 0f
                     granularity = 1f
                     setDrawGridLines(true)
-                    gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f).toArgb()
+                    gridColor = gridLinesArgb // Use ARGB Int
                 }
-                
-                // Right Y-axis styling (disabled)
                 axisRight.isEnabled = false
-                
-                // Enable zooming and scrolling
                 setScaleEnabled(true)
                 setPinchZoom(false)
                 isDoubleTapToZoomEnabled = true
             }
             
-            // Group data by enabled/disabled
             val enabledEntries = mutableListOf<BarEntry>()
             val disabledEntries = mutableListOf<BarEntry>()
             
@@ -833,27 +858,23 @@ fun HabitCategoryBarChart(
                 disabledEntries.add(BarEntry(index.toFloat(), disabled.toFloat()))
             }
             
-            // Create datasets
             val enabledDataSet = BarDataSet(enabledEntries, "Active").apply {
-                color = MaterialTheme.colorScheme.primary.toArgb()
-                valueTextColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                color = primaryArgb // Use ARGB Int
+                valueTextColor = onSurfaceArgb // Use ARGB Int
                 valueTextSize = 10f
                 setDrawValues(true)
             }
             
             val disabledDataSet = BarDataSet(disabledEntries, "Paused").apply {
-                color = MaterialTheme.colorScheme.surfaceVariant.toArgb()
-                valueTextColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                color = surfaceVariantArgb // Use ARGB Int
+                valueTextColor = onSurfaceArgb // Use ARGB Int
                 valueTextSize = 10f
                 setDrawValues(true)
             }
             
-            // Group the data
             val groupSpace = 0.3f
             val barSpace = 0.05f
             val barWidth = 0.3f
-            
-            // Create and apply the data
             val start = 0f
             
             val barData = BarData(enabledDataSet, disabledDataSet)
@@ -861,10 +882,9 @@ fun HabitCategoryBarChart(
             
             barChart.data = barData
             barChart.groupBars(start, groupSpace, barSpace)
-            barChart.setVisibleXRangeMaximum(5f) // Show max 5 groups at a time
+            barChart.setVisibleXRangeMaximum(5f)
             barChart.setFitBars(true)
             
-            // Animate the chart
             barChart.animateY(1400)
             barChart.invalidate()
         }
@@ -877,14 +897,36 @@ fun HabitTrendsLineChart(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    
-    // Check if there's enough data to display
+    // Explicitly resolve Compose Colors first
+    val scheme = MaterialTheme.colorScheme
+    val onSurfaceComposeColor = scheme.onSurface
+    val primaryComposeColor = scheme.primary
+    val tertiaryComposeColor = scheme.tertiary
+    val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
+    val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
+    val gridLinesComposeColor = scheme.onSurface.copy(alpha = 0.1f)
+    val primaryAlpha05ComposeColor = scheme.primary.copy(alpha = 0.5f)
+    val primaryAlpha01ComposeColor = scheme.primary.copy(alpha = 0.1f)
+    val tertiaryAlpha05ComposeColor = scheme.tertiary.copy(alpha = 0.5f)
+    val tertiaryAlpha01ComposeColor = scheme.tertiary.copy(alpha = 0.1f)
+
+    // Convert to ARGB Ints for MPAndroidChart
+    val onSurfaceArgb = onSurfaceComposeColor.toArgb()
+    val primaryArgb = primaryComposeColor.toArgb()
+    val tertiaryArgb = tertiaryComposeColor.toArgb()
+    val gridLinesArgb = gridLinesComposeColor.toArgb()
+    val primaryAlpha05Argb = primaryAlpha05ComposeColor.toArgb()
+    val primaryAlpha01Argb = primaryAlpha01ComposeColor.toArgb()
+    val tertiaryAlpha05Argb = tertiaryAlpha05ComposeColor.toArgb()
+    val tertiaryAlpha01Argb = tertiaryAlpha01ComposeColor.toArgb()
+
     if (habits.isEmpty()) {
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    surfaceVariantAlpha02ComposeColor, // Use Compose Color
                     shape = MaterialTheme.shapes.medium
                 ),
             contentAlignment = Alignment.Center
@@ -898,13 +940,13 @@ fun HabitTrendsLineChart(
                     modifier = Modifier
                         .size(48.dp)
                         .alpha(0.5f),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    tint = onSurfaceVariantAlpha05ComposeColor // Use Compose Color
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "Not enough data to show trends",
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = onSurfaceVariantAlpha07ComposeColor // Use Compose Color
                 )
             }
         }
@@ -913,26 +955,24 @@ fun HabitTrendsLineChart(
             factory = { LineChart(context) },
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+                .background(surfaceVariantAlpha02ComposeColor) // Use Compose Color
                 .padding(8.dp)
         ) { lineChart ->
-            // Setup chart appearance
             lineChart.apply {
                 description.isEnabled = false
                 legend.apply {
                     isEnabled = true
                     textSize = 12f
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
                     horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
                 }
                 
                 setDrawGridBackground(false)
                 
-                // X-axis styling
                 xAxis.apply {
                     position = XAxis.XAxisPosition.BOTTOM
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     textSize = 10f
                     valueFormatter = IndexAxisValueFormatter(
                         listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -940,47 +980,37 @@ fun HabitTrendsLineChart(
                     setDrawGridLines(false)
                 }
                 
-                // Left Y-axis styling
                 axisLeft.apply {
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    textColor = onSurfaceArgb // Use ARGB Int
                     textSize = 10f
                     axisMinimum = 0f
                     granularity = 1f
                     setDrawGridLines(true)
-                    gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f).toArgb()
+                    gridColor = gridLinesArgb // Use ARGB Int
                 }
-                
-                // Right Y-axis styling (disabled)
                 axisRight.isEnabled = false
-                
-                // Enable zooming and scrolling
                 setTouchEnabled(true)
                 isDragEnabled = true
                 setScaleEnabled(true)
                 setPinchZoom(true)
             }
             
-            // Generate some example trend data (in a real app this would come from actual user data)
             val completionEntries = (0..6).map { day ->
-                // Generate random completion data for demo purposes
-                // In a real app, this would come from actual habit completion data
                 val value = (habits.size * (0.3f + (day % 3) * 0.2f)).toFloat()
                 Entry(day.toFloat(), value)
             }
             
             val streakEntries = (0..6).map { day ->
-                // Generate random streak data for demo
                 val value = habits.sumOf { it.streak }.toFloat() / habits.size.coerceAtLeast(1)
                 Entry(day.toFloat(), value * (1 + day % 2) * 0.2f)
             }
             
-            // Create datasets
             val completionDataSet = LineDataSet(completionEntries, "Daily Completions").apply {
-                color = MaterialTheme.colorScheme.primary.toArgb()
+                color = primaryArgb // Use ARGB Int
                 lineWidth = 2f
                 setDrawValues(false)
                 setDrawCircles(true)
-                setCircleColor(MaterialTheme.colorScheme.primary.toArgb())
+                setCircleColor(primaryArgb) // Use ARGB Int
                 circleRadius = 4f
                 setDrawCircleHole(true)
                 circleHoleRadius = 2f
@@ -988,19 +1018,19 @@ fun HabitTrendsLineChart(
                 fillDrawable = GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
                     intArrayOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f).toArgb(),
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f).toArgb()
+                        primaryAlpha05Argb, // Use ARGB Int
+                        primaryAlpha01Argb  // Use ARGB Int
                     )
                 )
                 mode = LineDataSet.Mode.CUBIC_BEZIER
             }
             
             val streakDataSet = LineDataSet(streakEntries, "Avg. Streak Length").apply {
-                color = MaterialTheme.colorScheme.tertiary.toArgb()
+                color = tertiaryArgb // Use ARGB Int
                 lineWidth = 2f
                 setDrawValues(false)
                 setDrawCircles(true)
-                setCircleColor(MaterialTheme.colorScheme.tertiary.toArgb())
+                setCircleColor(tertiaryArgb) // Use ARGB Int
                 circleRadius = 4f
                 setDrawCircleHole(true)
                 circleHoleRadius = 2f
@@ -1008,17 +1038,14 @@ fun HabitTrendsLineChart(
                 fillDrawable = GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
                     intArrayOf(
-                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5f).toArgb(),
-                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f).toArgb()
+                        tertiaryAlpha05Argb, // Use ARGB Int
+                        tertiaryAlpha01Argb  // Use ARGB Int
                     )
                 )
                 mode = LineDataSet.Mode.CUBIC_BEZIER
             }
             
-            // Apply data
             lineChart.data = LineData(completionDataSet, streakDataSet)
-            
-            // Animate the chart
             lineChart.animateX(1500)
             lineChart.invalidate()
         }

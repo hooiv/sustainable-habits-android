@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -32,8 +35,6 @@ fun EnhancedParallaxBackground(
     particleColor: Color = Color.White.copy(alpha = 0.5f),
     content: @Composable () -> Unit
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    
     // Animation for the floating particles
     val infiniteTransition = rememberInfiniteTransition(label = "parallax")
     val offsetX by infiniteTransition.animateFloat(
@@ -137,7 +138,7 @@ private fun ParticleLayer(
                         color = color,
                         shape = androidx.compose.foundation.shape.CircleShape
                     )
-            )
+            ) {}
         }
     }
 }
@@ -158,35 +159,37 @@ fun TiltEffect(
     val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
     
     // Animate the tilt values for smooth transitions
-    val rotationX by animateFloatAsState(
+    val animatedRotationX by animateFloatAsState(
         targetValue = (offsetY / screenHeight * 2 - 1) * maxTiltDegrees,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
         ),
-        label = "rotationX"
+        label = "animatedRotationX"
     )
     
-    val rotationY by animateFloatAsState(
+    val animatedRotationY by animateFloatAsState(
         targetValue = -(offsetX / screenWidth * 2 - 1) * maxTiltDegrees,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
         ),
-        label = "rotationY"
+        label = "animatedRotationY"
     )
     
     Box(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                androidx.compose.foundation.gestures.awaitPointerEventScope {
+                awaitPointerEventScope {
                     while (true) {
-                        val event = awaitPointerEvent()
+                        val event: PointerEvent = awaitPointerEvent()
                         // Get position of the first pointer
-                        val position = event.changes.firstOrNull()?.position ?: continue
-                        offsetX = position.x
-                        offsetY = position.y
+                        val position = event.changes.firstOrNull()?.position
+                        if (position != null) {
+                            offsetX = position.x
+                            offsetY = position.y
+                        }
                         
                         // Make sure to consume the event
                         event.changes.forEach { it.consume() }
@@ -196,11 +199,11 @@ fun TiltEffect(
     ) {
         Box(
             modifier = Modifier
-                .graphicsLayer(
-                    rotationX = rotationX,
-                    rotationY = rotationY,
+                .graphicsLayer {
+                    rotationX = animatedRotationX
+                    rotationY = animatedRotationY
                     transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.5f)
-                )
+                }
         ) {
             content()
         }
@@ -230,7 +233,7 @@ fun FloatingCard(
     )
     
     // Create subtle rotation animation
-    val rotationZ by infiniteTransition.animateFloat(
+    val animatedRotationZ by infiniteTransition.animateFloat(
         initialValue = -1f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
@@ -240,25 +243,12 @@ fun FloatingCard(
         label = "rotationZ"
     )
     
-    // Create breathing shadow effect
-    val shadowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.2f,
-        targetValue = 0.4f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOutQuad),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "shadowAlpha"
-    )
-    
     Box(
         modifier = modifier
             .graphicsLayer {
                 translationY = offsetY
-                rotationZ = rotationZ
+                rotationZ = animatedRotationZ
                 this.shadowElevation = elevation.toPx()
-                this.spotShadowColor = Color.Black.copy(alpha = shadowAlpha)
-                this.ambientShadowColor = Color.Black.copy(alpha = shadowAlpha * 0.6f)
             }
     ) {
         content()
