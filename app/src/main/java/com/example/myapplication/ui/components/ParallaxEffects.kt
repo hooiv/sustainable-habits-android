@@ -64,6 +64,16 @@ fun EnhancedParallaxBackground(
                 .fillMaxSize()
                 .background(animatedGradient(colors = backgroundColors, animationDuration = 10000))
         )
+        // Add overlay gradient for contrast
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.15f))
+                    )
+                )
+        )
         
         // First layer of floating particles (slower)
         ParticleLayer(
@@ -134,6 +144,7 @@ private fun ParticleLayer(
                         translationY = (particleOffsetY + y) % screenHeight
                         alpha = 0.3f + (particleSize / maxSize.value) * 0.7f
                     }
+                    .blur(radius = (particleSize / 2).dp) // Add blur for a soft look
                     .background(
                         color = color,
                         shape = androidx.compose.foundation.shape.CircleShape
@@ -242,6 +253,16 @@ fun FloatingCard(
         ),
         label = "rotationZ"
     )
+    // Add scale animation for more depth
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.98f,
+        targetValue = 1.02f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = EaseInOutBack),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
     
     Box(
         modifier = modifier
@@ -249,7 +270,13 @@ fun FloatingCard(
                 translationY = offsetY
                 rotationZ = animatedRotationZ
                 this.shadowElevation = elevation.toPx()
+                this.scaleX = scale
+                this.scaleY = scale
             }
+            .background(
+                color = Color.White.copy(alpha = 0.05f),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
+            )
     ) {
         content()
     }

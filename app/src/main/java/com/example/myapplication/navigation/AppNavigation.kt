@@ -5,32 +5,86 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn // Added import for scaleIn
-import androidx.compose.animation.scaleOut // Added import for scaleOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.myapplication.features.habits.AddHabitScreen
 import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
 import com.example.myapplication.features.stats.StatsScreen
+import com.example.myapplication.features.settings.SettingsScreen
 import java.time.LocalDate
-import kotlin.math.pow // Ensure pow is imported
+import kotlin.math.pow
+
+@Composable
+fun MainBottomBar(
+    currentRoute: String?,
+    onNavigate: (String) -> Unit
+) {
+    NavigationBar {
+        NavigationBarItem(
+            selected = currentRoute == NavRoutes.HABIT_LIST,
+            onClick = { onNavigate(NavRoutes.HABIT_LIST) },
+            icon = { Icon(Icons.Default.List, contentDescription = "Habits") },
+            label = { Text("Habits") }
+        )
+        NavigationBarItem(
+            selected = currentRoute == NavRoutes.STATS,
+            onClick = { onNavigate(NavRoutes.STATS) },
+            icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
+            label = { Text("Stats") }
+        )
+        NavigationBarItem(
+            selected = currentRoute == NavRoutes.SETTINGS,
+            onClick = { onNavigate(NavRoutes.SETTINGS) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+            label = { Text("Settings") }
+        )
+    }
+}
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    
-    // Add debug logging for navigation events
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
+
     navController.addOnDestinationChangedListener { _, destination, arguments ->
         Log.d("Navigation", "Navigating to: ${destination.route}, arguments: $arguments")
     }
-    
-    AppNavigationGraph(navController = navController)
+
+    Scaffold(
+        bottomBar = {
+            MainBottomBar(currentRoute = currentRoute) { route ->
+                if (route != currentRoute) navController.navigate(route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            AppNavigationGraph(navController = navController)
+        }
+    }
 }
 
 @Composable
@@ -38,7 +92,6 @@ fun AppNavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController, 
         startDestination = NavRoutes.HABIT_LIST,
-        // Apply enhanced enter/exit animations for the entire NavHost
         enterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Start,
@@ -91,7 +144,6 @@ fun AppNavigationGraph(navController: NavHostController) {
         
         composable(
             route = NavRoutes.ADD_HABIT,
-            // Apply a unique animation for the add habit screen
             enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Up,
@@ -124,7 +176,6 @@ fun AppNavigationGraph(navController: NavHostController) {
             arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) { 
                 type = NavType.StringType 
             }),
-            // Apply a 3D-like rotation for the edit screen
             enterTransition = {
                 scaleIn(
                     initialScale = 0.8f,
@@ -151,7 +202,6 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         composable(
             route = NavRoutes.STATS,
-            // Apply an impressive transition for the stats screen
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(700, easing = EaseOutQuint)
@@ -166,22 +216,17 @@ fun AppNavigationGraph(navController: NavHostController) {
             StatsScreen(navController)
         }
 
-        // For now, commenting out screens that aren't implemented yet
-        // to avoid errors about missing composables
-        /*
         composable(
-            route = NavRoutes.CALENDAR
+            route = NavRoutes.SETTINGS,
+            // Simple fade transition for settings
+            enterTransition = { fadeIn(animationSpec = tween(400)) },
+            exitTransition = { fadeOut(animationSpec = tween(400)) }
         ) {
-            // Placeholder for calendar screen
+            val context = LocalContext.current
+            SettingsScreen(context = context)
         }
-
-        composable(route = NavRoutes.SETTINGS) {
-            // Placeholder for settings screen
-        }
-        */
     }
 }
 
-// Custom easing curves for more interesting animations
 private val EaseOutQuint = Easing { fraction -> (1f - (1f - fraction).pow(5)).toFloat() }
 private val EaseInQuint = Easing { fraction -> fraction.pow(5).toFloat() }
