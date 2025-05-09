@@ -54,19 +54,21 @@ import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitFrequency
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.ui.animation.*
+import com.example.myapplication.ui.animation.ThreeJSScene
+import com.example.myapplication.ui.animation.ParticleWave
+import com.example.myapplication.ui.animation.ParticleExplosion
+import com.example.myapplication.ui.animation.AnimeEasing
+import com.example.myapplication.features.stats.HabitCategoryBarChart
+import com.example.myapplication.features.stats.HabitTrendsLineChart
 import com.example.myapplication.ui.components.*
 import com.example.myapplication.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import com.example.myapplication.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.PercentFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -98,7 +100,7 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
             Log.w("HabitParsing", "createdDate is null or not a Timestamp for ID $id. Using current date as fallback.")
             Date() // Fallback, ideally this should always come from Firebase and be valid
         }
-        
+
         val lastUpdatedTimestampFirebase = data["lastUpdatedTimestamp"] as? Timestamp
         val lastUpdatedTimestamp = lastUpdatedTimestampFirebase?.toDate() ?: createdDate
 
@@ -116,7 +118,7 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
 
         val unlockedBadgesFirebase = data["unlockedBadges"] as? List<*>
         val unlockedBadges = unlockedBadgesFirebase?.mapNotNull { (it as? Long)?.toInt() } ?: emptyList()
-        
+
         val category = data["category"] as? String
 
         Habit(
@@ -127,7 +129,7 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
             goal = goal,
             goalProgress = goalProgress,
             streak = streak,
-            createdDate = createdDate, 
+            createdDate = createdDate,
             lastUpdatedTimestamp = lastUpdatedTimestamp,
             lastCompletedDate = lastCompletedDate,
             completionHistory = completionHistory,
@@ -150,7 +152,7 @@ fun StatsScreen(navController: NavController) {
     val completedCount = habits.count { it.goalProgress >= it.goal }
     val totalCount = habits.size
     val completionRate = if (totalCount > 0) completedCount * 100f / totalCount else 0f
-    
+
     var selectedTab by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -163,12 +165,12 @@ fun StatsScreen(navController: NavController) {
         animationSpec = tween(1500, easing = FastOutSlowInEasing),
         label = "completionRate"
     )
-    
+
     LaunchedEffect(true) {
         delay(1000)
         isLoading = false
     }
-    
+
     val chartScale by animateFloatAsState(
         targetValue = if (isLoading) 0.8f else 1f,
         animationSpec = spring(
@@ -177,13 +179,13 @@ fun StatsScreen(navController: NavController) {
         ),
         label = "chartScale"
     )
-    
+
     val chartAlpha by animateFloatAsState(
         targetValue = if (isLoading) 0f else 1f,
         animationSpec = tween(1000),
         label = "chartAlpha"
     )
-    
+
     val tabIndicatorOffset by animateFloatAsState(
         targetValue = selectedTab.toFloat(),
         animationSpec = spring(
@@ -192,7 +194,7 @@ fun StatsScreen(navController: NavController) {
         ),
         label = "tabOffset"
     )
-    
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -232,363 +234,416 @@ fun StatsScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ThreeDCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp)
-                        .height(120.dp)
-                        .animeEntrance(
-                            visible = !isLoading,
-                            initialOffsetY = -100,
-                            delayMillis = 200
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
-                                        colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
-                                    )
-                                )
-                            )
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.List,
-                            contentDescription = "Total Habits",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "$totalCount",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Text(
-                            text = "Total Habits",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-                
-                ThreeDCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp)
-                        .height(120.dp)
-                        .animeEntrance(
-                            visible = !isLoading,
-                            initialOffsetY = 100,
-                            delayMillis = 400
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
-                                        colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
-                                    )
-                                )
-                            )
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            Icons.Default.CheckCircle,
-                            contentDescription = "Completed Habits",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "$completedCount",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Text(
-                            text = "Completed",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-            }
-            
-            AnimatedCircularProgress(
-                currentValue = animatedCompletionRate.roundToInt(),
-                maxValue = 100,
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(vertical = 16.dp)
-                    .animeEntrance(
-                        visible = !isLoading,
-                        initialScale = 0.5f,
-                        delayMillis = 600
                     )
-            )
-            
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .animeEntrance(
-                        visible = !isLoading,
-                        initialOffsetY = 50,
-                        delayMillis = 800
-                    ),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                val tabs = listOf(
-                    "Pie Chart" to Icons.Default.PieChart,
-                    "Bar Chart" to Icons.Default.BarChart,
-                    "Trends" to Icons.AutoMirrored.Filled.ShowChart
                 )
-                
-                Box(
+        ) {
+            // Add subtle particle wave effect in the background
+            if (!isLoading) {
+                ParticleWave(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    particleCount = 30,
+                    waveHeight = 30f,
+                    waveWidth = 1000f,
+                    speed = 0.2f
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
-                        .clip(RoundedCornerShape(28.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Box(
+                    ThreeDCard(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .width((LocalConfiguration.current.screenWidthDp / 3).dp)
-                            .offset(x = (tabIndicatorOffset * (LocalConfiguration.current.screenWidthDp / 3)).dp)
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.tertiary
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                            .height(120.dp)
+                            .animeEntrance(
+                                visible = !isLoading,
+                                initialOffsetY = -100,
+                                delayMillis = 200
+                            )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
+                                            colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
+                                        )
                                     )
                                 )
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.List,
+                                contentDescription = "Total Habits",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
                             )
-                    )
-                    
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "$totalCount",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "Total Habits",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+
+                    ThreeDCard(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                            .height(120.dp)
+                            .animeEntrance(
+                                visible = !isLoading,
+                                initialOffsetY = 100,
+                                delayMillis = 400
+                            )
                     ) {
-                        tabs.forEachIndexed { index, (title, icon) ->
-                            val isSelected = selectedTab == index
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .clickable { 
-                                        selectedTab = index
-                                        coroutineScope.launch {
-                                            scrollState.animateScrollTo(scrollState.maxValue)
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        icon,
-                                        contentDescription = title,
-                                        tint = if (isSelected) 
-                                            MaterialTheme.colorScheme.onPrimary 
-                                        else 
-                                            MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    if (isSelected) {
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = title,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
+                                            colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
                                         )
+                                    )
+                                )
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                Icons.Default.CheckCircle,
+                                contentDescription = "Completed Habits",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "$completedCount",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Text(
+                                text = "Completed",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+                AnimatedCircularProgress(
+                    currentValue = animatedCompletionRate.roundToInt(),
+                    maxValue = 100,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .padding(vertical = 16.dp)
+                        .animeEntrance(
+                            visible = !isLoading,
+                            initialScale = 0.5f,
+                            delayMillis = 600
+                        )
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                        .animeEntrance(
+                            visible = !isLoading,
+                            initialOffsetY = 50,
+                            delayMillis = 800
+                        ),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val tabs = listOf(
+                        "Pie Chart" to Icons.Default.PieChart,
+                        "Bar Chart" to Icons.Default.BarChart,
+                        "Trends" to Icons.AutoMirrored.Filled.ShowChart
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width((LocalConfiguration.current.screenWidthDp / 3).dp)
+                                .offset(x = (tabIndicatorOffset * (LocalConfiguration.current.screenWidthDp / 3)).dp)
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.colorScheme.tertiary
+                                        )
+                                    )
+                                )
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            tabs.forEachIndexed { index, (title, icon) ->
+                                val isSelected = selectedTab == index
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .clickable {
+                                            selectedTab = index
+                                            coroutineScope.launch {
+                                                scrollState.animateScrollTo(scrollState.maxValue)
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            icon,
+                                            contentDescription = title,
+                                            tint = if (isSelected)
+                                                MaterialTheme.colorScheme.onPrimary
+                                            else
+                                                MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        if (isSelected) {
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = title,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .padding(vertical = 16.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .alpha(chartAlpha)
-                    .scale(chartScale)
-            ) {
-                when (selectedTab) {
-                    0 -> CompletionPieChart(
-                        completed = completedCount,
-                        total = totalCount,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    1 -> HabitCategoryBarChart(
-                        habits = habits,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    2 -> HabitTrendsLineChart(
-                        habits = habits,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-            
-            AnimatedVisibility(
-                visible = !isLoading,
-                enter = fadeIn() + slideInVertically { it },
-                exit = fadeOut() + slideOutVertically { it }
-            ) {
-                Column(
+
+                // Enhanced 3D chart display
+                ThreeJSScene(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(300.dp)
                         .padding(vertical = 16.dp)
-                ) {
-                    Text(
-                        text = "Habit Streak Leaderboard",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    
-                    val topStreakHabits = habits
-                        .sortedByDescending { it.streak }
-                        .take(5)
-                    
-                    for ((index, habit) in topStreakHabits.withIndex()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    when (index) {
-                                        0 -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                                        1 -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f) 
-                                        2 -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-                                        else -> MaterialTheme.colorScheme.surface
-                                    }
+                        .alpha(chartAlpha),
+                    rotationEnabled = !isLoading,
+                    initialRotationY = 5f,
+                    cameraDistance = 12f
+                ) { sceneModifier ->
+                    Box(
+                        modifier = sceneModifier
+                            .fillMaxSize()
+                            .scale(chartScale)
+                            .clip(MaterialTheme.shapes.medium)
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                                    )
                                 )
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (index < 3) {
-                                Icon(
-                                    when (index) {
-                                        0 -> Icons.Default.EmojiEvents
-                                        1 -> Icons.Default.EmojiEvents
-                                        else -> Icons.Default.EmojiEvents
-                                    },
-                                    contentDescription = "Rank ${index + 1}",
-                                    tint = when (index) {
-                                        0 -> Color(0xFFFFD700) 
-                                        1 -> Color(0xFFC0C0C0) 
-                                        else -> Color(0xFFCD7F32) 
-                                    },
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .padding(end = 8.dp)
-                                )
-                            } else {
-                                Text(
-                                    text = "${index + 1}.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.width(24.dp)
-                                )
-                            }
-                            
-                            Text(
-                                text = habit.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
                             )
-                            
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Default.LocalFireDepartment,
-                                    contentDescription = "Streak",
-                                    tint = when {
-                                        habit.streak > 20 -> Color(0xFFFF1744)
-                                        habit.streak > 10 -> Color(0xFFFF9100)
-                                        else -> Color(0xFFFF9800)
-                                    },
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .pulseEffect(pulseEnabled = habit.streak > 7)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "${habit.streak}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                    ) {
+                        when (selectedTab) {
+                            0 -> CompletionPieChart(
+                                completed = completedCount,
+                                total = totalCount,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            1 -> HabitCategoryBarChart(
+                                habits = habits,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            2 -> HabitTrendsLineChart(
+                                habits = habits,
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
-                    }
-                    
-                    if (topStreakHabits.isEmpty()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "No streak data yet. Keep completing your habits!",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+
+                        // Add particle effect when chart changes
+                        if (!isLoading) {
+                            ParticleExplosion(
+                                modifier = Modifier.fillMaxSize(),
+                                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                particleCount = 30,
+                                explosionRadius = 150f,
+                                duration = 1500,
+                                repeat = false
                             )
                         }
                     }
                 }
-            }
-            
-            // Firebase Backup and Restore Data sections removed.
-            // These functionalities are available in the SettingsScreen.
 
-            Spacer(modifier = Modifier.height(40.dp))
+                AnimatedVisibility(
+                    visible = !isLoading,
+                    enter = fadeIn() + slideInVertically { it },
+                    exit = fadeOut() + slideOutVertically { it }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    ) {
+                        Text(
+                            text = "Habit Streak Leaderboard",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        val topStreakHabits = habits
+                            .sortedByDescending { it.streak }
+                            .take(5)
+
+                        for ((index, habit) in topStreakHabits.withIndex()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        when (index) {
+                                            0 -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                                            1 -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                            2 -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                                            else -> MaterialTheme.colorScheme.surface
+                                        }
+                                    )
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (index < 3) {
+                                    Icon(
+                                        when (index) {
+                                            0 -> Icons.Default.EmojiEvents
+                                            1 -> Icons.Default.EmojiEvents
+                                            else -> Icons.Default.EmojiEvents
+                                        },
+                                        contentDescription = "Rank ${index + 1}",
+                                        tint = when (index) {
+                                            0 -> Color(0xFFFFD700)
+                                            1 -> Color(0xFFC0C0C0)
+                                            else -> Color(0xFFCD7F32)
+                                        },
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "${index + 1}.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.width(24.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = habit.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.LocalFireDepartment,
+                                        contentDescription = "Streak",
+                                        tint = when {
+                                            habit.streak > 20 -> Color(0xFFFF1744)
+                                            habit.streak > 10 -> Color(0xFFFF9100)
+                                            else -> Color(0xFFFF9800)
+                                        },
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .pulseEffect(pulseEnabled = habit.streak > 7)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "${habit.streak}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+
+                        if (topStreakHabits.isEmpty()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "No streak data yet. Keep completing your habits!",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Firebase Backup and Restore Data sections removed.
+                // These functionalities are available in the SettingsScreen.
+
+                Spacer(modifier = Modifier.height(40.dp))
+            }
         }
     }
 }
-
 @Composable
 fun AnimatedCircularProgress(
     currentValue: Int,
@@ -600,7 +655,7 @@ fun AnimatedCircularProgress(
         animationSpec = tween(1500, easing = FastOutSlowInEasing),
         label = "sweepAngle"
     )
-    
+
     val rotationAnimation by rememberInfiniteTransition(label = "rotate").animateFloat(
         initialValue = 0f,
         targetValue = 360f,
@@ -610,7 +665,7 @@ fun AnimatedCircularProgress(
         ),
         label = "rotation"
     )
-    
+
     val scheme = MaterialTheme.colorScheme
     val primaryColor = scheme.primary
     val tertiaryColor = scheme.tertiary
@@ -619,7 +674,7 @@ fun AnimatedCircularProgress(
     val surfaceVariantAlpha03Color = scheme.surfaceVariant.copy(alpha = 0.3f)
     val onBackgroundColor = scheme.onBackground
     val onBackgroundAlpha07Color = scheme.onBackground.copy(alpha = 0.7f)
-    
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -631,8 +686,8 @@ fun AnimatedCircularProgress(
             drawCircle(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        primaryContainerAlpha03Color, 
-                        surfaceVariantAlpha01Color    
+                        primaryContainerAlpha03Color,
+                        surfaceVariantAlpha01Color
                     ),
                     start = Offset(size.width / 2, 0f),
                     end = Offset(size.width / 2, size.height)
@@ -640,10 +695,10 @@ fun AnimatedCircularProgress(
                 radius = size.minDimension / 2.2f
             )
         }
-        
+
         Canvas(modifier = Modifier.matchParentSize()) {
             drawArc(
-                color = surfaceVariantAlpha03Color, 
+                color = surfaceVariantAlpha03Color,
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -651,12 +706,12 @@ fun AnimatedCircularProgress(
                 size = Size(size.width * 0.8f, size.height * 0.8f),
                 topLeft = Offset(size.width * 0.1f, size.height * 0.1f)
             )
-            
+
             drawArc(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        primaryColor,  
-                        tertiaryColor  
+                        primaryColor,
+                        tertiaryColor
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(size.width, size.height)
@@ -669,7 +724,7 @@ fun AnimatedCircularProgress(
                 topLeft = Offset(size.width * 0.1f, size.height * 0.1f)
             )
         }
-        
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -677,32 +732,32 @@ fun AnimatedCircularProgress(
                 text = "$currentValue%",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = onBackgroundColor 
+                color = onBackgroundColor
             )
             Text(
                 text = "Completion Rate",
                 style = MaterialTheme.typography.bodyMedium,
-                color = onBackgroundAlpha07Color 
+                color = onBackgroundAlpha07Color
             )
         }
-        
+
         Canvas(modifier = Modifier.matchParentSize()) {
             val radius = size.minDimension / 2f
             val particleCount = 8
             val particleRadius = 4f
-            
+
             for (i in 0 until particleCount) {
                 val angle = (i * (360f / particleCount) + rotationAnimation) % 360f
                 val particleProgress = (angle + 90) / 360f
-                
-                if (particleProgress * 360f <= sweepAngleAnimation || 
+
+                if (particleProgress * 360f <= sweepAngleAnimation ||
                     (particleProgress - 1f) * 360f <= sweepAngleAnimation) {
-                    
+
                     val x = center.x + cos(angle * PI.toFloat() / 180f) * radius
                     val y = center.y + sin(angle * PI.toFloat() / 180f) * radius
-                    
+
                     drawCircle(
-                        color = primaryColor, 
+                        color = primaryColor,
                         radius = particleRadius,
                         center = Offset(x, y)
                     )
@@ -723,7 +778,7 @@ fun CompletionPieChart(
     val onSurfaceComposeColor = scheme.onSurface
     val primaryComposeColor = scheme.primary
     val surfaceVariantComposeColor = scheme.surfaceVariant
-    val transparentComposeColor = Color.Transparent 
+    val transparentComposeColor = Color.Transparent
     val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
     val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
     val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
@@ -738,7 +793,7 @@ fun CompletionPieChart(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    surfaceVariantAlpha02ComposeColor, 
+                    surfaceVariantAlpha02ComposeColor,
                     shape = MaterialTheme.shapes.medium
                 ),
             contentAlignment = Alignment.Center
@@ -752,13 +807,13 @@ fun CompletionPieChart(
                     modifier = Modifier
                         .size(48.dp)
                         .alpha(0.5f),
-                    tint = onSurfaceVariantAlpha05ComposeColor 
+                    tint = onSurfaceVariantAlpha05ComposeColor
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "No habit data to display",
                     textAlign = TextAlign.Center,
-                    color = onSurfaceVariantAlpha07ComposeColor 
+                    color = onSurfaceVariantAlpha07ComposeColor
                 )
             }
         }
@@ -767,345 +822,45 @@ fun CompletionPieChart(
             factory = { PieChart(context) },
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
-                .background(surfaceVariantAlpha02ComposeColor) 
+                .background(surfaceVariantAlpha02ComposeColor)
                 .padding(8.dp)
         ) { pieChart ->
             pieChart.apply {
                 description.isEnabled = false
                 isDrawHoleEnabled = true
-                setHoleColor(transparentArgb) 
+                setHoleColor(transparentArgb)
                 holeRadius = 58f
                 transparentCircleRadius = 61f
                 setDrawCenterText(true)
                 centerText = "${(completed * 100f / total).roundToInt()}%\\nCompleted"
                 setCenterTextSize(14f)
-                setCenterTextColor(onSurfaceArgb) 
+                setCenterTextColor(onSurfaceArgb)
                 legend.isEnabled = true
                 legend.textSize = 12f
-                legend.textColor = onSurfaceArgb 
+                legend.textColor = onSurfaceArgb
                 setDrawEntryLabels(false)
                 animateY(1400, Easing.EaseInOutQuad)
             }
-            
+
             val entries = listOf(
                 PieEntry(completed.toFloat(), "Completed"),
                 PieEntry((total - completed).toFloat(), "Remaining")
             )
-            
+
             val dataSet = PieDataSet(entries, "")
             dataSet.apply {
                 colors = listOf(
-                    primaryArgb,         
-                    surfaceVariantArgb   
+                    primaryArgb,
+                    surfaceVariantArgb
                 )
                 valueTextSize = 14f
-                valueTextColor = onSurfaceArgb 
-                valueFormatter = com.github.mikephil.charting.formatter.PercentFormatter(pieChart)
+                valueTextColor = onSurfaceArgb
+                valueFormatter = PercentFormatter(pieChart)
                 setDrawValues(true)
             }
-            
+
             pieChart.data = PieData(dataSet)
             pieChart.invalidate()
-        }
-    }
-}
-
-@Composable
-fun HabitCategoryBarChart(
-    habits: List<Habit>,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val scheme = MaterialTheme.colorScheme
-    val onSurfaceComposeColor = scheme.onSurface
-    val primaryComposeColor = scheme.primary
-    val surfaceVariantComposeColor = scheme.surfaceVariant
-    val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
-    val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
-    val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
-    val gridLinesComposeColor = scheme.onSurface.copy(alpha = 0.1f)
-
-    val onSurfaceArgb = onSurfaceComposeColor.toArgb()
-    val primaryArgb = primaryComposeColor.toArgb()
-    val surfaceVariantArgb = surfaceVariantComposeColor.toArgb()
-    val gridLinesArgb = gridLinesComposeColor.toArgb()
-
-    val categoryCounts = habits
-        .filter { !it.category.isNullOrEmpty() }
-        .groupBy { it.category ?: "Uncategorized" }
-        .mapValues { (_, habitList) ->
-            habitList.count { it.isEnabled } to habitList.count { !it.isEnabled }
-        }
-    
-    if (categoryCounts.isEmpty()) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(
-                    surfaceVariantAlpha02ComposeColor, 
-                    shape = MaterialTheme.shapes.medium
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.Default.BarChart,
-                    contentDescription = "No Data",
-                    modifier = Modifier
-                        .size(48.dp)
-                        .alpha(0.5f),
-                    tint = onSurfaceVariantAlpha05ComposeColor 
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "No category data available",
-                    textAlign = TextAlign.Center,
-                    color = onSurfaceVariantAlpha07ComposeColor 
-                )
-            }
-        }
-    } else {
-        AndroidView(
-            factory = { BarChart(context) },
-            modifier = modifier
-                .clip(MaterialTheme.shapes.medium)
-                .background(surfaceVariantAlpha02ComposeColor) 
-                .padding(8.dp)
-        ) { barChart ->
-            barChart.apply {
-                description.isEnabled = false
-                legend.apply {
-                    isEnabled = true
-                    textSize = 12f
-                    textColor = onSurfaceArgb 
-                    verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
-                    horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
-                }
-                
-                setDrawGridBackground(false)
-                setDrawBarShadow(false)
-                
-                xAxis.apply {
-                    position = XAxis.XAxisPosition.BOTTOM
-                    granularity = 1f
-                    textColor = onSurfaceArgb 
-                    textSize = 10f
-                    valueFormatter = IndexAxisValueFormatter(categoryCounts.keys.toList())
-                    setDrawGridLines(false)
-                }
-                
-                axisLeft.apply {
-                    textColor = onSurfaceArgb 
-                    textSize = 10f
-                    axisMinimum = 0f
-                    granularity = 1f
-                    setDrawGridLines(true)
-                    gridColor = gridLinesArgb 
-                }
-                axisRight.isEnabled = false
-                setScaleEnabled(true)
-                setPinchZoom(false)
-                isDoubleTapToZoomEnabled = true
-            }
-            
-            val enabledEntries = mutableListOf<BarEntry>()
-            val disabledEntries = mutableListOf<BarEntry>()
-            
-            categoryCounts.values.forEachIndexed { index, (enabled, disabled) ->
-                enabledEntries.add(BarEntry(index.toFloat(), enabled.toFloat()))
-                disabledEntries.add(BarEntry(index.toFloat(), disabled.toFloat()))
-            }
-            
-            val enabledDataSet = BarDataSet(enabledEntries, "Active").apply {
-                color = primaryArgb 
-                valueTextColor = onSurfaceArgb 
-                valueTextSize = 10f
-                setDrawValues(true)
-            }
-            
-            val disabledDataSet = BarDataSet(disabledEntries, "Paused").apply {
-                color = surfaceVariantArgb 
-                valueTextColor = onSurfaceArgb 
-                valueTextSize = 10f
-                setDrawValues(true)
-            }
-            
-            val groupSpace = 0.3f
-            val barSpace = 0.05f
-            val barWidth = 0.3f
-            val start = 0f
-            
-            val barData = BarData(enabledDataSet, disabledDataSet)
-            barData.barWidth = barWidth
-            
-            barChart.data = barData
-            barChart.groupBars(start, groupSpace, barSpace)
-            barChart.setVisibleXRangeMaximum(5f)
-            barChart.setFitBars(true)
-            
-            barChart.animateY(1400)
-            barChart.invalidate()
-        }
-    }
-}
-
-@Composable
-fun HabitTrendsLineChart(
-    habits: List<Habit>,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val scheme = MaterialTheme.colorScheme
-    val onSurfaceComposeColor = scheme.onSurface
-    val primaryComposeColor = scheme.primary
-    val tertiaryComposeColor = scheme.tertiary
-    val surfaceVariantAlpha02ComposeColor = scheme.surfaceVariant.copy(alpha = 0.2f)
-    val onSurfaceVariantAlpha05ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.5f)
-    val onSurfaceVariantAlpha07ComposeColor = scheme.onSurfaceVariant.copy(alpha = 0.7f)
-    val gridLinesComposeColor = scheme.onSurface.copy(alpha = 0.1f)
-    val primaryAlpha05ComposeColor = scheme.primary.copy(alpha = 0.5f)
-    val primaryAlpha01ComposeColor = scheme.primary.copy(alpha = 0.1f)
-    val tertiaryAlpha05ComposeColor = scheme.tertiary.copy(alpha = 0.5f)
-    val tertiaryAlpha01ComposeColor = scheme.tertiary.copy(alpha = 0.1f)
-
-    val onSurfaceArgb = onSurfaceComposeColor.toArgb()
-    val primaryArgb = primaryComposeColor.toArgb()
-    val tertiaryArgb = tertiaryComposeColor.toArgb()
-    val gridLinesArgb = gridLinesComposeColor.toArgb()
-    val primaryAlpha05Argb = primaryAlpha05ComposeColor.toArgb()
-    val primaryAlpha01Argb = primaryAlpha01ComposeColor.toArgb()
-    val tertiaryAlpha05Argb = tertiaryAlpha05ComposeColor.toArgb()
-    val tertiaryAlpha01Argb = tertiaryAlpha01ComposeColor.toArgb()
-
-    if (habits.isEmpty()) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(
-                    surfaceVariantAlpha02ComposeColor, 
-                    shape = MaterialTheme.shapes.medium
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ShowChart,
-                    contentDescription = "No Data",
-                    modifier = Modifier
-                        .size(48.dp)
-                        .alpha(0.5f),
-                    tint = onSurfaceVariantAlpha05ComposeColor 
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "Not enough data to show trends",
-                    textAlign = TextAlign.Center,
-                    color = onSurfaceVariantAlpha07ComposeColor 
-                )
-            }
-        }
-    } else {
-        AndroidView(
-            factory = { LineChart(context) },
-            modifier = modifier
-                .clip(MaterialTheme.shapes.medium)
-                .background(surfaceVariantAlpha02ComposeColor) 
-                .padding(8.dp)
-        ) { lineChart ->
-            lineChart.apply {
-                description.isEnabled = false
-                legend.apply {
-                    isEnabled = true
-                    textSize = 12f
-                    textColor = onSurfaceArgb 
-                    verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
-                    horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
-                }
-                
-                setDrawGridBackground(false)
-                
-                xAxis.apply {
-                    position = XAxis.XAxisPosition.BOTTOM
-                    textColor = onSurfaceArgb 
-                    textSize = 10f
-                    valueFormatter = IndexAxisValueFormatter(
-                        listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                    )
-                    setDrawGridLines(false)
-                }
-                
-                axisLeft.apply {
-                    textColor = onSurfaceArgb 
-                    textSize = 10f
-                    axisMinimum = 0f
-                    granularity = 1f
-                    setDrawGridLines(true)
-                    gridColor = gridLinesArgb 
-                }
-                axisRight.isEnabled = false
-                setTouchEnabled(true)
-                isDragEnabled = true
-                setScaleEnabled(true)
-                setPinchZoom(true)
-            }
-            
-            val completionEntries = (0..6).map { day ->
-                val value = (habits.size * (0.3f + (day % 3) * 0.2f)).toFloat() // Dummy data
-                Entry(day.toFloat(), value)
-            }
-            
-            val streakEntries = (0..6).map { day ->
-                val value = habits.sumOf { it.streak }.toFloat() / habits.size.coerceAtLeast(1) // Dummy data
-                Entry(day.toFloat(), value * (1 + day % 2) * 0.2f)
-            }
-            
-            val completionDataSet = LineDataSet(completionEntries, "Daily Completions").apply {
-                color = primaryArgb 
-                lineWidth = 2f
-                setDrawValues(false)
-                setDrawCircles(true)
-                setCircleColor(primaryArgb) 
-                circleRadius = 4f
-                setDrawCircleHole(true)
-                circleHoleRadius = 2f
-                setDrawFilled(true)
-                fillDrawable = GradientDrawable(
-                    GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(
-                        primaryAlpha05Argb, 
-                        primaryAlpha01Argb  
-                    )
-                )
-                mode = LineDataSet.Mode.CUBIC_BEZIER
-            }
-            
-            val streakDataSet = LineDataSet(streakEntries, "Avg. Streak Length").apply {
-                color = tertiaryArgb 
-                lineWidth = 2f
-                setDrawValues(false)
-                setDrawCircles(true)
-                setCircleColor(tertiaryArgb) 
-                circleRadius = 4f
-                setDrawCircleHole(true)
-                circleHoleRadius = 2f
-                setDrawFilled(true)
-                fillDrawable = GradientDrawable(
-                    GradientDrawable.Orientation.TOP_BOTTOM,
-                    intArrayOf(
-                        tertiaryAlpha05Argb, 
-                        tertiaryAlpha01Argb  
-                    )
-                )
-                mode = LineDataSet.Mode.CUBIC_BEZIER
-            }
-            
-            lineChart.data = LineData(completionDataSet, streakDataSet)
-            lineChart.animateX(1500)
-            lineChart.invalidate()
         }
     }
 }

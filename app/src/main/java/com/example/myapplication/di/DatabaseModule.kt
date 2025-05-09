@@ -32,4 +32,9 @@ object DatabaseModule {
     fun provideHabitDao(appDatabase: AppDatabase): HabitDao {
         return appDatabase.habitDao()
     }
+
+    @Provides
+    fun provideNeuralNetworkDao(appDatabase: AppDatabase): NeuralNetworkDao {
+        return appDatabase.neuralNetworkDao()
+    }
 }

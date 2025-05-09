@@ -9,8 +9,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,8 +22,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.ui.animation.AnimeEasing
+import com.example.myapplication.ui.animation.ParticleWave
+import com.example.myapplication.ui.animation.animeEntrance
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.components.JupiterGradientButton
 import java.time.LocalTime
@@ -54,7 +63,7 @@ fun AddHabitScreen(
     var goal by remember { mutableStateOf("1") }
 
     val context = LocalContext.current
-    
+
     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
@@ -76,7 +85,7 @@ fun AddHabitScreen(
             initialHour = reminderTime?.hour ?: 8,
             initialMinute = reminderTime?.minute ?: 0
         )
-        
+
         AddHabitTimePickerDialog(
             onDismissRequest = { showTimePicker = false },
             onConfirm = {
@@ -122,162 +131,293 @@ fun AddHabitScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        // Add animated background
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = habitName,
-                    onValueChange = { habitName = it },
-                    label = { Text("Habit Name") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-                IconButton(onClick = {
-                    launcher.launch(intent)
-                }) {
-                    Icon(Icons.Default.Mic, contentDescription = "Voice Input")
-                }
-            }
-
-            OutlinedTextField(
-                value = habitDescription,
-                onValueChange = { habitDescription = it },
-                label = { Text("Description (Optional)") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3
-            )
-
-            OutlinedTextField(
-                value = habitCategory,
-                onValueChange = { habitCategory = it },
-                label = { Text("Category") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-            )
-
-            // Frequency Dropdown
-            ExposedDropdownMenuBox(
-                expanded = isFrequencyDropdownExpanded,
-                onExpandedChange = { isFrequencyDropdownExpanded = !isFrequencyDropdownExpanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = selectedFrequency.name,
-                    onValueChange = {}, // Not directly editable
-                    readOnly = true,
-                    label = { Text("Frequency") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isFrequencyDropdownExpanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = isFrequencyDropdownExpanded,
-                    onDismissRequest = { isFrequencyDropdownExpanded = false }
-                ) {
-                    HabitFrequency.values().forEach { frequency ->
-                        DropdownMenuItem(
-                            text = { Text(frequency.name) },
-                            onClick = {
-                                selectedFrequency = frequency
-                                isFrequencyDropdownExpanded = false
-                            }
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                         )
-                    }
-                }
-            }
-            
-            // Goal input
-            OutlinedTextField(
-                value = goal,
-                onValueChange = { 
-                    // Only allow numbers
-                    if (it.isBlank() || it.toIntOrNull() != null) {
-                        goal = it
-                    }
-                },
-                label = { Text("Goal (times per ${selectedFrequency.name.lowercase()})") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    )
                 )
+        ) {
+            // Add subtle particle wave effect in the background
+            ParticleWave(
+                modifier = Modifier.fillMaxSize(),
+                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                particleCount = 20,
+                waveHeight = 20f,
+                waveWidth = 1000f,
+                speed = 0.2f
             )
-            
-            // Reminder time picker
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
-                    text = "Set reminder",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f)
+                // Animated title with pulsing effect
+                val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.05f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(2000, easing = AnimeEasing.EaseInOutQuad),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "pulseScale"
                 )
-                
-                OutlinedButton(
-                    onClick = { showTimePicker = true },
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Alarm,
-                        contentDescription = "Set reminder time",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        reminderTime?.format(DateTimeFormatter.ofPattern("hh:mm a")) ?: "Set Time"
-                    )
-                }
-            }
-            
-            if (reminderTime != null) {
+
+                Text(
+                    "Create Your New Habit",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .scale(scale)
+                )
+
+                // Animated form fields with staggered entrance
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 0,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("You'll be reminded at ${reminderTime?.format(DateTimeFormatter.ofPattern("hh:mm a"))}")
-                    Spacer(Modifier.weight(1f))
-                    TextButton(onClick = { reminderTime = null }) {
-                        Text("Clear")
+                    OutlinedTextField(
+                        value = habitName,
+                        onValueChange = { habitName = it },
+                        label = { Text("Habit Name") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+
+                    // Animated mic button
+                    IconButton(
+                        onClick = { launcher.launch(intent) },
+                        modifier = Modifier
+                            .scale(if (habitName.isEmpty()) scale else 1f)
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Mic,
+                            contentDescription = "Voice Input",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.weight(1f)) // Pushes button to the bottom
+                OutlinedTextField(
+                    value = habitDescription,
+                    onValueChange = { habitDescription = it },
+                    label = { Text("Description (Optional)") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 1,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
+                        ),
+                    minLines = 3
+                )
 
-            JupiterGradientButton(
-                text = "Save Habit",
-                onClick = {
-                    if (habitName.isNotBlank()) {
-                        Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
-                        
-                        val goalValue = goal.toIntOrNull() ?: 1
-                        val reminderTimeString = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
-                        
-                        viewModel.addHabit(
-                            name = habitName,
-                            description = habitDescription,
-                            category = habitCategory.takeIf { it.isNotBlank() } ?: "Uncategorized",
-                            frequency = selectedFrequency,
-                            goal = goalValue,
-                            reminderTime = reminderTimeString
+                OutlinedTextField(
+                    value = habitCategory,
+                    onValueChange = { habitCategory = it },
+                    label = { Text("Category") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .animeEntrance(
+                            visible = true,
+                            index = 2,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
                         )
-                        navController.popBackStack() // Go back after saving
+                )
+
+                // Frequency Dropdown with animation
+                ExposedDropdownMenuBox(
+                    expanded = isFrequencyDropdownExpanded,
+                    onExpandedChange = { isFrequencyDropdownExpanded = !isFrequencyDropdownExpanded },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 3,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
+                        )
+                ) {
+                    OutlinedTextField(
+                        value = selectedFrequency.name,
+                        onValueChange = {}, // Not directly editable
+                        readOnly = true,
+                        label = { Text("Frequency") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isFrequencyDropdownExpanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = isFrequencyDropdownExpanded,
+                        onDismissRequest = { isFrequencyDropdownExpanded = false }
+                    ) {
+                        HabitFrequency.values().forEach { frequency ->
+                            DropdownMenuItem(
+                                text = { Text(frequency.name) },
+                                onClick = {
+                                    selectedFrequency = frequency
+                                    isFrequencyDropdownExpanded = false
+                                }
+                            )
+                        }
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-                // Note: button enabled when habitName is not blank
-            )
+                }
+
+                // Goal input with animation
+                OutlinedTextField(
+                    value = goal,
+                    onValueChange = {
+                        // Only allow numbers
+                        if (it.isBlank() || it.toIntOrNull() != null) {
+                            goal = it
+                        }
+                    },
+                    label = { Text("Goal (times per ${selectedFrequency.name.lowercase()})") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 4,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
+                        ),
+                    singleLine = true,
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    )
+                )
+
+                // Reminder time picker with animation
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 5,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutBack
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Set reminder",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    OutlinedButton(
+                        onClick = { showTimePicker = true },
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                    ) {
+                        Icon(
+                            Icons.Default.Alarm,
+                            contentDescription = "Set reminder time",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            reminderTime?.format(DateTimeFormatter.ofPattern("hh:mm a")) ?: "Set Time"
+                        )
+                    }
+                }
+
+                if (reminderTime != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("You'll be reminded at ${reminderTime?.format(DateTimeFormatter.ofPattern("hh:mm a"))}")
+                        Spacer(Modifier.weight(1f))
+                        TextButton(onClick = { reminderTime = null }) {
+                            Text("Clear")
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f)) // Pushes button to the bottom
+
+                JupiterGradientButton(
+                    text = "Save Habit",
+                    onClick = {
+                        if (habitName.isNotBlank()) {
+                            Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
+
+                            val goalValue = goal.toIntOrNull() ?: 1
+                            val reminderTimeString = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+
+                            viewModel.addHabit(
+                                name = habitName,
+                                description = habitDescription,
+                                category = habitCategory.takeIf { it.isNotBlank() } ?: "Uncategorized",
+                                frequency = selectedFrequency,
+                                goal = goalValue,
+                                reminderTime = reminderTimeString
+                            )
+                            navController.popBackStack() // Go back after saving
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animeEntrance(
+                            visible = true,
+                            index = 6,
+                            baseDelay = 100,
+                            duration = 800,
+                            initialOffsetY = 50,
+                            easing = AnimeEasing.EaseOutElastic
+                        )
+                        .graphicsLayer {
+                            scaleX = if (habitName.isNotBlank()) scale else 0.95f
+                            scaleY = if (habitName.isNotBlank()) scale else 0.95f
+                        }
+                )
+            }
         }
     }
 }

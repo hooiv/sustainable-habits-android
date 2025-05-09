@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -116,6 +117,7 @@ fun HabitItem(
     onCompletedClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onToggleEnabled: () -> Unit,
+    onNeuralInterfaceClick: () -> Unit = {},
     index: Int = 0 // Added index parameter for staggered animations
 ) {
     // Get current date for comparison and formatting
@@ -125,52 +127,52 @@ fun HabitItem(
             dateFormat.format(it) == dateFormat.format(Date())
         } ?: false
     }
-    
+
     // Card states
     var isExpanded by remember { mutableStateOf(false) }
     val hapticFeedback = LocalHapticFeedback.current
     val density = LocalDensity.current
     var cardSize by remember { mutableStateOf(IntSize.Zero) }
-    
+
     // Animation states
     var rotationX by remember { mutableStateOf(0f) }
     var rotationY by remember { mutableStateOf(0f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-    
+
     // Calculate progress percentage
     val progress = if (habit.goal > 0) {
         habit.goalProgress.toFloat() / habit.goal.toFloat()
     } else {
         0f
     }
-    
+
     // Animated values
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
         animationSpec = tween(1000, easing = FastOutSlowInEasing),
         label = "progress"
     )
-    
+
     val backgroundColor by animateColorAsState(
-        targetValue = if (isCompletedToday) 
+        targetValue = if (isCompletedToday)
             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
-        else 
+        else
             MaterialTheme.colorScheme.surface,
         label = "backgroundColor"
     )
-    
+
     // Use only one MaterialTheme.elevation property - we'll define this in Theme.kt later
     val cardElevation by animateFloatAsState(
         targetValue = if (habit.isEnabled) 8f else 2f,
         label = "elevation"
     )
-    
+
     val contentAlpha by animateFloatAsState(
         targetValue = if (habit.isEnabled) 1f else 0.7f,
         label = "contentAlpha"
     )
-    
+
     val scale by animateFloatAsState(
         targetValue = if (isExpanded) 1.02f else 1f,
         animationSpec = spring(
@@ -179,21 +181,21 @@ fun HabitItem(
         ),
         label = "scale"
     )
-    
+
     // Entry animation
     val visible = remember { mutableStateOf(false) }
     LaunchedEffect(true) {
         delay(staggeredDelay(index, 80, 800).toLong())
         visible.value = true
     }
-    
+
     // Animated particle effects for completed habits
     val particleAlpha by animateFloatAsState(
         targetValue = if (isCompletedToday) 1f else 0f,
         animationSpec = tween(500),
         label = "particleAlpha"
     )
-    
+
     // Rotation with smooth animation
     val animatedRotationX by animateFloatAsState(
         targetValue = rotationX,
@@ -203,7 +205,7 @@ fun HabitItem(
         ),
         label = "rotationX"
     )
-    
+
     val animatedRotationY by animateFloatAsState(
         targetValue = rotationY,
         animationSpec = spring(
@@ -212,7 +214,7 @@ fun HabitItem(
         ),
         label = "rotationY"
     )
-    
+
     // Create color gradient based on streak and completion status - avoid color ambiguities
     val gradientColors = when {
         isCompletedToday -> listOf(
@@ -232,7 +234,7 @@ fun HabitItem(
             MaterialTheme.colorScheme.surface
         )
     }
-    
+
     // Main card wrapper with entrance animation
     Box(
         modifier = Modifier
@@ -272,7 +274,7 @@ fun HabitItem(
                 }
             }
         }
-        
+
         // Main card with 3D effect
         ThreeDCard(
             modifier = Modifier
@@ -287,11 +289,11 @@ fun HabitItem(
                         }
                     ) { change, dragAmount ->
                         change.consume()
-                        
+
                         // Calculate rotation based on drag position
                         val touchX = change.position.x
                         val touchY = change.position.y
-                        
+
                         // Apply rotation (limited range)
                         rotationX = (touchY / cardSize.height.coerceAtLeast(1)) * 10f
                         rotationY = -(touchX / cardSize.width.coerceAtLeast(1)) * 10f
@@ -338,7 +340,7 @@ fun HabitItem(
                                         else -> Color(0xFFF57C00)
                                     }
                                 )
-                                
+
                                 // Add streak count inside the fire icon for higher streaks
                                 if (habit.streak > 3) {
                                     Text(
@@ -352,7 +354,7 @@ fun HabitItem(
                                 }
                             }
                         }
-                        
+
                         Text(
                             text = habit.name,
                             style = MaterialTheme.typography.titleMedium,
@@ -360,7 +362,7 @@ fun HabitItem(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isCompletedToday) 0.7f else 1f)
                         )
                     }
-                    
+
                     // Right side indicators
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // Frequency chip with icon
@@ -393,7 +395,7 @@ fun HabitItem(
                                 )
                             }
                         }
-                        
+
                         // Reminder indicator with animation
                         if (habit.reminderTime != null) {
                             Box(
@@ -411,7 +413,7 @@ fun HabitItem(
                         }
                     }
                 }
-                
+
                 // Progress indicator
                 if (habit.goal > 0) {
                     Column(modifier = Modifier.padding(top = 12.dp)) {
@@ -425,7 +427,7 @@ fun HabitItem(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
-                            
+
                             // Completion percentage
                             Text(
                                 text = "${(animatedProgress * 100).toInt()}%",
@@ -437,7 +439,7 @@ fun HabitItem(
                                 }
                             )
                         }
-                        
+
                         // Animated progress bar with gradient colors
                         Box(
                             modifier = Modifier
@@ -473,7 +475,7 @@ fun HabitItem(
                         }
                     }
                 }
-                
+
                 // Description if available - shown when expanded or no goal
                 if (!habit.description.isNullOrEmpty() && (isExpanded || habit.goal <= 0)) {
                     Column(
@@ -496,7 +498,7 @@ fun HabitItem(
                         )
                     }
                 }
-                
+
                 // Action buttons with improved layout and animations
                 Row(
                     modifier = Modifier
@@ -521,37 +523,78 @@ fun HabitItem(
                         Icon(
                             imageVector = if (habit.isEnabled) Icons.Default.PauseCircle else Icons.Default.PlayCircle,
                             contentDescription = if (habit.isEnabled) "Pause habit" else "Resume habit",
-                            tint = if (habit.isEnabled) 
+                            tint = if (habit.isEnabled)
                                 MaterialTheme.colorScheme.onSurface
-                            else 
+                            else
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             modifier = Modifier
                                 .scale(if (habit.isEnabled) 1f else 0.9f)
                         )
                     }
-                    
-                    // Delete button
-                    IconButton(
-                        onClick = {
-                            onDeleteClick()
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                        },
-                        modifier = Modifier
-                            .size(42.dp)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                                shape = CircleShape
+
+                    // More options menu
+                    Box {
+                        var expanded by remember { mutableStateOf(false) }
+
+                        IconButton(
+                            onClick = {
+                                expanded = true
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            },
+                            modifier = Modifier
+                                .size(42.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.scale(0.9f)
                             )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete habit",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.scale(0.9f)
-                        )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            // Delete option
+                            DropdownMenuItem(
+                                text = { Text("Delete") },
+                                onClick = {
+                                    expanded = false
+                                    onDeleteClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+
+                            // Neural Interface option
+                            DropdownMenuItem(
+                                text = { Text("Neural Interface") },
+                                onClick = {
+                                    expanded = false
+                                    onNeuralInterfaceClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Psychology,
+                                        contentDescription = "Neural Interface",
+                                        tint = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
+                            )
+                        }
                     }
-                    
+
                     // Complete button with gradient and animation
                     GradientButton(
                         text = if (isCompletedToday) "Completed" else "Complete",

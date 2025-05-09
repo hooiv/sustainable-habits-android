@@ -32,10 +32,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.myapplication.features.habits.AddHabitScreen
 import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
+import com.example.myapplication.features.neural.NeuralInterfaceScreen
+import com.example.myapplication.features.neural.NeuralInterfaceViewModel
 import com.example.myapplication.features.stats.StatsScreen
 import com.example.myapplication.features.settings.SettingsScreen
 import com.example.myapplication.features.auth.SignInScreen
 import com.example.myapplication.features.demo.AnimationDemoScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.R
 import java.time.LocalDate
 import kotlin.math.pow
@@ -205,6 +208,43 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         composable(route = NavRoutes.ANIMATION_DEMO) {
             AnimationDemoScreen(navController = navController)
+        }
+
+        composable(
+            route = NavRoutes.NEURAL_INTERFACE,
+            arguments = listOf(navArgument(NavRoutes.NEURAL_INTERFACE_ARG_ID) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.NEURAL_INTERFACE_ARG_ID)
+            val viewModel: NeuralInterfaceViewModel = hiltViewModel()
+
+            habitId?.let { id ->
+                // Get the habit from the repository
+                val habitRepository = com.example.myapplication.data.repository.HabitRepository(
+                    com.example.myapplication.data.database.HabitDao(
+                        com.example.myapplication.data.database.AppDatabase.getDatabase(LocalContext.current)
+                    )
+                )
+
+                // For simplicity, we're creating a sample habit
+                // In a real app, you would get this from the repository
+                val habit = com.example.myapplication.data.model.Habit(
+                    id = id,
+                    name = "Sample Habit",
+                    description = "This is a sample habit for the neural interface demo",
+                    frequency = com.example.myapplication.data.model.HabitFrequency.DAILY,
+                    streak = 5,
+                    goal = 10,
+                    goalProgress = 7
+                )
+
+                NeuralInterfaceScreen(
+                    habit = habit,
+                    onBackClick = { navController.popBackStack() },
+                    viewModel = viewModel
+                )
+            }
         }
     }
 }

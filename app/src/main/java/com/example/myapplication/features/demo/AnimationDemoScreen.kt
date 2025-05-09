@@ -36,13 +36,13 @@ import kotlin.math.sin
 @Composable
 fun AnimationDemoScreen(navController: NavController) {
     val scrollState = rememberScrollState()
-    
+
     // Animation states
     var showParticles by remember { mutableStateOf(false) }
     var showThreeJS by remember { mutableStateOf(false) }
     var showTimeline by remember { mutableStateOf(false) }
     var showWave by remember { mutableStateOf(false) }
-    
+
     // Start animations sequentially
     LaunchedEffect(Unit) {
         delay(100)
@@ -54,24 +54,24 @@ fun AnimationDemoScreen(navController: NavController) {
         delay(300)
         showWave = true
     }
-    
+
     // Create a gradient background
     val gradientColors = listOf(
         MaterialTheme.colorScheme.surface,
         MaterialTheme.colorScheme.surfaceVariant,
         MaterialTheme.colorScheme.surface
     )
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         "Animation Demos",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
-                    ) 
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -104,7 +104,7 @@ fun AnimationDemoScreen(navController: NavController) {
                     maxSpeed = 0.5f
                 )
             }
-            
+
             // Main content
             Column(
                 modifier = Modifier
@@ -118,7 +118,7 @@ fun AnimationDemoScreen(navController: NavController) {
                     title = "Three.js Inspired 3D",
                     visible = showThreeJS
                 )
-                
+
                 if (showThreeJS) {
                     Box(
                         modifier = Modifier
@@ -143,15 +143,15 @@ fun AnimationDemoScreen(navController: NavController) {
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 // Section 2: Anime.js Inspired Timeline Animation
                 SectionTitle(
                     title = "Anime.js Timeline Effects",
                     visible = showTimeline
                 )
-                
+
                 if (showTimeline) {
                     Row(
                         modifier = Modifier
@@ -179,19 +179,19 @@ fun AnimationDemoScreen(navController: NavController) {
                             )
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // Morphing shape animation
                     var morphTarget by remember { mutableStateOf(0f) }
-                    
+
                     LaunchedEffect(Unit) {
                         while (true) {
                             delay(2000)
                             morphTarget = if (morphTarget < 0.5f) 1f else 0f
                         }
                     }
-                    
+
                     Box(
                         modifier = Modifier
                             .size(100.dp)
@@ -213,15 +213,15 @@ fun AnimationDemoScreen(navController: NavController) {
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 // Section 3: Particle Effects
                 SectionTitle(
                     title = "Particle Effects",
                     visible = showWave
                 )
-                
+
                 if (showWave) {
                     Box(
                         modifier = Modifier
@@ -236,12 +236,13 @@ fun AnimationDemoScreen(navController: NavController) {
                             particleColor = MaterialTheme.colorScheme.primary,
                             particleCount = 100,
                             waveHeight = 50f,
+                            waveWidth = 1000f,
                             speed = 0.5f
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -261,7 +262,7 @@ fun AnimationDemoScreen(navController: NavController) {
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(50.dp))
             }
         }

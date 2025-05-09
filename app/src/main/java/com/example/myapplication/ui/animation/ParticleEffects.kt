@@ -44,20 +44,20 @@ fun ParticleWave(
         ),
         label = "phase"
     )
-    
+
     Canvas(modifier = modifier) {
         val canvasWidth = size.width
         val canvasHeight = size.height
         val centerY = canvasHeight / 2
-        
+
         for (i in 0 until particleCount) {
             val x = (i.toFloat() / particleCount) * canvasWidth
             val wavePhase = phase + (x / waveWidth) * 2 * PI.toFloat()
             val y = centerY + sin(wavePhase) * waveHeight
-            
+
             // Vary particle size based on y position
             val particleSize = 2f + 2f * (1 + sin(wavePhase)) / 2
-            
+
             drawCircle(
                 color = particleColor.copy(alpha = 0.7f),
                 radius = particleSize,
@@ -92,10 +92,10 @@ fun ParticleExplosion(
             )
         }
     }
-    
+
     var isExploding by remember { mutableStateOf(true) }
     val animationProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(isExploding) {
         if (isExploding) {
             animationProgress.snapTo(0f)
@@ -106,7 +106,7 @@ fun ParticleExplosion(
                     easing = LinearEasing
                 )
             )
-            
+
             if (repeat) {
                 isExploding = false
                 delay(500) // Wait before repeating
@@ -116,21 +116,21 @@ fun ParticleExplosion(
             }
         }
     }
-    
+
     Canvas(modifier = modifier) {
         val canvasWidth = size.width
         val canvasHeight = size.height
         val centerX = canvasWidth / 2
         val centerY = canvasHeight / 2
-        
+
         particles.forEach { particle ->
             val distance = explosionRadius * animationProgress.value * particle.speed
             val x = centerX + cos(particle.angle) * distance
             val y = centerY + sin(particle.angle) * distance
-            
+
             // Fade out as particles move away
             val alpha = 1f - animationProgress.value
-            
+
             drawCircle(
                 color = particleColor.copy(alpha = alpha),
                 radius = particle.size * (1f - animationProgress.value * 0.5f),
@@ -165,7 +165,7 @@ fun ParticleText(
 ) {
     var animationPlayed by remember { mutableStateOf(false) }
     val animationProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(Unit) {
         delay(animationDelay.toLong())
         animationPlayed = true
@@ -178,39 +178,39 @@ fun ParticleText(
         )
         onAnimationEnd()
     }
-    
+
     Box(modifier = modifier) {
         // This would be where we'd render the actual text and particles
         // For a real implementation, we'd need to use a custom text layout
         // and generate particles based on the text shape
-        
+
         // For this example, we'll just show a simple particle effect
+        val particleSizePx = with(LocalDensity.current) { particleSize.toPx() }
         Canvas(modifier = Modifier.fillMaxSize()) {
             val canvasWidth = size.width
             val canvasHeight = size.height
-            
+
             // Create a grid of particles
-            val particleSizePx = with(LocalDensity.current) { particleSize.toPx() }
             val gridSize = 20
             val spacing = canvasWidth / gridSize
-            
+
             for (x in 0 until gridSize) {
                 for (y in 0 until (canvasHeight / spacing).toInt()) {
                     // Only draw some particles based on density
                     if (Random.nextFloat() > particleDensity) continue
-                    
+
                     val posX = x * spacing + spacing / 2
                     val posY = y * spacing + spacing / 2
-                    
+
                     // Calculate particle movement
                     val angle = Random.nextFloat() * 2 * PI.toFloat()
                     val distance = 100f * animationProgress.value
                     val offsetX = cos(angle) * distance
                     val offsetY = sin(angle) * distance
-                    
+
                     // Fade out as animation progresses
                     val alpha = 1f - animationProgress.value
-                    
+
                     drawCircle(
                         color = particleColor.copy(alpha = alpha),
                         radius = particleSizePx * (1f - animationProgress.value * 0.5f),
@@ -236,9 +236,9 @@ fun ParticleTrail(
 ) {
     val density = LocalDensity.current
     val particleSizePx = with(density) { particleSize.toPx() }
-    
+
     val animationProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(pathPoints) {
         animationProgress.snapTo(0f)
         animationProgress.animateTo(
@@ -249,25 +249,25 @@ fun ParticleTrail(
             )
         )
     }
-    
+
     Canvas(modifier = modifier) {
         if (pathPoints.size < 2) return@Canvas
-        
+
         // Calculate the total path length
         var totalLength = 0f
         for (i in 0 until pathPoints.size - 1) {
             totalLength += (pathPoints[i + 1] - pathPoints[i]).getDistance()
         }
-        
+
         // Draw particles along the path
         for (i in 0 until particleCount) {
             val particleProgress = (i.toFloat() / particleCount + animationProgress.value) % 1f
             var currentLength = particleProgress * totalLength
-            
+
             // Find the segment where this particle should be
             var segmentStart = 0
             var segmentLength = 0f
-            
+
             while (segmentStart < pathPoints.size - 1) {
                 val segmentDistance = (pathPoints[segmentStart + 1] - pathPoints[segmentStart]).getDistance()
                 if (currentLength <= segmentDistance) {
@@ -277,10 +277,10 @@ fun ParticleTrail(
                         pathPoints[segmentStart].x + (pathPoints[segmentStart + 1].x - pathPoints[segmentStart].x) * segmentProgress,
                         pathPoints[segmentStart].y + (pathPoints[segmentStart + 1].y - pathPoints[segmentStart].y) * segmentProgress
                     )
-                    
+
                     // Fade based on position in the trail
                     val alpha = 0.2f + 0.8f * (1f - i.toFloat() / particleCount)
-                    
+
                     drawCircle(
                         color = particleColor.copy(alpha = alpha),
                         radius = particleSizePx * (0.5f + 0.5f * (1f - i.toFloat() / particleCount)),
@@ -288,7 +288,7 @@ fun ParticleTrail(
                     )
                     break
                 }
-                
+
                 currentLength -= segmentDistance
                 segmentStart++
             }

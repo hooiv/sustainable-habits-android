@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,17 +20,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
+import com.example.myapplication.ui.animation.AnimeEasing
+import com.example.myapplication.ui.animation.ParticleWave
+import com.example.myapplication.ui.animation.animeEntrance
 import com.example.myapplication.ui.components.JupiterGradientButton
 import kotlinx.coroutines.delay
 
@@ -40,22 +47,22 @@ fun HabitListScreen(
     viewModel: HabitViewModel = hiltViewModel()
 ) {
     val habits by viewModel.habits.collectAsState(initial = emptyList())
-    
+
     // List state for scroll animations
     val listState = rememberLazyListState()
     // Animation states
     var isLoading by remember { mutableStateOf(true) }
-    
+
     // Simulate loading state briefly
     LaunchedEffect(true) {
         delay(1500)
         isLoading = false
     }
-    
+
     // Category filtering
     var selectedCategory by remember { mutableStateOf("All") }
     val categories = listOf("All") + habits.mapNotNull { it.category }.distinct().sorted()
-    
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -92,16 +99,47 @@ fun HabitListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
+                    )
+                )
         ) {
+            // Add subtle particle wave effect in the background
+            if (!isLoading) {
+                ParticleWave(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    particleCount = 30,
+                    waveHeight = 30f,
+                    waveWidth = 1000f,
+                    speed = 0.2f
+                )
+            }
+
             Column(modifier = Modifier.fillMaxSize()) {
-                // Category filter card
+                // Category filter card with animation
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .graphicsLayer {
+                            // Add subtle floating animation
+                            translationY = if (!isLoading) 0f else -50f
+                            alpha = if (!isLoading) 1f else 0f
+                        }
+                        .animateContentSize(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessLow
+                            )
+                        ),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
                     ),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -115,9 +153,9 @@ fun HabitListScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         // Horizontal category chips
                         Row(
                             modifier = Modifier
@@ -125,73 +163,149 @@ fun HabitListScreen(
                                 .horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            categories.forEach { category ->
+                            categories.forEachIndexed { index, category ->
                                 val isSelected = category == selectedCategory
-                                FilterChip(
-                                    selected = isSelected,
-                                    onClick = { selectedCategory = category },
-                                    label = { Text(category) },
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+
+                                // Add staggered entrance animation for each chip
+                                Box(
+                                    modifier = Modifier.animeEntrance(
+                                        visible = !isLoading,
+                                        index = index,
+                                        baseDelay = 50,
+                                        duration = 600,
+                                        initialOffsetY = 20,
+                                        easing = AnimeEasing.EaseOutBack
                                     )
-                                )
+                                ) {
+                                    FilterChip(
+                                        selected = isSelected,
+                                        onClick = { selectedCategory = category },
+                                        label = { Text(category) },
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        modifier = Modifier.scale(if (isSelected) 1.05f else 1f)
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
                 // Filter habits
-                val filteredHabits = if (selectedCategory == "All") 
-                    habits 
-                else 
+                val filteredHabits = if (selectedCategory == "All")
+                    habits
+                else
                     habits.filter { it.category == selectedCategory }
 
                 if (isLoading) {
-                    // Simple loading state
+                    // Loading state with pulsing animation
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
+                        // Create pulsing effect for the loader
+                        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+                        val scale by infiniteTransition.animateFloat(
+                            initialValue = 0.8f,
+                            targetValue = 1.2f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(1000, easing = AnimeEasing.EaseInOutQuad),
+                                repeatMode = RepeatMode.Reverse
+                            ),
+                            label = "pulseScale"
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .scale(scale)
+                                .alpha(0.1f)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CircleShape
+                                )
+                        )
+
                         CircularProgressIndicator()
                     }
                 } else if (filteredHabits.isEmpty()) {
-                    // Empty state
+                    // Empty state with animations
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
+                        // Add floating particles in the background
+                        ParticleWave(
+                            modifier = Modifier.fillMaxSize(),
+                            particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            particleCount = 50,
+                            waveHeight = 80f,
+                            waveWidth = 1000f,
+                            speed = 0.3f
+                        )
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier.padding(32.dp)
                         ) {
+                            // Animated icon with bounce effect
+                            val infiniteTransition = rememberInfiniteTransition(label = "iconBounce")
+                            val iconScale by infiniteTransition.animateFloat(
+                                initialValue = 1f,
+                                targetValue = 1.2f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(1500, easing = AnimeEasing.EaseInOutBack),
+                                    repeatMode = RepeatMode.Reverse
+                                ),
+                                label = "iconScale"
+                            )
+
                             Icon(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = "Add habit",
                                 modifier = Modifier
                                     .size(120.dp)
+                                    .scale(iconScale)
                                     .padding(bottom = 16.dp)
                                     .alpha(0.6f),
                                 tint = MaterialTheme.colorScheme.primary
                             )
+
                             Text(
                                 "No habits yet",
                                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold),
                                 color = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .graphicsLayer {
+                                        alpha = iconScale * 0.8f
+                                    }
                             )
+
                             Text(
                                 "Tap the + button to start tracking your first habit",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(bottom = 24.dp)
+                                modifier = Modifier
+                                    .padding(bottom = 24.dp)
+                                    .graphicsLayer {
+                                        alpha = iconScale * 0.7f
+                                    }
                             )
+
                             JupiterGradientButton(
                                 text = "Create First Habit",
                                 onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
-                                modifier = Modifier.padding(top = 16.dp)
+                                modifier = Modifier
+                                    .padding(top = 16.dp)
+                                    .graphicsLayer {
+                                        scaleX = iconScale * 0.9f
+                                        scaleY = iconScale * 0.9f
+                                    }
                             )
                         }
                     }
@@ -212,7 +326,8 @@ fun HabitListScreen(
                                 onItemClick = { navController.navigate(NavRoutes.editHabit(habit.id)) },
                                 onCompletedClick = { viewModel.markHabitCompleted(habit.id) },
                                 onDeleteClick = { viewModel.deleteHabit(habit) },
-                                onToggleEnabled = { viewModel.toggleHabitEnabled(habit) }
+                                onToggleEnabled = { viewModel.toggleHabitEnabled(habit) },
+                                onNeuralInterfaceClick = { navController.navigate(NavRoutes.neuralInterface(habit.id)) }
                             )
                         }
                     }
