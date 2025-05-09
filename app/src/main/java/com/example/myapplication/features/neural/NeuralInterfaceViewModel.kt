@@ -930,6 +930,145 @@ class NeuralInterfaceViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Start biometric monitoring
+     */
+    fun startBiometricMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
+    }
+
+    /**
+     * Stop biometric monitoring
+     */
+    fun stopBiometricMonitoring() {
+        biometricIntegration.stopHeartRateMonitoring()
+    }
+
+    /**
+     * Start spatial tracking
+     */
+    fun startSpatialTracking() {
+        spatialComputing.startSpatialTracking()
+    }
+
+    /**
+     * Stop spatial tracking
+     */
+    fun stopSpatialTracking() {
+        spatialComputing.stopSpatialTracking()
+    }
+
+    /**
+     * Place habit in AR space
+     */
+    fun placeHabitInSpace() {
+        viewModelScope.launch {
+            try {
+                val habitId = _currentHabitId.value ?: return@launch
+                val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
+
+                spatialComputing.placeHabitInSpace(habit)
+
+                // Also place streak visualization
+                if (habit.streak > 0) {
+                    spatialComputing.placeStreakVisualization(habit, habit.streak)
+                }
+
+                _errorMessage.value = "Placed habit in AR space"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to place habit in space: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Start voice recognition
+     */
+    fun startVoiceRecognition() {
+        voiceAndNlpProcessor.startListening()
+    }
+
+    /**
+     * Stop voice recognition
+     */
+    fun stopVoiceRecognition() {
+        voiceAndNlpProcessor.stopListening()
+    }
+
+    /**
+     * Speak text using text-to-speech
+     */
+    fun speakText(text: String) {
+        voiceAndNlpProcessor.speak(text)
+    }
+
+    /**
+     * Process voice command
+     */
+    fun processVoiceCommand(text: String) {
+        voiceAndNlpProcessor.processText(text)
+    }
+
+    /**
+     * Initialize quantum visualization
+     */
+    fun initializeQuantumVisualization() {
+        viewModelScope.launch {
+            try {
+                val habits = habitRepository.getAllHabits().first()
+
+                // Get completions for each habit
+                val completionsMap = mutableMapOf<String, List<HabitCompletion>>()
+                for (habit in habits) {
+                    val completions = habitRepository.getHabitCompletions(habit.id).first()
+                    completionsMap[habit.id] = completions
+                }
+
+                // Initialize quantum state
+                quantumVisualizer.initializeQuantumState(habits, completionsMap)
+
+                // Get visualization for current habit
+                updateQuantumVisualization()
+
+                _errorMessage.value = "Quantum visualization initialized"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to initialize quantum visualization: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Update quantum visualization
+     */
+    fun updateQuantumVisualization() {
+        viewModelScope.launch {
+            try {
+                // Update quantum simulation
+                quantumVisualizer.updateSimulation()
+
+                // Get visualization for current habit
+                val habitId = _currentHabitId.value
+                if (habitId != null) {
+                    val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
+                    _quantumVisualization.value = visualization
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to update quantum visualization: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Clean up resources
+     */
+    override fun onCleared() {
+        super.onCleared()
+        contextFeatureCollector.stopCollecting()
+        biometricIntegration.stopHeartRateMonitoring()
+        spatialComputing.stopSpatialTracking()
+        voiceAndNlpProcessor.cleanup()
+    }
 }
 
 /**

@@ -187,9 +187,9 @@ fun NeuralInterfaceScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
         ) {
-            // Tabs for Neural Network, Predictions, Training, Patterns, Advanced, and Ultra
+            // Tabs for Neural Network, Predictions, Training, Patterns, Advanced, Ultra, and Bionic
             var selectedTab by remember { mutableStateOf(0) }
-            val tabs = listOf("Neural Network", "Predictions", "Training", "Patterns", "Advanced", "Ultra")
+            val tabs = listOf("Neural Network", "Predictions", "Training", "Patterns", "Advanced", "Ultra", "Bionic")
 
             TabRow(
                 selectedTabIndex = selectedTab,
