@@ -39,6 +39,8 @@ import java.util.Date
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 // Helper function to parse Firebase data map to a Habit domain object
 // Adapted from HabitSyncWorker.kt
@@ -140,7 +142,8 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -204,7 +207,7 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
                 Text(text = "Notifications", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(
                     checked = notificationsEnabled,
-                    onCheckedChange = { enabled ->
+                    onCheckedChange = { enabled -> 
                         notificationsEnabled = enabled
                         if (enabled) {
                             NotificationUtil.scheduleDailyNotification(context, notificationHour, notificationMinute, notificationText, notificationSoundEnabled, notificationCustomSoundUri)
