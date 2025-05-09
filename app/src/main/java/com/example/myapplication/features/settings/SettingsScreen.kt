@@ -216,7 +216,7 @@ fun SettingsScreen(
                 Text(text = "Notifications", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(
                     checked = notificationsEnabled,
-                    onCheckedChange = { enabled -> 
+                    onCheckedChange = { enabled ->
                         notificationsEnabled = enabled
                         if (enabled) {
                             NotificationUtil.scheduleDailyNotification(context, notificationHour, notificationMinute, notificationText, notificationSoundEnabled, notificationCustomSoundUri)
@@ -390,7 +390,7 @@ fun SettingsScreen(
 
             // Sign Out Button
             if (authState.isSignedIn) {
-                Button(onClick = { 
+                Button(onClick = {
                     authViewModel.signOut()
                     Toast.makeText(context, "Signed out", Toast.LENGTH_SHORT).show()
                 }) {
@@ -400,6 +400,16 @@ fun SettingsScreen(
                 Button(onClick = { navController.navigate(NavRoutes.SIGN_IN) }) {
                     Text("Sign In")
                 }
+            }
+
+            HorizontalDivider()
+
+            // Animation Demo Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.ANIMATION_DEMO) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Animation Demo")
             }
 
             HorizontalDivider()

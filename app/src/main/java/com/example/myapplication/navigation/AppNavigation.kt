@@ -35,6 +35,7 @@ import com.example.myapplication.features.habits.HabitListScreen
 import com.example.myapplication.features.stats.StatsScreen
 import com.example.myapplication.features.settings.SettingsScreen
 import com.example.myapplication.features.auth.SignInScreen
+import com.example.myapplication.features.demo.AnimationDemoScreen
 import com.example.myapplication.R
 import java.time.LocalDate
 import kotlin.math.pow
@@ -112,7 +113,7 @@ fun AppNavigation() {
 @Composable
 fun AppNavigationGraph(navController: NavHostController) {
     NavHost(
-        navController = navController, 
+        navController = navController,
         startDestination = NavRoutes.HABIT_LIST,
         enterTransition = {
             slideIntoContainer(
@@ -163,16 +164,16 @@ fun AppNavigationGraph(navController: NavHostController) {
             Log.d("AppNavigation", "Setting up HabitListScreen")
             HabitListScreen(navController = navController)
         }
-        
+
         composable(route = NavRoutes.ADD_HABIT) {
-            Log.d("AppNavigation", "Setting up AddHabitScreen") 
+            Log.d("AppNavigation", "Setting up AddHabitScreen")
             AddHabitScreen(navController = navController)
         }
-        
+
         composable(
             route = NavRoutes.EDIT_HABIT,
-            arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) { 
-                type = NavType.StringType 
+            arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) {
+                type = NavType.StringType
             })
         ) { backStackEntry ->
             val habitId = backStackEntry.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
@@ -200,6 +201,10 @@ fun AppNavigationGraph(navController: NavHostController) {
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(route = NavRoutes.ANIMATION_DEMO) {
+            AnimationDemoScreen(navController = navController)
         }
     }
 }
