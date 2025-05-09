@@ -25,6 +25,8 @@ import com.example.myapplication.util.FirebaseUtil
 import com.example.myapplication.util.ThemePreferenceManager
 import com.example.myapplication.util.NotificationUtil
 import com.google.firebase.auth.FirebaseAuth
+import com.example.myapplication.data.model.Habit
+import com.example.myapplication.data.model.HabitFrequency
 import kotlinx.coroutines.launch
 import com.example.myapplication.R
 import androidx.compose.foundation.background
@@ -213,16 +215,30 @@ fun SettingsScreen(context: Context) {
             HorizontalDivider()
             // Backup/Restore
             Button(onClick = {
-                val habitData = mapOf(
+                val exampleHabitMap = mapOf(
                     "name" to "Example Habit",
                     "description" to "This is a sample habit",
                     "category" to "Health",
                     "frequency" to "DAILY",
                     "goal" to 1
                 )
-                FirebaseUtil.saveHabitData(userId, habitData,
+                // Construct a Habit object from the map
+                val habitToBackup = Habit(
+                    id = "settings_example_habit_" + System.currentTimeMillis(), // Generate a unique ID for this test
+                    name = exampleHabitMap["name"] as String,
+                    description = exampleHabitMap["description"] as? String,
+                    category = exampleHabitMap["category"] as? String,
+                    frequency = HabitFrequency.valueOf(exampleHabitMap["frequency"] as String),
+                    goal = (exampleHabitMap["goal"] as Number).toInt()
+                    // Other Habit fields like createdDate, lastUpdatedTimestamp will use defaults from the constructor
+                )
+
+                // Call backupHabitData with a list containing the single Habit
+                FirebaseUtil.backupHabitData(userId, listOf(habitToBackup),
                     onSuccess = { Toast.makeText(context, "Backup successful", Toast.LENGTH_SHORT).show() },
-                    onFailure = { Toast.makeText(context, "Backup failed: ${it.message}", Toast.LENGTH_SHORT).show() }
+                    onFailure = { exception -> // Explicitly named lambda parameter
+                        Toast.makeText(context, "Backup failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
                 )
             }) {
                 Text("Backup Data")
@@ -232,7 +248,9 @@ fun SettingsScreen(context: Context) {
                     onSuccess = { habits ->
                         Toast.makeText(context, "Fetched ${habits.size} habits", Toast.LENGTH_SHORT).show()
                     },
-                    onFailure = { Toast.makeText(context, "Fetch failed: ${it.message}", Toast.LENGTH_SHORT).show() }
+                    onFailure = { exception -> // Explicitly named lambda parameter
+                        Toast.makeText(context, "Fetch failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
                 )
             }) {
                 Text("Restore Data")

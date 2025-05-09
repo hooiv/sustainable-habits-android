@@ -2,14 +2,19 @@ package com.example.myapplication.sync
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.data.repository.HabitRepository
 import com.example.myapplication.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import java.util.Date
 
@@ -79,9 +84,11 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
     }
 }
 
-class HabitSyncWorker(
-    context: Context,
-    params: WorkerParameters,
+@HiltWorker
+class HabitSyncWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
+    private val habitRepository: HabitRepository // Injected HabitRepository
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -124,8 +131,10 @@ class HabitSyncWorker(
     }
 
     private suspend fun fetchLocalHabits(): List<Habit> {
-        Log.w("HabitSyncWorker", "fetchLocalHabits: Placeholder - returning empty list.")
-        return emptyList()
+        Log.d("HabitSyncWorker", "fetchLocalHabits: Fetching from repository.")
+        // Use HabitRepository to get all habits
+        // The flow is collected once to get the current list of habits.
+        return habitRepository.getAllHabits().firstOrNull() ?: emptyList()
     }
 
     private fun mergeHabits(localHabits: List<Habit>, remoteHabits: List<Habit>): List<Habit> {
@@ -164,6 +173,8 @@ class HabitSyncWorker(
             return
         }
         Log.d("HabitSyncWorker", "saveToLocalDatabase: Saving ${habits.size} habits.")
-        Log.w("HabitSyncWorker", "saveToLocalDatabase: Placeholder - not saving to local DB yet.")
+        // Use HabitRepository to insert or replace habits
+        habitRepository.insertOrReplaceHabits(habits)
+        Log.d("HabitSyncWorker", "Successfully saved ${habits.size} habits to local database.")
     }
 }

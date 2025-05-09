@@ -7,8 +7,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.myapplication.data.model.Habit
 
-// Increased version number from 2 to 3
-@Database(entities = [Habit::class], version = 3, exportSchema = false)
+@Database(entities = [Habit::class], version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -27,11 +26,18 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
         
-        // Migration from version 2 to 3
+        // Migration from version 2 to 3: Adding lastUpdatedTimestamp
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // This migration just updates the version number to resolve schema mismatch
-                // without making schema changes.
+                // Add the new lastUpdatedTimestamp column to the habits table
+                database.execSQL("ALTER TABLE habits ADD COLUMN lastUpdatedTimestamp INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        // Migration from version 3 to 4: To resolve identity hash mismatch
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // This migration is added to address a potential schema mismatch.
             }
         }
 
@@ -42,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_database"
                 )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // Add both migrations
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4) // Add all migrations
                 .fallbackToDestructiveMigration() // As a last resort, recreate the database
                 .build()
                 INSTANCE = instance
