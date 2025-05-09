@@ -1,4 +1,6 @@
 {
     "gitdoc.enabled": true,
-    "java.dependency.autoRefresh": true
+    "java.dependency.autoRefresh": true,
+    "kotlin.languageServer.enabled": true
+
 }

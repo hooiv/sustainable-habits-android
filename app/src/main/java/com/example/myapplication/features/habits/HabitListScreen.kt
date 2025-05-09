@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myapplication.R
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
 import com.example.myapplication.ui.components.JupiterGradientButton
