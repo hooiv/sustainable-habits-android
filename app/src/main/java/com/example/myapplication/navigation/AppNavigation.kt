@@ -34,6 +34,7 @@ import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
 import com.example.myapplication.features.stats.StatsScreen
 import com.example.myapplication.features.settings.SettingsScreen
+import com.example.myapplication.features.auth.SignInScreen
 import com.example.myapplication.R
 import java.time.LocalDate
 import kotlin.math.pow
@@ -185,7 +186,20 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         composable(route = NavRoutes.SETTINGS) {
             val context = LocalContext.current
-            SettingsScreen(context = context)
+            SettingsScreen(navController = navController, context = context)
+        }
+
+        composable(route = NavRoutes.SIGN_IN) {
+            SignInScreen(
+                onSignInSuccess = {
+                    navController.navigate(NavRoutes.SETTINGS) {
+                        popUpTo(NavRoutes.SIGN_IN) { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ object NavRoutes {
     const val STATS = "stats"
     const val CALENDAR = "calendar"
     const val SETTINGS = "settings"
+    const val SIGN_IN = "sign_in" // Added sign_in route
     
     // Helper function for parameterized routes
     fun editHabit(habitId: String) = "$EDIT_HABIT_ROUTE/$habitId"
