@@ -3,6 +3,7 @@
 package com.example.myapplication.features.settings
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -31,10 +32,81 @@ import kotlinx.coroutines.launch
 import com.example.myapplication.R
 import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.features.habits.HabitViewModel
+import com.google.firebase.Timestamp
+import java.util.Date
+
+// Helper function to parse Firebase data map to a Habit domain object
+// Adapted from HabitSyncWorker.kt
+private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
+    return try {
+        val name = data["name"] as? String ?: run {
+            Log.e("SettingsScreenParser", "Habit name is null or not a String for ID $id. Skipping.")
+            return null
+        }
+        val description = data["description"] as? String
+        val frequencyString = data["frequency"] as? String ?: HabitFrequency.DAILY.name
+        val frequency = try { HabitFrequency.valueOf(frequencyString) } catch (e: IllegalArgumentException) {
+            Log.w("SettingsScreenParser", "Invalid frequency string '$frequencyString' for ID $id. Defaulting to DAILY.")
+            HabitFrequency.DAILY
+        }
+
+        val goal = (data["goal"] as? Long)?.toInt() ?: 1
+        val goalProgress = (data["goalProgress"] as? Long)?.toInt() ?: 0
+        val streak = (data["streak"] as? Long)?.toInt() ?: 0
+
+        val createdTimestamp = data["createdDate"] as? Timestamp
+        val createdDate = createdTimestamp?.toDate() ?: run {
+            Log.w("SettingsScreenParser", "createdDate is null or not a Timestamp for ID $id. Using current date as fallback.")
+            Date()
+        }
+
+        val lastUpdatedTimestampFirebase = data["lastUpdatedTimestamp"] as? Timestamp
+        val lastUpdatedTimestamp = lastUpdatedTimestampFirebase?.toDate() ?: createdDate
+
+        val lastCompletedTimestamp = data["lastCompletedDate"] as? Timestamp
+        val lastCompletedDate = lastCompletedTimestamp?.toDate()
+
+        val completionHistoryFirebase = data["completionHistory"] as? List<*>
+        val completionHistory = completionHistoryFirebase?.mapNotNull {
+            (it as? Timestamp)?.toDate()
+        }?.toMutableList() ?: mutableListOf()
+
+        val isEnabled = data["isEnabled"] as? Boolean ?: true
+        val reminderTime = data["reminderTime"] as? String
+
+        val unlockedBadgesFirebase = data["unlockedBadges"] as? List<*>
+        val unlockedBadges = unlockedBadgesFirebase?.mapNotNull { (it as? Long)?.toInt() } ?: emptyList()
+
+        val category = data["category"] as? String
+
+        Habit(
+            id = id,
+            name = name,
+            description = description,
+            frequency = frequency,
+            goal = goal,
+            goalProgress = goalProgress,
+            streak = streak,
+            createdDate = createdDate,
+            lastUpdatedTimestamp = lastUpdatedTimestamp,
+            lastCompletedDate = lastCompletedDate,
+            completionHistory = completionHistory,
+            isEnabled = isEnabled,
+            reminderTime = reminderTime,
+            unlockedBadges = unlockedBadges,
+            category = category
+        )
+    } catch (e: Exception) {
+        Log.e("SettingsScreenParser", "Failed to parse habit with id $id: ${e.message}", e)
+        null
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(context: Context) {
+fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -244,14 +316,33 @@ fun SettingsScreen(context: Context) {
                 Text("Backup Data")
             }
             Button(onClick = {
-                FirebaseUtil.fetchHabitData(userId,
-                    onSuccess = { habits ->
-                        Toast.makeText(context, "Fetched ${habits.size} habits", Toast.LENGTH_SHORT).show()
-                    },
-                    onFailure = { exception -> // Explicitly named lambda parameter
-                        Toast.makeText(context, "Fetch failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                coroutineScope.launch {
+                    if (userId == "default_user") {
+                        Toast.makeText(context, "User not logged in.", Toast.LENGTH_SHORT).show()
+                        return@launch
                     }
-                )
+                    try {
+                        val firebaseDataMap = FirebaseUtil.fetchHabitDataSuspend(userId)
+                        if (firebaseDataMap.isEmpty()) {
+                            Toast.makeText(context, "No data found in Firebase to restore.", Toast.LENGTH_SHORT).show()
+                            return@launch
+                        }
+
+                        val habitsToRestore = firebaseDataMap.mapNotNull { (id, dataMap) ->
+                            parseHabitMapToDomain(id, dataMap)
+                        }
+
+                        if (habitsToRestore.isNotEmpty()) {
+                            habitViewModel.restoreHabits(habitsToRestore)
+                            Toast.makeText(context, "Restored ${habitsToRestore.size} habits successfully.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "No valid habits found to restore after parsing.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("SettingsScreenRestore", "Error restoring data: ${e.message}", e)
+                        Toast.makeText(context, "Restore failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }) {
                 Text("Restore Data")
             }
@@ -266,10 +357,6 @@ fun SettingsScreen(context: Context) {
         }
     }
 }
-
-// --- NotificationUtil update required for custom text and sound ---
-// Add these parameters to NotificationUtil.scheduleDailyNotification and update NotificationWorker accordingly.
-// --- End NotificationUtil update note ---
 
 // Compose TimePickerDialog implementation
 @Composable
