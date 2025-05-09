@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            // The ThemePreferenceManager will be observed directly within MyApplicationTheme
             MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
