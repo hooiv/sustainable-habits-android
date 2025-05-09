@@ -41,6 +41,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.navigation.NavController
+import com.example.myapplication.features.auth.AuthViewModel
+import com.example.myapplication.navigation.NavRoutes
 
 // Helper function to parse Firebase data map to a Habit domain object
 // Adapted from HabitSyncWorker.kt
@@ -111,7 +114,12 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    navController: NavController,
+    context: Context,
+    habitViewModel: HabitViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -149,7 +157,8 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
         ) {
             val isDarkModeEnabled by ThemePreferenceManager.isDarkModeEnabled(context).collectAsState(initial = false)
             val coroutineScope = rememberCoroutineScope()
-            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "default_user"
+            val authState by authViewModel.authState.collectAsState()
+            val userId = authState.userId
             var notificationsEnabled by remember { mutableStateOf(true) }
             var selectedLanguage by remember { mutableStateOf("English") }
             val languages = listOf("English", "Hindi", "Spanish", "French")
@@ -315,6 +324,10 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
             HorizontalDivider()
             // Backup/Restore
             Button(onClick = {
+                if (userId == null) {
+                    navController.navigate(NavRoutes.SIGN_IN)
+                    return@Button
+                }
                 val exampleHabitMap = mapOf(
                     "name" to "Example Habit",
                     "description" to "This is a sample habit",
@@ -344,11 +357,11 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
                 Text("Backup Data")
             }
             Button(onClick = {
+                if (userId == null) {
+                    navController.navigate(NavRoutes.SIGN_IN)
+                    return@Button
+                }
                 coroutineScope.launch {
-                    if (userId == "default_user") {
-                        Toast.makeText(context, "User not logged in.", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
                     try {
                         val firebaseDataMap = FirebaseUtil.fetchHabitDataSuspend(userId)
                         if (firebaseDataMap.isEmpty()) {
@@ -374,6 +387,21 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
             }) {
                 Text("Restore Data")
             }
+
+            // Sign Out Button
+            if (authState.isSignedIn) {
+                Button(onClick = { 
+                    authViewModel.signOut()
+                    Toast.makeText(context, "Signed out", Toast.LENGTH_SHORT).show()
+                }) {
+                    Text("Sign Out")
+                }
+            } else {
+                Button(onClick = { navController.navigate(NavRoutes.SIGN_IN) }) {
+                    Text("Sign In")
+                }
+            }
+
             HorizontalDivider()
             // About Section
             Text(
