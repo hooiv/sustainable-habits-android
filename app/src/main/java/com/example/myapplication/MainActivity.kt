@@ -63,7 +63,12 @@ sealed class StartDestination {
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Attempt to programmatically set the theme before super.onCreate()
+        // This ensures the theme is applied before any window decisions are made.
+        setTheme(R.style.Theme_MyApplication) // Using the theme defined in themes.xml
+
         super.onCreate(savedInstanceState)
+
         // Ensure no default ActionBar is displayed when using Compose
         WindowCompat.setDecorFitsSystemWindows(window, false) // Optional: for edge-to-edge
 
