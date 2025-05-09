@@ -653,19 +653,15 @@ fun StatsScreen(navController: NavController) {
                                         val restoredHabits = mutableListOf<Habit>()
                                         Log.d("StatsScreenRestore", "Fetched ${habitDataMap.size} items from Firebase for user $userId.")
                                         for ((habitId, habitDetails) in habitDataMap.entries) {
-                                            if (habitDetails is Map<*, *>) {
-                                                @Suppress("UNCHECKED_CAST")
-                                                val detailsMap = habitDetails as? Map<String, Any>
-                                                if (detailsMap != null) {
-                                                    Log.d("StatsScreenRestore", "Parsing habit with ID: $habitId")
-                                                    parseHabitMapToDomain(habitId, detailsMap)?.let { habit ->
-                                                        restoredHabits.add(habit)
-                                                    }
-                                                } else {
-                                                    Log.w("StatsScreenRestore", "Skipping habit ID $habitId: details not a Map<String, Any>: $habitDetails")
+                                            @Suppress("UNCHECKED_CAST")
+                                            val detailsMap = habitDetails as? Map<String, Any>
+                                            if (detailsMap != null) {
+                                                Log.d("StatsScreenRestore", "Parsing habit with ID: $habitId")
+                                                parseHabitMapToDomain(habitId, detailsMap)?.let { habit ->
+                                                    restoredHabits.add(habit)
                                                 }
                                             } else {
-                                                Log.w("StatsScreenRestore", "Skipping habit ID $habitId: details not a Map: $habitDetails")
+                                                Log.w("StatsScreenRestore", "Skipping habit ID $habitId: details not a Map<String, Any>: $habitDetails")
                                             }
                                         }
 
