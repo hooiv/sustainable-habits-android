@@ -5,6 +5,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 // import androidx.compose.ui.draw.blur - replaced with custom implementation
+import com.example.myapplication.ui.animation.glowEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -32,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.*
 import kotlin.random.Random
+import com.example.myapplication.ui.animation.CustomEasing
 
 /**
  * A 3D scene container inspired by Three.js
@@ -118,7 +123,10 @@ fun ThreeJSScene(
 
     Box(
         modifier = containerModifier
-            .scale(tapScale * scale)
+            .graphicsLayer {
+                scaleX = tapScale * scale
+                scaleY = tapScale * scale
+            }
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = { isInteracting = true },
@@ -232,7 +240,7 @@ fun ThreeJSCube(
         initialValue = 1f,
         targetValue = 1.02f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = AnimeEasing.EaseInOutQuad),
+            animation = tween(2000, easing = CustomEasing.EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
         label = "breatheScale"
@@ -243,7 +251,7 @@ fun ThreeJSCube(
         initialValue = 0.2f,
         targetValue = 0.4f,
         animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = AnimeEasing.EaseInOutSine),
+            animation = tween(3000, easing = CustomEasing.EaseInOutSine),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glowAlpha"
@@ -264,22 +272,22 @@ fun ThreeJSCube(
     Box(
         modifier = modifier
             .size(size)
-            .scale(scale * breatheScale)
             .graphicsLayer {
-                this.rotationX = rotationX
-                this.rotationY = rotationY
-                this.rotationZ = rotationZ
-                this.cameraDistance = 12f * density
+                scaleX = scale * breatheScale
+                scaleY = scale * breatheScale
+                rotationX = rotationX
+                rotationY = rotationY
+                rotationZ = rotationZ
+                cameraDistance = 12f * density
             }
             .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        isPressed = true
-                        tryAwaitRelease()
+                forEachGesture {
+                    awaitFirstDown().also { isPressed = true }
+                    waitForUpOrCancellation()?.also {
                         isPressed = false
                         onClick()
-                    }
-                )
+                    } ?: run { isPressed = false }
+                }
             }
     ) {
         // Glow effect behind the cube

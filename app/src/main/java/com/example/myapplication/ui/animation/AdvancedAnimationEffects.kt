@@ -206,7 +206,7 @@ fun LiquidButton(
                             // Animate ripple
                             val startTime = System.currentTimeMillis()
                             val duration = 500
-                            val maxRadius = size.maxDimension * 1.5f
+                            val maxRadius = max(size.width, size.height) * 1.5f
 
                             while (System.currentTimeMillis() - startTime < duration) {
                                 val progress = (System.currentTimeMillis() - startTime) / duration.toFloat()
