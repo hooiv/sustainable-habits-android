@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.Share
+import androidx.lifecycle.LocalLifecycleOwner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -930,6 +931,82 @@ fun NeuralInterfaceScreen(
                                 adaptationProgress = adaptationProgress,
                                 onStartMetaLearning = { viewModel.startMetaLearning() },
                                 onAdaptToHabit = { viewModel.adaptToHabit() }
+                            )
+                        }
+                    }
+                }
+                6 -> {
+                    // Bionic tab - Biometric, Spatial, Voice, Quantum
+                    val biometricData = com.example.myapplication.data.biometric.BiometricData(
+                        heartRate = viewModel.biometricData.heartRate,
+                        heartRateConfidence = viewModel.biometricData.heartRateConfidence,
+                        stepCount = viewModel.biometricData.stepCount,
+                        caloriesBurned = viewModel.biometricData.caloriesBurned,
+                        stressLevel = viewModel.biometricData.stressLevel,
+                        sleepQuality = viewModel.biometricData.sleepQuality
+                    )
+                    val isMonitoring by viewModel.isMonitoring.collectAsState()
+                    val spatialObjects by viewModel.spatialObjects.collectAsState()
+                    val isSpatialTrackingActive by viewModel.isSpatialTrackingActive.collectAsState()
+                    val recognizedText by viewModel.recognizedText.collectAsState()
+                    val isListening by viewModel.isListening.collectAsState()
+                    val isSpeaking by viewModel.isSpeaking.collectAsState()
+                    val nlpIntent by viewModel.nlpIntent.collectAsState()
+                    val nlpConfidence by viewModel.nlpConfidence.collectAsState()
+                    val quantumVisualization by viewModel.quantumVisualization.collectAsState()
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // Biometric integration
+                            com.example.myapplication.features.advanced.BiometricMonitoringCard(
+                                biometricData = biometricData,
+                                isMonitoring = isMonitoring,
+                                onStartMonitoring = {
+                                    // In a real app, this would use the actual lifecycle owner
+                                    // For this demo, we'll just show a message
+                                    viewModel.startBiometricMonitoring(LocalLifecycleOwner.current)
+                                },
+                                onStopMonitoring = { viewModel.stopBiometricMonitoring() }
+                            )
+
+                            // Spatial computing
+                            com.example.myapplication.features.advanced.SpatialComputingCard(
+                                spatialObjects = spatialObjects,
+                                isSpatialTrackingActive = isSpatialTrackingActive,
+                                onStartTracking = { viewModel.startSpatialTracking() },
+                                onStopTracking = { viewModel.stopSpatialTracking() },
+                                onPlaceObject = { viewModel.placeHabitInSpace() }
+                            )
+
+                            // Voice and NLP
+                            com.example.myapplication.features.advanced.VoiceAndNlpCard(
+                                recognizedText = recognizedText,
+                                isListening = isListening,
+                                isSpeaking = isSpeaking,
+                                nlpIntent = nlpIntent,
+                                confidence = nlpConfidence,
+                                onStartListening = { viewModel.startVoiceRecognition() },
+                                onStopListening = { viewModel.stopVoiceRecognition() },
+                                onSpeak = { text -> viewModel.speakText(text) }
+                            )
+
+                            // Quantum visualization
+                            com.example.myapplication.features.advanced.QuantumVisualizationCard(
+                                quantumVisualization = quantumVisualization,
+                                onUpdateSimulation = {
+                                    if (quantumVisualization == null) {
+                                        viewModel.initializeQuantumVisualization()
+                                    } else {
+                                        viewModel.updateQuantumVisualization()
+                                    }
+                                }
                             )
                         }
                     }
