@@ -296,11 +296,10 @@ class BiometricManager @Inject constructor(
      * Simulate sleep quality
      */
     private fun simulateSleepQuality() {
-        // Simulate sleep quality (0-1 scale)
-        val sleepQuality = (Math.random() * 0.5 + 0.5).toFloat()
-        _sleepQuality.value = sleepQuality
-        
-        addBiometricDataPoint(BiometricType.SLEEP_QUALITY, sleepQuality)
+        val placeholderSleepQuality = 0.0f // Using 0.0f as a placeholder
+        _sleepQuality.value = placeholderSleepQuality
+        addBiometricDataPoint(BiometricType.SLEEP_QUALITY, placeholderSleepQuality)
+        Log.i(TAG, "Sleep quality is a placeholder (set to 0.0). Real implementation needed.")
     }
     
     /**

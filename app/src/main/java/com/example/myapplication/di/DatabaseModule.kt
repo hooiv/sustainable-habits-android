@@ -23,7 +23,12 @@ object DatabaseModule {
             AppDatabase::class.java,
             "habit_database" // Changed to match the name used in AppDatabase.getInstance()
         )
-        .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3) // Add both migrations
+        .addMigrations(
+            AppDatabase.MIGRATION_1_2, 
+            AppDatabase.MIGRATION_2_3, 
+            AppDatabase.MIGRATION_3_4, 
+            AppDatabase.MIGRATION_4_5
+        ) // Add all migrations
         .fallbackToDestructiveMigration() // Allow destructive migrations as a last resort
         .build()
     }

@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+// import androidx.compose.ui.draw.blur - replaced with custom implementation
+import com.example.myapplication.ui.animation.softShadowEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -46,7 +47,7 @@ fun EnhancedParallaxBackground(
         ),
         label = "offsetX"
     )
-    
+
     val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
@@ -56,7 +57,7 @@ fun EnhancedParallaxBackground(
         ),
         label = "offsetY"
     )
-    
+
     Box(modifier = modifier.fillMaxSize()) {
         // Animated gradient background
         Box(
@@ -74,7 +75,7 @@ fun EnhancedParallaxBackground(
                     )
                 )
         )
-        
+
         // First layer of floating particles (slower)
         ParticleLayer(
             count = 30,
@@ -83,7 +84,7 @@ fun EnhancedParallaxBackground(
             offsetX = offsetX * 0.3f,
             offsetY = offsetY * 0.2f
         )
-        
+
         // Second layer of floating particles (medium speed)
         ParticleLayer(
             count = 20,
@@ -92,7 +93,7 @@ fun EnhancedParallaxBackground(
             offsetX = offsetX * 0.5f,
             offsetY = offsetY * 0.4f
         )
-        
+
         // Third layer of floating particles (faster)
         ParticleLayer(
             count = 10,
@@ -101,7 +102,7 @@ fun EnhancedParallaxBackground(
             offsetX = offsetX * 0.8f,
             offsetY = offsetY * 0.6f
         )
-        
+
         // Content
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -125,17 +126,17 @@ private fun ParticleLayer(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    
+
     Box(modifier = Modifier.fillMaxSize()) {
         repeat(count) { index ->
             val particleSize = (3 + (index % 5)) * maxSize.value / 10
             val x = ((index * 37) % screenWidth)
             val y = ((index * 53) % screenHeight)
-            
+
             // Different speeds based on particle size
             val particleOffsetX = offsetX * (0.5f + (particleSize / maxSize.value) * 0.5f)
             val particleOffsetY = offsetY * (0.5f + (particleSize / maxSize.value) * 0.5f)
-            
+
             Box(
                 modifier = Modifier
                     .size(particleSize.dp)
@@ -144,7 +145,7 @@ private fun ParticleLayer(
                         translationY = (particleOffsetY + y) % screenHeight
                         alpha = 0.3f + (particleSize / maxSize.value) * 0.7f
                     }
-                    .blur(radius = (particleSize / 2).dp) // Add blur for a soft look
+                    .softShadowEffect(radius = (particleSize / 2).dp) // Add blur for a soft look
                     .background(
                         color = color,
                         shape = androidx.compose.foundation.shape.CircleShape
@@ -165,10 +166,10 @@ fun TiltEffect(
 ) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-    
+
     val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
     val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
-    
+
     // Animate the tilt values for smooth transitions
     val animatedRotationX by animateFloatAsState(
         targetValue = (offsetY / screenHeight * 2 - 1) * maxTiltDegrees,
@@ -178,7 +179,7 @@ fun TiltEffect(
         ),
         label = "animatedRotationX"
     )
-    
+
     val animatedRotationY by animateFloatAsState(
         targetValue = -(offsetX / screenWidth * 2 - 1) * maxTiltDegrees,
         animationSpec = spring(
@@ -187,7 +188,7 @@ fun TiltEffect(
         ),
         label = "animatedRotationY"
     )
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -201,7 +202,7 @@ fun TiltEffect(
                             offsetX = position.x
                             offsetY = position.y
                         }
-                        
+
                         // Make sure to consume the event
                         event.changes.forEach { it.consume() }
                     }
@@ -231,7 +232,7 @@ fun FloatingCard(
     content: @Composable () -> Unit
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "float")
-    
+
     // Create subtle floating animation
     val offsetY by infiniteTransition.animateFloat(
         initialValue = -2f,
@@ -242,7 +243,7 @@ fun FloatingCard(
         ),
         label = "offsetY"
     )
-    
+
     // Create subtle rotation animation
     val animatedRotationZ by infiniteTransition.animateFloat(
         initialValue = -1f,
@@ -263,7 +264,7 @@ fun FloatingCard(
         ),
         label = "scale"
     )
-    
+
     Box(
         modifier = modifier
             .graphicsLayer {

@@ -14,7 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
+// Removed blur import as we'll implement our own
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
@@ -37,6 +37,8 @@ import kotlinx.coroutines.launch
 import kotlin.math.*
 import kotlin.random.Random
 
+// Using the custom blur implementation from BlurUtils.kt
+
 /**
  * Creates a morphing blob shape that animates organically
  */
@@ -51,7 +53,7 @@ fun MorphingBlob(
     blurRadius: Dp = 5.dp
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "blobMorph")
-    
+
     // Create animated values for each point
     val animatedValues = List(pointCount) { index ->
         infiniteTransition.animateFloat(
@@ -68,33 +70,33 @@ fun MorphingBlob(
             label = "point$index"
         )
     }
-    
+
     Canvas(
         modifier = modifier
-            .blur(blurRadius)
+            .softShadowEffect(blurRadius)
     ) {
         val centerX = size.width / 2
         val centerY = size.height / 2
         val radius = size.width.coerceAtMost(size.height) / 2
-        
+
         val path = Path()
-        
+
         // Create a closed path with animated points
         for (i in 0 until pointCount) {
             val angle = (i * 360f / pointCount) * (PI / 180f)
             val pointRadius = radius * animatedValues[i].value
             val x = centerX + pointRadius * cos(angle).toFloat()
             val y = centerY + pointRadius * sin(angle).toFloat()
-            
+
             if (i == 0) {
                 path.moveTo(x, y)
             } else {
                 path.lineTo(x, y)
             }
         }
-        
+
         path.close()
-        
+
         // Draw the blob with gradient fill
         drawPath(
             path = path,
@@ -128,7 +130,7 @@ fun LiquidButton(
     var rippleCenter by remember { mutableStateOf(Offset.Zero) }
     var rippleRadius by remember { mutableStateOf(0f) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Button animations
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.95f else 1f,
@@ -138,7 +140,7 @@ fun LiquidButton(
         ),
         label = "buttonScale"
     )
-    
+
     // Blob animation
     val infiniteTransition = rememberInfiniteTransition(label = "buttonBlob")
     val blobPhase by infiniteTransition.animateFloat(
@@ -150,7 +152,7 @@ fun LiquidButton(
         ),
         label = "blobPhase"
     )
-    
+
     Box(
         modifier = modifier
             .width(width)
@@ -163,26 +165,26 @@ fun LiquidButton(
                 val path = Path()
                 val amplitude = size.height * 0.05f * (if (isPressed) 0.5f else 1f)
                 val frequency = 15f
-                
+
                 path.moveTo(0f, 0f)
                 path.lineTo(0f, size.height)
-                
+
                 // Bottom wavy edge
                 for (x in 0..size.width.toInt() step 5) {
                     val xFloat = x.toFloat()
                     val yOffset = amplitude * sin(frequency * xFloat / size.width + blobPhase)
                     path.lineTo(xFloat, size.height + yOffset)
                 }
-                
+
                 path.lineTo(size.width, size.height)
                 path.lineTo(size.width, 0f)
                 path.close()
-                
+
                 drawPath(
                     path = path,
                     color = color.copy(alpha = 0.7f)
                 )
-                
+
                 // Draw ripple effect when pressed
                 if (rippleRadius > 0) {
                     drawCircle(
@@ -199,22 +201,22 @@ fun LiquidButton(
                         isPressed = true
                         rippleCenter = offset
                         rippleRadius = 0f
-                        
+
                         coroutineScope.launch {
                             // Animate ripple
                             val startTime = System.currentTimeMillis()
                             val duration = 500
                             val maxRadius = size.maxDimension * 1.5f
-                            
+
                             while (System.currentTimeMillis() - startTime < duration) {
                                 val progress = (System.currentTimeMillis() - startTime) / duration.toFloat()
                                 rippleRadius = progress * maxRadius
                                 delay(16) // ~60fps
                             }
-                            
+
                             rippleRadius = 0f
                         }
-                        
+
                         tryAwaitRelease()
                         isPressed = false
                         onClick()
@@ -256,16 +258,16 @@ fun GlowingText(
             text = text,
             color = glowColor,
             style = style,
-            modifier = Modifier.blur(glowRadius)
+            modifier = Modifier.textGlowEffect(glowRadius, glowColor)
         )
-        
+
         // Main text
         Text(
             text = text,
             color = color,
             style = style
         )
-        
+
         // Particle effect around text
         if (particlesEnabled) {
             ParticleSystem(

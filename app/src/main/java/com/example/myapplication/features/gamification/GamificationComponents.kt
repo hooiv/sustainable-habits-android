@@ -15,7 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
+// import androidx.compose.ui.draw.blur - replaced with custom implementation
+import com.example.myapplication.ui.animation.glowEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -52,7 +53,7 @@ fun ExperienceBar(
     var animatedXp by remember { mutableStateOf(0) }
     var showLevelUpEffect by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Animate XP changes
     LaunchedEffect(currentXp) {
         if (animatedXp > 0 && currentXp < animatedXp) {
@@ -60,35 +61,35 @@ fun ExperienceBar(
             animatedXp = 0
             delay(300)
         }
-        
+
         val startXp = animatedXp
         val targetXp = currentXp
-        
+
         if (startXp < targetXp) {
             val duration = 1000 // ms
             val startTime = System.currentTimeMillis()
-            
+
             while (animatedXp < targetXp) {
                 val elapsedTime = System.currentTimeMillis() - startTime
                 val progress = (elapsedTime / duration.toFloat()).coerceIn(0f, 1f)
-                
+
                 // Use easing for smoother animation
                 val easedProgress = AnimeEasing.EaseOutQuart(progress)
                 animatedXp = startXp + ((targetXp - startXp) * easedProgress).toInt()
-                
+
                 if (animatedXp >= maxXp) {
                     showLevelUpEffect = true
                     onLevelUp()
                     break
                 }
-                
+
                 delay(16) // ~60fps
             }
-            
+
             animatedXp = targetXp
         }
     }
-    
+
     // Level up animation
     val levelUpScale by animateFloatAsState(
         targetValue = if (showLevelUpEffect) 1.2f else 1f,
@@ -106,10 +107,10 @@ fun ExperienceBar(
         },
         label = "levelUpScale"
     )
-    
+
     // Progress calculation
     val progress = (animatedXp.toFloat() / maxXp).coerceIn(0f, 1f)
-    
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -140,7 +141,7 @@ fun ExperienceBar(
                     glowEffect = true
                 )
             }
-            
+
             Text(
                 text = level.toString(),
                 color = Color.White,
@@ -148,9 +149,9 @@ fun ExperienceBar(
                 fontSize = 20.sp
             )
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // XP Progress bar
         Box(
             modifier = Modifier
@@ -173,7 +174,7 @@ fun ExperienceBar(
                         )
                     )
             )
-            
+
             // XP Text
             Text(
                 text = "$animatedXp / $maxXp XP",
@@ -206,7 +207,7 @@ fun AchievementBadge(
     } else {
         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
     }
-    
+
     // Animation for unlocked badges
     val infiniteTransition = rememberInfiniteTransition(label = "badgeGlow")
     val glowAlpha by infiniteTransition.animateFloat(
@@ -218,7 +219,7 @@ fun AchievementBadge(
         ),
         label = "glowAlpha"
     )
-    
+
     val rotation by infiniteTransition.animateFloat(
         initialValue = -5f,
         targetValue = 5f,
@@ -228,7 +229,7 @@ fun AchievementBadge(
         ),
         label = "badgeRotation"
     )
-    
+
     Box(
         modifier = modifier
             .clickable(onClick = onBadgeClick)
@@ -241,7 +242,7 @@ fun AchievementBadge(
                 modifier = Modifier
                     .size(80.dp)
                     .alpha(glowAlpha)
-                    .blur(8.dp)
+                    .glowEffect(8.dp, Color(0xFFFFD700))
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
@@ -253,7 +254,7 @@ fun AchievementBadge(
                     )
             )
         }
-        
+
         // Badge container
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -310,7 +311,7 @@ fun AchievementBadge(
                     tint = if (isUnlocked) Color.White else Color.Gray.copy(alpha = 0.7f),
                     modifier = Modifier.size(32.dp)
                 )
-                
+
                 if (!isUnlocked) {
                     Box(
                         modifier = Modifier
@@ -318,7 +319,7 @@ fun AchievementBadge(
                             .alpha(0.7f)
                             .background(Color.Black.copy(alpha = 0.5f))
                     )
-                    
+
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Locked",
@@ -327,9 +328,9 @@ fun AchievementBadge(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Badge title
             Text(
                 text = title,
@@ -338,7 +339,7 @@ fun AchievementBadge(
                 color = if (isUnlocked) MaterialTheme.colorScheme.onBackground else Color.Gray,
                 textAlign = TextAlign.Center
             )
-            
+
             // Badge description
             Text(
                 text = description,

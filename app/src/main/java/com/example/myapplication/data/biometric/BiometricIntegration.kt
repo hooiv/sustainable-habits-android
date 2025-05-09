@@ -43,6 +43,10 @@ class BiometricIntegration @Inject constructor(
         private const val HEART_RATE_SAMPLE_PERIOD = 20L // milliseconds
         private const val HEART_RATE_SAMPLE_COUNT = 300 // 6 seconds of data
         private const val RED_THRESHOLD = 200 // Minimum red value to consider for heart rate
+
+        // Constants for calorie calculation
+        private const val USER_WEIGHT_KG = 70.0 // TODO: Make this dynamic from user profile
+        private const val LIGHT_ACTIVITY_METS = 1.5 // Assuming light activity for this measurement context
     }
     
     // Camera components
@@ -77,8 +81,17 @@ class BiometricIntegration @Inject constructor(
     private val _stressLevel = MutableStateFlow(0f)
     val stressLevel: StateFlow<Float> = _stressLevel.asStateFlow()
     
-    private val _sleepQuality = MutableStateFlow(0f)
-    val sleepQuality: StateFlow<Float> = _sleepQuality.asStateFlow()
+    private val _sleepQuality = MutableStateFlow<Float?>(null)
+    val sleepQuality: StateFlow<Float?> = _sleepQuality.asStateFlow()
+
+    private val _energyLevel = MutableStateFlow<Float?>(null)
+    val energyLevel: StateFlow<Float?> = _energyLevel.asStateFlow()
+
+    private val _focusLevel = MutableStateFlow<Float?>(null)
+    val focusLevel: StateFlow<Float?> = _focusLevel.asStateFlow()
+
+    private val _mood = MutableStateFlow<Float?>(null)
+    val mood: StateFlow<Float?> = _mood.asStateFlow()
     
     private val _isMonitoring = MutableStateFlow(false)
     val isMonitoring: StateFlow<Boolean> = _isMonitoring.asStateFlow()
@@ -175,8 +188,11 @@ class BiometricIntegration @Inject constructor(
             simulateStepCount()
         }
         
-        // Simulate sleep quality
+        // Set initial placeholder values for metrics
         simulateSleepQuality()
+        _energyLevel.value = null
+        _focusLevel.value = null
+        _mood.value = null
         
         Log.d(TAG, "Started heart rate monitoring")
     }
@@ -315,12 +331,12 @@ class BiometricIntegration @Inject constructor(
      * Update calories burned based on heart rate
      */
     private fun updateCaloriesBurned() {
-        // Simple formula: calories = heart rate * weight * time / 4200
-        val weight = 70 // Assume 70kg
-        val timeInMinutes = 1 / 60.0 // 1 second
-        val calories = _heartRate.value * weight * timeInMinutes / 4200
+        // Simple formula: Calories/min = (METs * bodyWeightKg * 3.5) / 200
+        // This function is called when heart rate is updated (roughly per second if HR calc is per second)
+        val caloriesPerMinute = (LIGHT_ACTIVITY_METS * USER_WEIGHT_KG * 3.5) / 200
+        val caloriesThisUpdate = caloriesPerMinute / 60.0 // Calories for one second interval
         
-        _caloriesBurned.value = _caloriesBurned.value + (calories * 100).roundToInt() // Scale up for demo
+        _caloriesBurned.value += caloriesThisUpdate.roundToInt()
     }
     
     /**
@@ -345,8 +361,8 @@ class BiometricIntegration @Inject constructor(
      */
     private fun simulateSleepQuality() {
         // Simulate sleep quality (0-1 scale)
-        val sleepQuality = (Math.random() * 0.5 + 0.5).toFloat()
-        _sleepQuality.value = sleepQuality
+        _sleepQuality.value = null // Placeholder: Real sleep quality measurement is complex and not implemented.
+        Log.i(TAG, "Sleep quality is a placeholder (null). Real implementation needed.")
     }
     
     /**
@@ -469,7 +485,10 @@ class BiometricIntegration @Inject constructor(
             stepCount = _stepCount.value,
             caloriesBurned = _caloriesBurned.value,
             stressLevel = _stressLevel.value,
-            sleepQuality = _sleepQuality.value
+            sleepQuality = _sleepQuality.value,
+            energyLevel = _energyLevel.value,
+            focusLevel = _focusLevel.value,
+            mood = _mood.value
         )
     }
 }
@@ -483,5 +502,8 @@ data class BiometricData(
     val stepCount: Int,
     val caloriesBurned: Int,
     val stressLevel: Float,
-    val sleepQuality: Float
+    val sleepQuality: Float?, // Updated to nullable
+    val energyLevel: Float?,   // Added
+    val focusLevel: Float?,    // Added
+    val mood: Float?           // Added
 )
