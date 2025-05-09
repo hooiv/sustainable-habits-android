@@ -659,6 +659,254 @@ class NeuralInterfaceViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Compress the neural network model
+     */
+    fun compressModel() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+
+                // Create a dummy model buffer for demonstration
+                val modelBuffer = ByteBuffer.allocateDirect(1024 * 100) // 100KB
+
+                // Compress the model
+                val compressedBuffer = modelCompressor.quantizeModel(modelBuffer)
+
+                // Calculate compression statistics
+                val originalSize = modelBuffer.capacity()
+                val compressedSize = compressedBuffer.capacity()
+                val stats = modelCompressor.getCompressionStats(originalSize, compressedSize)
+
+                // Update state
+                _compressionStats.value = stats
+
+                // Show success message
+                _errorMessage.value = "Model compressed successfully: ${stats.percentSaved.toInt()}% space saved"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to compress model: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Optimize hyperparameters
+     */
+    fun optimizeHyperparameters() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+
+                // Clear previous results
+                _trialResults.value = emptyList()
+                _bestHyperparameters.value = null
+
+                // Define evaluation function
+                val evaluateConfig: suspend (Hyperparameters) -> Float = { config ->
+                    // Simulate training with these hyperparameters
+                    // In a real app, this would actually train a model
+
+                    // Add some randomness to the evaluation
+                    val baseScore = 0.5f
+                    val learningRateFactor = if (config.learningRate > 0.01f) 0.1f else -0.1f
+                    val hiddenLayerFactor = if (config.hiddenLayerSizes.sum() > 16) 0.1f else -0.1f
+                    val batchSizeFactor = if (config.batchSize > 16) 0.1f else -0.1f
+                    val dropoutFactor = if (config.dropoutRate > 0.1f) 0.1f else -0.1f
+
+                    val score = baseScore + learningRateFactor + hiddenLayerFactor + batchSizeFactor + dropoutFactor
+                    val randomness = (Math.random() * 0.2 - 0.1).toFloat()
+
+                    // Add trial result to state
+                    val result = TrialResult(
+                        trial = _trialResults.value.size + 1,
+                        hyperparameters = config,
+                        score = score + randomness
+                    )
+
+                    _trialResults.value = _trialResults.value + result
+
+                    // Simulate delay
+                    kotlinx.coroutines.delay(500)
+
+                    return@evaluateConfig score + randomness
+                }
+
+                // Run optimization
+                val bestConfig = hyperparameterOptimizer.optimizeHyperparameters(evaluateConfig)
+
+                // Update state
+                _bestHyperparameters.value = bestConfig
+                _hyperparameterImportance.value = hyperparameterOptimizer.getHyperparameterImportance()
+
+                // Show success message
+                _errorMessage.value = "Hyperparameter optimization completed"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to optimize hyperparameters: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Detect anomalies in habit completions
+     */
+    fun detectAnomalies() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+
+                val habitId = _currentHabitId.value ?: return@launch
+
+                // Get habit and completions
+                val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
+                val completions = habitRepository.getHabitCompletions(habitId).first()
+
+                if (completions.isEmpty()) {
+                    _errorMessage.value = "Not enough completions to detect anomalies"
+                    return@launch
+                }
+
+                // Detect anomalies
+                val anomalies = anomalyDetector.detectAnomalies(habit, completions)
+
+                // Update state
+                _anomalies.value = anomalies
+
+                // Show success message
+                if (anomalies.isEmpty()) {
+                    _errorMessage.value = "No anomalies detected"
+                } else {
+                    _errorMessage.value = "Detected ${anomalies.size} anomalies"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to detect anomalies: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Explain an anomaly
+     */
+    fun explainAnomaly(anomaly: HabitAnomaly) {
+        val explanation = anomalyDetector.getAnomalyExplanation(anomaly)
+        _errorMessage.value = explanation
+    }
+
+    /**
+     * Capture image for multi-modal learning
+     */
+    fun captureImage() {
+        // In a real app, this would launch the camera
+        // For this demo, we'll just simulate capturing an image
+
+        _hasImageFeatures.value = true
+        _errorMessage.value = "Image captured successfully"
+    }
+
+    /**
+     * Add notes for multi-modal learning
+     */
+    fun addNotes() {
+        // In a real app, this would show a text input dialog
+        // For this demo, we'll just simulate adding notes
+
+        _hasTextFeatures.value = true
+        _errorMessage.value = "Notes added successfully"
+    }
+
+    /**
+     * Process multi-modal features
+     */
+    fun processMultiModalFeatures() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+
+                // In a real app, this would process actual features
+                // For this demo, we'll just simulate processing
+
+                // Simulate sensor data
+                _hasSensorFeatures.value = true
+
+                // Show success message
+                _errorMessage.value = "Multi-modal features processed successfully"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to process features: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Start meta-learning across all habits
+     */
+    fun startMetaLearning() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+                _metaLearningProgress.value = 0f
+
+                // Get all habits and their completions
+                val habits = habitRepository.getAllHabits().first()
+
+                if (habits.size < 5) {
+                    _errorMessage.value = "Not enough habits for meta-learning (need at least 5)"
+                    return@launch
+                }
+
+                val completionsMap = mutableMapOf<String, List<HabitCompletion>>()
+
+                for (habit in habits) {
+                    val completions = habitRepository.getHabitCompletions(habit.id).first()
+                    completionsMap[habit.id] = completions
+                }
+
+                // Start meta-learning
+                val success = metaLearning.metaLearn(habits, completionsMap)
+
+                if (success) {
+                    _errorMessage.value = "Meta-learning completed successfully"
+                } else {
+                    _errorMessage.value = "Meta-learning failed"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start meta-learning: ${e.message}"
+                _metaLearningProgress.value = 0f
+            }
+        }
+    }
+
+    /**
+     * Adapt meta-model to current habit
+     */
+    fun adaptToHabit() {
+        viewModelScope.launch {
+            try {
+                _errorMessage.value = null
+                _adaptationProgress.value = 0f
+
+                val habitId = _currentHabitId.value ?: return@launch
+
+                // Get habit and completions
+                val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
+                val completions = habitRepository.getHabitCompletions(habitId).first()
+
+                if (completions.isEmpty()) {
+                    _errorMessage.value = "Not enough completions for adaptation"
+                    return@launch
+                }
+
+                // Adapt to habit
+                val (adaptedInputToHidden, adaptedHiddenToOutput) = metaLearning.adaptToHabit(habit, completions)
+
+                // In a real app, we would use these adapted parameters
+
+                _errorMessage.value = "Adaptation to habit completed successfully"
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to adapt to habit: ${e.message}"
+                _adaptationProgress.value = 0f
+            }
+        }
+    }
 }
 
 /**
