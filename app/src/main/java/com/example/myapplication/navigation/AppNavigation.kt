@@ -5,17 +5,16 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -42,7 +41,7 @@ fun MainBottomBar(
         NavigationBarItem(
             selected = currentRoute == NavRoutes.HABIT_LIST,
             onClick = { onNavigate(NavRoutes.HABIT_LIST) },
-            icon = { Icon(Icons.Default.List, contentDescription = "Habits") },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Habits") },
             label = { Text("Habits") }
         )
         NavigationBarItem(
@@ -142,31 +141,7 @@ fun AppNavigationGraph(navController: NavHostController) {
             HabitListScreen(navController = navController)
         }
         
-        composable(
-            route = NavRoutes.ADD_HABIT,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                ) + fadeIn(
-                    animationSpec = tween(300)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                ) + fadeOut(
-                    animationSpec = tween(300)
-                )
-            }
-        ) {
+        composable(route = NavRoutes.ADD_HABIT) {
             Log.d("AppNavigation", "Setting up AddHabitScreen") 
             AddHabitScreen(navController = navController)
         }
@@ -175,53 +150,18 @@ fun AppNavigationGraph(navController: NavHostController) {
             route = NavRoutes.EDIT_HABIT,
             arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) { 
                 type = NavType.StringType 
-            }),
-            enterTransition = {
-                scaleIn(
-                    initialScale = 0.8f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                ) + fadeIn()
-            },
-            exitTransition = {
-                scaleOut(
-                    targetScale = 0.8f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                ) + fadeOut()
-            }
+            })
         ) { backStackEntry ->
             val habitId = backStackEntry.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
             Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
             EditHabitScreen(navController = navController, habitId = habitId)
         }
 
-        composable(
-            route = NavRoutes.STATS,
-            enterTransition = {
-                fadeIn(
-                    animationSpec = tween(700, easing = EaseOutQuint)
-                )
-            },
-            exitTransition = {
-                fadeOut(
-                    animationSpec = tween(700, easing = EaseInQuint)
-                )
-            }
-        ) {
+        composable(route = NavRoutes.STATS) {
             StatsScreen(navController)
         }
 
-        composable(
-            route = NavRoutes.SETTINGS,
-            // Simple fade transition for settings
-            enterTransition = { fadeIn(animationSpec = tween(400)) },
-            exitTransition = { fadeOut(animationSpec = tween(400)) }
-        ) {
+        composable(route = NavRoutes.SETTINGS) {
             val context = LocalContext.current
             SettingsScreen(context = context)
         }

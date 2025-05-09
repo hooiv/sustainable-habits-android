@@ -31,6 +31,10 @@ fun SettingsScreen(context: Context) {
     var selectedLanguage by remember { mutableStateOf("English") }
     val languages = listOf("English", "Hindi", "Spanish", "French")
     var isLanguageDropdownExpanded by remember { mutableStateOf(false) }
+    var notificationHour by remember { mutableStateOf(8) }
+    var notificationMinute by remember { mutableStateOf(0) }
+    var notificationText by remember { mutableStateOf("Don't forget to complete your habit today!") }
+    var notificationSoundEnabled by remember { mutableStateOf(true) }
     var notificationCustomSoundUri by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -45,7 +49,7 @@ fun SettingsScreen(context: Context) {
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Divider()
+        HorizontalDivider()
         // Dark Mode Toggle
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -88,10 +92,6 @@ fun SettingsScreen(context: Context) {
         if (notificationsEnabled) {
             // Notification time selection
             var showTimePicker by remember { mutableStateOf(false) }
-            var notificationHour by remember { mutableStateOf(8) }
-            var notificationMinute by remember { mutableStateOf(0) }
-            var notificationText by remember { mutableStateOf("Don't forget to complete your habit today!") }
-            var notificationSoundEnabled by remember { mutableStateOf(true) }
             val formattedTime = String.format("%02d:%02d", notificationHour, notificationMinute)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -179,7 +179,7 @@ fun SettingsScreen(context: Context) {
                 }
             }
         }
-        Divider()
+        HorizontalDivider()
         // Backup/Restore
         Button(onClick = {
             val habitData = mapOf(
@@ -206,7 +206,7 @@ fun SettingsScreen(context: Context) {
         }) {
             Text("Restore Data")
         }
-        Divider()
+        HorizontalDivider()
         // About Section
         Text(
             text = "App Version: 1.0.0\nDeveloped by YourName\n© 2025",

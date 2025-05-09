@@ -12,10 +12,11 @@ navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0" # Added Hilt Navigation Compose version
-composeBom = "2024.06.00"
-activityCompose = "1.9.0"
-composeNavigation = "2.8.0-beta05"
+composeBom = "2024.05.00" # Downgraded for compatibility with Kotlin 1.9.24 and Compiler 1.5.14
+activityCompose = "1.9.0" # Ensure this is compatible with new BOM, or let BOM manage it
+composeNavigation = "2.8.0-beta05" # Ensure this is compatible, or let BOM manage it
 room = "2.6.1"
+googleServices = "4.4.1" # Added Google Services version
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,7 +35,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
 # Activity Compose
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" } # Version managed by BOM
 
 # Compose UI
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -43,7 +44,20 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 # Compose Navigation
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" } # Corrected to use specific version
+
+# Compose Animation
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" } # Version managed by BOM
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core" } # Version managed by BOM
+
+# Compose Foundation
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" } # Version managed by BOM
+
+# Compose Runtime Livedata
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" } # Version managed by BOM
+
+# Compose Material Icons Extended
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" } # Version managed by BOM
 
 # Compose Test
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -62,4 +76,5 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" } # Added Google Services plugin
 

@@ -171,7 +171,7 @@ fun StatsScreen(navController: NavController) {
                         .height(120.dp)
                         .animeEntrance(
                             visible = !isLoading,
-                            initialOffsetX = -100,
+                            initialOffsetY = -100,
                             delayMillis = 200
                         )
                 ) {
@@ -219,7 +219,7 @@ fun StatsScreen(navController: NavController) {
                         .height(120.dp)
                         .animeEntrance(
                             visible = !isLoading,
-                            initialOffsetX = 100,
+                            initialOffsetY = 100,
                             delayMillis = 400
                         )
                 ) {

@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
@@ -30,11 +31,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.Box
 
 sealed class StartDestination {
     object Splash : StartDestination()
     object Onboarding : StartDestination()
     object Main : StartDestination()
+
+    companion object {
+        val Saver: Saver<StartDestination, String> = Saver(
+            save = {
+                when (it) {
+                    Splash -> "Splash"
+                    Onboarding -> "Onboarding"
+                    Main -> "Main"
+                }
+            },
+            restore = {
+                when (it) {
+                    "Splash" -> Splash
+                    "Onboarding" -> Onboarding
+                    "Main" -> Main
+                    else -> throw IllegalArgumentException("Unknown StartDestination: $it")
+                }
+            }
+        )
+    }
 }
 
 @AndroidEntryPoint
@@ -48,7 +70,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val context = LocalContext.current
-                    var startDestination by rememberSaveable { mutableStateOf<StartDestination>(StartDestination.Splash) }
+                    var startDestination by rememberSaveable(stateSaver = StartDestination.Saver) { mutableStateOf<StartDestination>(StartDestination.Splash) }
 
                     LaunchedEffect(Unit) {
                         delay(1500) // Splash duration
@@ -77,17 +99,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SplashScreen() {
-    // Simple animated splash (replace with logo/animation as needed)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.primary
     ) {
-        androidx.compose.material3.Text(
-            text = "MyApp",
-            style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "MyApp",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     }
 }
 

@@ -1,6 +1,9 @@
 package com.example.myapplication.ui.animation
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.* // Keep for general animation utilities
+import androidx.compose.animation.core.animateValue // Explicit import for animateValue
+import androidx.compose.animation.core.AnimationVector4D // Explicit import
+import androidx.compose.animation.core.TwoWayConverter // Explicit import
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,9 +25,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb // Import for toArgb
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.colorspace.ColorSpaces // Import for ColorSpaces
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.pow
@@ -68,29 +73,22 @@ fun Modifier.flipCard(
  */
 fun Modifier.loadingBounceEffect(
     enabled: Boolean = true,
-    amplitude: Float = 20f,
-    frequency: Float = 1.5f
+    magnitude: Float = 20f
 ): Modifier = composed {
     if (!enabled) return@composed this
 
-    var animatedOffset by remember { mutableStateOf(0f) }
     val infiniteTransition = rememberInfiniteTransition(label = "bounce")
-    val offsetAnimation = infiniteTransition.animateFloat(
+    val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 1f,
+        targetValue = magnitude,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = (1000 / frequency).toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            animation = tween(800, easing = EaseInOutQuad),
+            repeatMode = RepeatMode.Reverse
         ),
-        label = "bounce"
+        label = "bounceOffset"
     )
 
-    LaunchedEffect(offsetAnimation.value) {
-        // Create a bouncing sine wave effect
-        animatedOffset = sin(offsetAnimation.value * 2 * PI.toFloat()) * amplitude
-    }
-
-    this.offset { IntOffset(0, animatedOffset.roundToInt()) }
+    this.offset(y = offsetY.dp)
 }
 
 /**
@@ -125,8 +123,7 @@ fun Modifier.floatingEffect(
  */
 fun Modifier.pulseEffect(
     pulseEnabled: Boolean = true,
-    pulseMagnitude: Float = 0.1f,
-    pulseFrequency: Float = 1f
+    pulseMagnitude: Float = 0.1f
 ): Modifier = composed {
     if (!pulseEnabled) return@composed this
 
@@ -135,13 +132,10 @@ fun Modifier.pulseEffect(
         initialValue = 1f,
         targetValue = 1f + pulseMagnitude,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = (1000 / pulseFrequency).toInt(),
-                easing = EaseInOutQuad
-            ),
+            animation = tween(1000, easing = EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "pulse"
+        label = "pulseScale"
     )
 
     this.scale(scale)
@@ -152,81 +146,39 @@ fun Modifier.pulseEffect(
  */
 fun Modifier.animeEntrance(
     visible: Boolean,
-    initialOffsetX: Int = 0,
-    initialOffsetY: Int = 0,
-    initialScale: Float = 1f,
-    initialAlpha: Float = 1f,
-    delayMillis: Int = 0,
-    durationMillis: Int = 500
+    initialOffsetY: Int = 100,
+    initialAlpha: Float = 0f,
+    initialScale: Float = 0.8f,
+    delayMillis: Int = 0
 ): Modifier = composed {
-    var animatedOffset by remember { mutableStateOf(Pair(initialOffsetX, initialOffsetY)) }
-    var animatedScale by remember { mutableStateOf(initialScale) }
-    var animatedAlpha by remember { mutableStateOf(initialAlpha) }
+    // TODO: Implement delayMillis if needed, AnimatedVisibility doesn't directly support a start delay for enter animation in this manner.
+    // Consider using LaunchedEffect with delay for more complex scenarios or a custom animation approach.
 
-    LaunchedEffect(visible) {
-        if (delayMillis > 0) {
-            delay(delayMillis.toLong())
-        }
-
-        if (visible) {
-            animate(
-                initialValue = initialOffsetX.toFloat(),
-                targetValue = 0f,
-                animationSpec = tween(
-                    durationMillis = durationMillis,
-                    easing = FastOutSlowInEasing
-                )
-            ) { value, _ ->
-                animatedOffset = Pair(value.toInt(), animatedOffset.second)
-            }
-
-            animate(
-                initialValue = initialOffsetY.toFloat(),
-                targetValue = 0f,
-                animationSpec = tween(
-                    durationMillis = durationMillis,
-                    easing = FastOutSlowInEasing
-                )
-            ) { value, _ ->
-                animatedOffset = Pair(animatedOffset.first, value.toInt())
-            }
-
-            animate(
-                initialValue = initialScale,
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = durationMillis,
-                    easing = FastOutSlowInEasing
-                )
-            ) { value, _ ->
-                animatedScale = value
-            }
-
-            animate(
-                initialValue = initialAlpha,
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = durationMillis,
-                    easing = FastOutSlowInEasing
-                )
-            ) { value, _ ->
-                animatedAlpha = value
-            }
-        } else {
-            animatedOffset = Pair(initialOffsetX, initialOffsetY)
-            animatedScale = initialScale
-            animatedAlpha = initialAlpha
-        }
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(
+            initialOffsetY = { initialOffsetY },
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ) + fadeIn(
+            initialAlpha = initialAlpha,
+            animationSpec = tween(300)
+        ) + androidx.compose.animation.scaleIn(
+            initialScale = initialScale,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ),
+        exit = fadeOut() + slideOutVertically()
+    ) {
+        // Content for AnimatedVisibility.
+        // This block is part of AnimatedVisibility's content lambda.
+        // The Modifier returned by animeEntrance applies to the AnimatedVisibility itself.
     }
-
-    this
-        .graphicsLayer {
-            translationX = animatedOffset.first.toFloat()
-            translationY = animatedOffset.second.toFloat()
-            scaleX = animatedScale
-            scaleY = animatedScale
-            alpha = animatedAlpha
-        }
+    return@composed Modifier
 }
 
 /**
@@ -256,6 +208,58 @@ fun Modifier.shimmerEffect(
  */
 fun staggeredDelay(index: Int, baseDelay: Int, maxDelay: Int): Int {
     return (index * baseDelay).coerceAtMost(maxDelay)
+}
+
+// Custom TwoWayConverter for Color
+val ColorToVectorConverter = TwoWayConverter<Color, AnimationVector4D>(
+    convertToVector = { color ->
+        val colorArgb = color.toArgb()
+        AnimationVector4D(
+            ((colorArgb shr 16) and 0xFF) / 255f, // Red
+            ((colorArgb shr 8) and 0xFF) / 255f,  // Green
+            (colorArgb and 0xFF) / 255f,          // Blue
+            ((colorArgb shr 24) and 0xFF) / 255f  // Alpha
+        )
+    },
+    convertFromVector = { vector ->
+        Color(
+            red = vector.v1,
+            green = vector.v2,
+            blue = vector.v3,
+            alpha = vector.v4
+        )
+    }
+)
+
+/**
+ * Creates an animated gradient with color animation
+ */
+@Composable
+fun animatedGradient(
+    colors: List<Color>,
+    animationDuration: Int = 3000
+): Brush {
+    val infiniteTransition = rememberInfiniteTransition(label = "gradient_transition")
+    val safeColors = if (colors.size < 2) listOf(colors.firstOrNull() ?: Color.White, Color.White) else colors
+
+    val colorStates = mutableListOf<State<Color>>()
+    for (i in safeColors.indices) {
+        colorStates.add(
+            infiniteTransition.animateValue(
+                initialValue = safeColors[i],
+                targetValue = safeColors[(i + 1) % safeColors.size],
+                typeConverter = ColorToVectorConverter, // Use custom converter
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = animationDuration, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "colorAnimation_$i"
+            )
+        )
+    }
+
+    val animatedColorValues = colorStates.map { it.value }
+    return Brush.verticalGradient(animatedColorValues)
 }
 
 // Custom Easing functions
@@ -306,30 +310,4 @@ fun AnimatedVisibilityWithSlide(
     ) {
         content()
     }
-}
-
-/**
- * Creates an animated gradient brush with moving colors
- */
-@Composable
-fun animatedGradient(
-    colors: List<Color>,
-    animationDuration: Int = 3000
-): Brush {
-    val infiniteTransition = rememberInfiniteTransition(label = "gradientTransition")
-    val offset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(animationDuration, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "gradientAnimation"
-    )
-    
-    return Brush.linearGradient(
-        colors = colors,
-        start = Offset(offset - 1000f, offset - 1000f),
-        end = Offset(offset, offset)
-    )
 }
