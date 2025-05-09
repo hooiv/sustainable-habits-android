@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -147,10 +148,14 @@ fun StatsScreen(navController: NavController) {
     
     // Animation states
     var selectedTab by remember { mutableStateOf(0) }
-    var isLoading by remember { mutableStateOf(true) }
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-    
+    val context = LocalContext.current
+
+    // Loading state for animations
+    var isLoading by remember { mutableStateOf(true) }
+
+    // Completion rate animation
     // Completion rate animation
     val animatedCompletionRate by animateFloatAsState(
         targetValue = completionRate,
@@ -615,7 +620,7 @@ fun StatsScreen(navController: NavController) {
                                         Toast.makeText(context, "Data backed up successfully!", Toast.LENGTH_SHORT).show()
                                     }
                                 },
-                                onFailure = { exception ->
+                                onFailure = { exception: Exception ->
                                      coroutineScope.launch {
                                         Toast.makeText(context, "Backup failed: ${exception.message}", Toast.LENGTH_LONG).show()
                                         Log.e("StatsScreenBackup", "Backup failed", exception)
@@ -647,7 +652,7 @@ fun StatsScreen(navController: NavController) {
 
                                         val restoredHabits = mutableListOf<Habit>()
                                         Log.d("StatsScreenRestore", "Fetched ${habitDataMap.size} items from Firebase for user $userId.")
-                                        for ((habitId, habitDetails) in habitDataMap) {
+                                        for ((habitId, habitDetails) in habitDataMap.entries) {
                                             if (habitDetails is Map<*, *>) {
                                                 @Suppress("UNCHECKED_CAST")
                                                 val detailsMap = habitDetails as? Map<String, Any>
