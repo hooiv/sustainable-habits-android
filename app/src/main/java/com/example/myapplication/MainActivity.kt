@@ -3,36 +3,35 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.example.myapplication.navigation.AppNavigation
+import com.example.myapplication.ui.animation.AnimeEasing
+import com.example.myapplication.ui.animation.ParticleSystem
+import com.example.myapplication.ui.animation.ParticleWave
+import com.example.myapplication.ui.animation.ThreeJSScene
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.foundation.layout.Box
-import androidx.core.view.WindowCompat
 
 sealed class StartDestination {
     object Splash : StartDestination()
@@ -109,18 +108,96 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SplashScreen() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.primary
+    // Remember animation states
+    var showParticles by remember { mutableStateOf(false) }
+    var showText by remember { mutableStateOf(false) }
+
+    // Start animations after a short delay
+    LaunchedEffect(Unit) {
+        delay(100)
+        showParticles = true
+        delay(300)
+        showText = true
+    }
+
+    // Create a gradient background
+    val gradientColors = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.primaryContainer,
+        MaterialTheme.colorScheme.secondary
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(colors = gradientColors)
+            ),
+        contentAlignment = Alignment.Center
     ) {
+        // Add particle effects in the background
+        if (showParticles) {
+            ParticleSystem(
+                modifier = Modifier.fillMaxSize(),
+                particleCount = 100,
+                particleColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                maxSpeed = 1f,
+                fadeDistance = 0.9f
+            )
+        }
+
+        // Add animated text with 3D effect
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .graphicsLayer {
+                    rotationX = if (showText) 0f else 30f
+                    alpha = if (showText) 1f else 0f
+                    scaleX = if (showText) 1f else 0.8f
+                    scaleY = if (showText) 1f else 0.8f
+                    shadowElevation = 20f
+                }
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "MyApp",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .padding(32.dp)
+                    .graphicsLayer {
+                        shadowElevation = 12f
+                    }
+            )
+        }
+
+        // Add a pulsing circle behind the text
+        if (showText) {
+            val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+            val scale by infiniteTransition.animateFloat(
+                initialValue = 0.8f,
+                targetValue = 1.2f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(2000, easing = AnimeEasing.EaseInOutQuad),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "pulseScale"
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .scale(scale)
+                    .alpha(0.2f)
+                    .background(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        shape = CircleShape
+                    )
             )
         }
     }
@@ -128,36 +205,173 @@ fun SplashScreen() {
 
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
-    // Simple onboarding with 2 steps (expand as needed)
+    // Enhanced onboarding with anime.js-like animations
     var page by rememberSaveable { mutableStateOf(0) }
     val pages = listOf(
         "Welcome to MyApp! Track your habits easily.",
-        "Stay motivated with reminders and stats."
+        "Stay motivated with reminders and stats.",
+        "Visualize your progress with beautiful charts."
     )
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+
+    // Track if content should be visible (for animations)
+    var contentVisible by remember { mutableStateOf(false) }
+
+    // Start entrance animation
+    LaunchedEffect(page) {
+        contentVisible = false
+        delay(100)
+        contentVisible = true
+    }
+
+    // Create a gradient background
+    val gradientColors = listOf(
+        MaterialTheme.colorScheme.background,
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(colors = gradientColors)
+            )
     ) {
+        // Add subtle particle effect in background
+        ParticleWave(
+            modifier = Modifier.fillMaxSize(),
+            particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+            particleCount = 50,
+            waveHeight = 50f,
+            speed = 0.3f
+        )
+
+        // Main content with animations
         Column(
-            modifier = Modifier.fillMaxSize().padding(32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Page indicator
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 48.dp)
+                    .graphicsLayer {
+                        alpha = if (contentVisible) 1f else 0f
+                    },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(pages.size) { i ->
+                    val isSelected = i == page
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .size(if (isSelected) 12.dp else 8.dp)
+                            .background(
+                                color = if (isSelected)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                shape = CircleShape
+                            )
+                            .graphicsLayer {
+                                scaleX = if (isSelected) 1f else 0.8f
+                                scaleY = if (isSelected) 1f else 0.8f
+                            }
+                    )
+                }
+            }
+
+            // Animated text
             Text(
                 text = pages[page],
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = if (contentVisible) 1f else 0f
+                        translationY = if (contentVisible) 0f else 50f
+                    }
+                    .padding(bottom = 32.dp)
             )
-            Spacer(Modifier.height(32.dp))
-            Row {
-                if (page > 0) {
-                    Button(onClick = { page-- }) { Text("Back") }
-                    Spacer(Modifier.width(16.dp))
+
+            // 3D card with content
+            ThreeJSScene(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(bottom = 32.dp)
+                    .graphicsLayer {
+                        alpha = if (contentVisible) 1f else 0f
+                        translationY = if (contentVisible) 0f else 100f
+                    },
+                rotationEnabled = true,
+                initialRotationY = 10f,
+                cameraDistance = 12f
+            ) { sceneModifier ->
+                Box(
+                    modifier = sceneModifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Different content for each page
+                    when (page) {
+                        0 -> Text(
+                            "Track Daily Habits",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        1 -> Text(
+                            "View Progress Stats",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        2 -> Text(
+                            "Beautiful Visualizations",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 }
+            }
+
+            // Navigation buttons with animation
+            Row(
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = if (contentVisible) 1f else 0f
+                        translationY = if (contentVisible) 0f else 50f
+                    }
+            ) {
+                if (page > 0) {
+                    Button(
+                        onClick = { page-- },
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        Text("Back")
+                    }
+                }
+
                 if (page < pages.lastIndex) {
-                    Button(onClick = { page++ }) { Text("Next") }
+                    Button(
+                        onClick = { page++ },
+                        modifier = Modifier.padding(start = if (page > 0) 0.dp else 16.dp)
+                    ) {
+                        Text("Next")
+                    }
                 } else {
-                    Button(onClick = onFinish) { Text("Get Started") }
+                    Button(
+                        onClick = onFinish,
+                        modifier = Modifier.padding(start = if (page > 0) 0.dp else 16.dp)
+                    ) {
+                        Text("Get Started")
+                    }
                 }
             }
         }
