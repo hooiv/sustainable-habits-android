@@ -4,8 +4,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
+import androidx.compose.ui.geometry.Offset
 import com.example.myapplication.data.ml.*
 import com.example.myapplication.data.model.*
+import java.nio.ByteBuffer
 import com.example.myapplication.data.repository.HabitRepository
 import com.example.myapplication.data.repository.NeuralNetworkRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +29,12 @@ class NeuralInterfaceViewModel @Inject constructor(
     private val personalizedRecommendationEngine: PersonalizedRecommendationEngine,
     private val abTestingManager: ABTestingManager,
     private val federatedLearningManager: FederatedLearningManager,
-    private val adaptiveLearningRateOptimizer: AdaptiveLearningRateOptimizer
+    private val adaptiveLearningRateOptimizer: AdaptiveLearningRateOptimizer,
+    private val modelCompressor: ModelCompressor,
+    private val hyperparameterOptimizer: HyperparameterOptimizer,
+    private val anomalyDetector: AnomalyDetector,
+    private val multiModalLearning: MultiModalLearning,
+    private val metaLearning: MetaLearning
 ) : ViewModel() {
 
     // State for the current habit ID
@@ -105,6 +112,41 @@ class NeuralInterfaceViewModel @Inject constructor(
     // State for imported model count
     private val _importedModelCount = MutableStateFlow<Int>(0)
     val importedModelCount: StateFlow<Int> = _importedModelCount.asStateFlow()
+
+    // State for model compression
+    private val _compressionStats = MutableStateFlow(CompressionStats(0, 0, 0f, 0, 0f))
+    val compressionStats: StateFlow<CompressionStats> = _compressionStats.asStateFlow()
+
+    // State for hyperparameter optimization
+    private val _trialResults = MutableStateFlow<List<TrialResult>>(emptyList())
+    val trialResults: StateFlow<List<TrialResult>> = _trialResults.asStateFlow()
+
+    private val _bestHyperparameters = MutableStateFlow<Hyperparameters?>(null)
+    val bestHyperparameters: StateFlow<Hyperparameters?> = _bestHyperparameters.asStateFlow()
+
+    private val _hyperparameterImportance = MutableStateFlow<Map<String, Float>>(emptyMap())
+    val hyperparameterImportance: StateFlow<Map<String, Float>> = _hyperparameterImportance.asStateFlow()
+
+    // State for anomaly detection
+    private val _anomalies = MutableStateFlow<List<HabitAnomaly>>(emptyList())
+    val anomalies: StateFlow<List<HabitAnomaly>> = _anomalies.asStateFlow()
+
+    // State for multi-modal learning
+    private val _hasImageFeatures = MutableStateFlow(false)
+    val hasImageFeatures: StateFlow<Boolean> = _hasImageFeatures.asStateFlow()
+
+    private val _hasTextFeatures = MutableStateFlow(false)
+    val hasTextFeatures: StateFlow<Boolean> = _hasTextFeatures.asStateFlow()
+
+    private val _hasSensorFeatures = MutableStateFlow(false)
+    val hasSensorFeatures: StateFlow<Boolean> = _hasSensorFeatures.asStateFlow()
+
+    // State for meta-learning
+    private val _metaLearningProgress = MutableStateFlow(0f)
+    val metaLearningProgress: StateFlow<Float> = _metaLearningProgress.asStateFlow()
+
+    private val _adaptationProgress = MutableStateFlow(0f)
+    val adaptationProgress: StateFlow<Float> = _adaptationProgress.asStateFlow()
 
     /**
      * Load neural network for a habit

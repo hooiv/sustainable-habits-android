@@ -870,6 +870,70 @@ fun NeuralInterfaceScreen(
                         }
                     }
                 }
+                5 -> {
+                    // Ultra tab
+                    val compressionStats by viewModel.compressionStats.collectAsState()
+                    val trialResults by viewModel.trialResults.collectAsState()
+                    val bestHyperparameters by viewModel.bestHyperparameters.collectAsState()
+                    val hyperparameterImportance by viewModel.hyperparameterImportance.collectAsState()
+                    val anomalies by viewModel.anomalies.collectAsState()
+                    val hasImageFeatures by viewModel.hasImageFeatures.collectAsState()
+                    val hasTextFeatures by viewModel.hasTextFeatures.collectAsState()
+                    val hasSensorFeatures by viewModel.hasSensorFeatures.collectAsState()
+                    val metaLearningProgress by viewModel.metaLearningProgress.collectAsState()
+                    val adaptationProgress by viewModel.adaptationProgress.collectAsState()
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // Model compression
+                            ModelCompressionCard(
+                                compressionStats = compressionStats,
+                                onRecompress = { viewModel.compressModel() }
+                            )
+
+                            // Hyperparameter optimization
+                            HyperparameterOptimizationCard(
+                                trialResults = trialResults,
+                                bestHyperparameters = bestHyperparameters,
+                                hyperparameterImportance = hyperparameterImportance,
+                                onOptimize = { viewModel.optimizeHyperparameters() }
+                            )
+
+                            // Anomaly detection
+                            AnomalyDetectionCard(
+                                anomalies = anomalies,
+                                onExplainAnomaly = { anomaly ->
+                                    viewModel.explainAnomaly(anomaly)
+                                }
+                            )
+
+                            // Multi-modal learning
+                            MultiModalLearningCard(
+                                hasImageFeatures = hasImageFeatures,
+                                hasTextFeatures = hasTextFeatures,
+                                hasSensorFeatures = hasSensorFeatures,
+                                onCaptureImage = { viewModel.captureImage() },
+                                onAddNotes = { viewModel.addNotes() },
+                                onProcessFeatures = { viewModel.processMultiModalFeatures() }
+                            )
+
+                            // Meta-learning
+                            MetaLearningCard(
+                                metaLearningProgress = metaLearningProgress,
+                                adaptationProgress = adaptationProgress,
+                                onStartMetaLearning = { viewModel.startMetaLearning() },
+                                onAdaptToHabit = { viewModel.adaptToHabit() }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
