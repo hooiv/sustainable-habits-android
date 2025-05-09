@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Box
+import androidx.core.view.WindowCompat
 
 sealed class StartDestination {
     object Splash : StartDestination()
@@ -63,6 +64,9 @@ sealed class StartDestination {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Ensure no default ActionBar is displayed when using Compose
+        WindowCompat.setDecorFitsSystemWindows(window, false) // Optional: for edge-to-edge
+
         setContent {
             // The ThemePreferenceManager will be observed directly within MyApplicationTheme
             MyApplicationTheme {
