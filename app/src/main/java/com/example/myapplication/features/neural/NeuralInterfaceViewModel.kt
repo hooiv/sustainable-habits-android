@@ -491,6 +491,36 @@ class NeuralInterfaceViewModel @Inject constructor(
 
         // Initialize adaptive learning rate
         adaptiveLearningRateOptimizer.reset()
+
+        // Initialize model compression stats
+        _compressionStats.value = CompressionStats(
+            originalSize = 1024 * 100, // 100KB placeholder
+            compressedSize = 1024 * 30, // 30KB placeholder
+            compressionRatio = 3.33f,
+            spaceSaved = 1024 * 70, // 70KB placeholder
+            percentSaved = 70f
+        )
+
+        // Initialize hyperparameter importance
+        _hyperparameterImportance.value = mapOf(
+            "learningRate" to 0.4f,
+            "hiddenLayerSizes" to 0.3f,
+            "batchSize" to 0.2f,
+            "dropoutRate" to 0.1f
+        )
+
+        // Subscribe to meta-learning progress
+        viewModelScope.launch {
+            metaLearning.metaLearningProgress.collect { progress ->
+                _metaLearningProgress.value = progress
+            }
+        }
+
+        viewModelScope.launch {
+            metaLearning.adaptationProgress.collect { progress ->
+                _adaptationProgress.value = progress
+            }
+        }
     }
 
     /**
