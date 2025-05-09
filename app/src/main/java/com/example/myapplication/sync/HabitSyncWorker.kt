@@ -53,7 +53,7 @@ class HabitSyncWorker(context: Context, params: WorkerParameters) : CoroutineWor
 
     private fun saveToFirestore(userId: String, habits: List<Map<String, Any>>) {
         habits.forEach { habit ->
-            FirebaseUtil.saveHabitData(userId, habit, onSuccess = {}, onFailure = { throw it })
+            FirebaseUtil.backupHabitData(userId, habit, onSuccess = {}, onFailure = { throw it })
         }
     }
 
