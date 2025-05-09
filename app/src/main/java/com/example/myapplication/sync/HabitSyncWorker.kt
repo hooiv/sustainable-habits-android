@@ -10,7 +10,6 @@ import com.example.myapplication.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Date
 
@@ -37,7 +36,10 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
             Log.w("HabitParsingWorker", "createdDate is null or not a Timestamp for ID $id. Using current date as fallback.")
             Date()
         }
-        
+
+        val lastUpdatedTimestampFirebase = data["lastUpdatedTimestamp"] as? Timestamp
+        val lastUpdatedTimestamp = lastUpdatedTimestampFirebase?.toDate() ?: createdDate
+
         val lastCompletedTimestamp = data["lastCompletedDate"] as? Timestamp
         val lastCompletedDate = lastCompletedTimestamp?.toDate()
 
@@ -51,7 +53,7 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
 
         val unlockedBadgesFirebase = data["unlockedBadges"] as? List<*>
         val unlockedBadges = unlockedBadgesFirebase?.mapNotNull { (it as? Long)?.toInt() } ?: emptyList()
-        
+
         val category = data["category"] as? String
 
         Habit(
@@ -63,6 +65,7 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
             goalProgress = goalProgress,
             streak = streak,
             createdDate = createdDate,
+            lastUpdatedTimestamp = lastUpdatedTimestamp,
             lastCompletedDate = lastCompletedDate,
             completionHistory = completionHistory,
             isEnabled = isEnabled,
@@ -76,13 +79,9 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
     }
 }
 
-
 class HabitSyncWorker(
-    context: Context, 
+    context: Context,
     params: WorkerParameters,
-    // Assuming you have a way to inject or get an instance of HabitRepository or HabitViewModel
-    // For simplicity, let's assume a static or singleton access for now, or pass it if possible
-    // private val habitRepository: HabitRepository 
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -91,10 +90,11 @@ class HabitSyncWorker(
 
         try {
             // Fetch local and remote data
-            val localHabits = fetchLocalHabits() // Should return List<Habit>
+            val localHabits = fetchLocalHabits()
             Log.d("HabitSyncWorker", "Fetched ${localHabits.size} local habits.")
-            val remoteHabitsMap = fetchRemoteHabitsData(userId) // Returns Map<String, Map<String, Any>>
-            Log.d("HabitSyncWorker", "Fetched ${remoteHabitsMap.size} remote habits.")
+
+            val remoteHabitsMap = FirebaseUtil.fetchHabitDataSuspend(userId)
+            Log.d("HabitSyncWorker", "Fetched ${remoteHabitsMap.size} remote habits from Firebase.")
 
             val remoteHabits = remoteHabitsMap.mapNotNull { (id, data) ->
                 parseHabitMapToDomain(id, data)
@@ -102,19 +102,19 @@ class HabitSyncWorker(
             Log.d("HabitSyncWorker", "Parsed ${remoteHabits.size} remote habits into domain objects.")
 
             // Merge data and resolve conflicts
-            val mergedHabits = mergeHabits(localHabits, remoteHabits) // Should operate on List<Habit>
+            val mergedHabits = mergeHabits(localHabits, remoteHabits)
             Log.d("HabitSyncWorker", "Merged into ${mergedHabits.size} habits.")
 
             // Save merged data back to Firestore and locally
             if (mergedHabits.isNotEmpty()) {
-                saveToFirestore(userId, mergedHabits)
+                FirebaseUtil.backupHabitDataSuspend(userId, mergedHabits)
                 Log.d("HabitSyncWorker", "Saved ${mergedHabits.size} habits to Firestore.")
-                saveToLocalDatabase(mergedHabits) // Should take List<Habit>
+                saveToLocalDatabase(mergedHabits)
                 Log.d("HabitSyncWorker", "Saved ${mergedHabits.size} habits to local database.")
             } else {
                 Log.d("HabitSyncWorker", "No habits to save after merge.")
             }
-            
+
             Log.d("HabitSyncWorker", "Sync completed successfully for user $userId.")
             Result.success()
         } catch (e: Exception) {
@@ -124,91 +124,38 @@ class HabitSyncWorker(
     }
 
     private suspend fun fetchLocalHabits(): List<Habit> {
-        // TODO: Implement actual logic to fetch habits from local Room database
-        // Example: return habitRepository.getAllHabits().first() 
         Log.w("HabitSyncWorker", "fetchLocalHabits: Placeholder - returning empty list.")
-        return emptyList() 
+        return emptyList()
     }
 
-    private suspend fun fetchRemoteHabitsData(userId: String): Map<String, Map<String, Any>> {
-        return try {
-            val data = mutableMapOf<String, Map<String, Any>>()
-            // Using a more direct way to handle suspend function for Firebase
-            FirebaseUtil.fetchHabitData(userId, 
-                onSuccess = { fetchedMap -> data.putAll(fetchedMap) },
-                onFailure = { exception -> throw exception } // Propagate failure
-            )
-            // This is tricky because fetchHabitData is not a suspend function and uses callbacks.
-            // For a cleaner approach in a CoroutineWorker, FirebaseUtil.fetchHabitData should be a suspend function.
-            // For now, let's assume it populates `data` correctly or we might need a delay/await mechanism if it's truly async.
-            // A better way if FirebaseUtil.fetchHabitData was a suspend function:
-            // return FirebaseUtil.fetchHabitDataSuspend(userId) 
-            
-            // Kludge for callback: wait a bit. THIS IS NOT ROBUST.
-            // Consider using kotlinx.coroutines.tasks.await() on the Task if FirebaseUtil can return it.
-            // Or use a CompletableDeferred.
-            // For now, assuming the callback populates `data` quickly enough or is synchronous for this example.
-            // If FirebaseUtil.fetchHabitData uses addOnSuccessListener/FailureListener, it's async.
-            // The current FirebaseUtil.fetchHabitData is not ideal for direct use in a suspend function like this.
-            // It should ideally return a Task or be a suspend function itself.
-            
-            // Let's assume FirebaseUtil.fetchHabitData is modified to be suspend or uses await()
-            // For the sake of this example, if it's callback based and we can't change it now:
-            var remoteData: Map<String, Map<String, Any>>? = null
-            var error: Exception? = null
-            val deferred = kotlinx.coroutines.CompletableDeferred<Map<String, Map<String, Any>>>()
+    private fun mergeHabits(localHabits: List<Habit>, remoteHabits: List<Habit>): List<Habit> {
+        Log.d("HabitSyncWorker", "Merging ${localHabits.size} local and ${remoteHabits.size} remote habits.")
+        val mergedHabits = mutableMapOf<String, Habit>()
 
-            FirebaseUtil.fetchHabitData(userId,
-                onSuccess = { fetchedMap -> deferred.complete(fetchedMap) },
-                onFailure = { exception -> deferred.completeExceptionally(exception) }
-            )
-            Log.d("HabitSyncWorker", "fetchRemoteHabitsData: Waiting for Firebase callback.")
-            return deferred.await() // Wait for the callback to complete
+        localHabits.forEach { mergedHabits[it.id] = it }
 
-        } catch (e: Exception) {
-            Log.e("HabitSyncWorker", "fetchRemoteHabitsData failed", e)
-            throw e // Re-throw to be caught by doWork
-        }
-    }
-    
-    // Simplified merge: remote wins for conflicts, new from local are added.
-    // A real merge would be more complex (e.g., based on last updated timestamp).
-    private fun mergeHabits(local: List<Habit>, remote: List<Habit>): List<Habit> {
-        Log.d("HabitSyncWorker", "Merging ${local.size} local and ${remote.size} remote habits.")
-        val remoteMap = remote.associateBy { it.id }
-        val localMap = local.associateBy { it.id }
-
-        val merged = mutableMapOf<String, Habit>()
-
-        // Add all remote habits (remote is source of truth for existing)
-        remote.forEach { merged[it.id] = it }
-
-        // Add local habits that are not in remote (new habits created offline)
-        local.forEach { 
-            if (!remoteMap.containsKey(it.id)) {
-                merged[it.id] = it
+        remoteHabits.forEach { remoteHabit ->
+            val localHabit = mergedHabits[remoteHabit.id]
+            if (localHabit == null) {
+                mergedHabits[remoteHabit.id] = remoteHabit
+            } else {
+                if (remoteHabit.lastUpdatedTimestamp.after(localHabit.lastUpdatedTimestamp)) {
+                    mergedHabits[remoteHabit.id] = remoteHabit
+                }
             }
-            // For conflicts (same ID): if you want local to win, or merge fields:
-            // else { val remoteHabit = remoteMap[it.id]!! /* handle merging fields */ }
         }
-        Log.d("HabitSyncWorker", "Merge result: ${merged.values.size} habits.")
-        return merged.values.toList()
+        Log.d("HabitSyncWorker", "Merge result: ${mergedHabits.values.size} habits.")
+        return mergedHabits.values.toList()
     }
 
-    private fun saveToFirestore(userId: String, habits: List<Habit>) {
+    private suspend fun saveToFirestore(userId: String, habits: List<Habit>) {
         if (habits.isEmpty()) {
             Log.d("HabitSyncWorker", "saveToFirestore: No habits to save.")
             return
         }
         Log.d("HabitSyncWorker", "saveToFirestore: Saving ${habits.size} habits for user $userId.")
-        // FirebaseUtil.backupHabitData already handles a list
-        FirebaseUtil.backupHabitData(userId, habits, 
-            onSuccess = { Log.d("HabitSyncWorker", "Successfully saved ${habits.size} habits to Firestore.") }, 
-            onFailure = { exception -> 
-                Log.e("HabitSyncWorker", "Failed to save habits to Firestore for user $userId.", exception)
-                throw exception // Propagate failure
-            }
-        )
+        FirebaseUtil.backupHabitDataSuspend(userId, habits)
+        Log.d("HabitSyncWorker", "Successfully saved ${habits.size} habits to Firestore.")
     }
 
     private suspend fun saveToLocalDatabase(habits: List<Habit>) {
@@ -217,11 +164,6 @@ class HabitSyncWorker(
             return
         }
         Log.d("HabitSyncWorker", "saveToLocalDatabase: Saving ${habits.size} habits.")
-        // TODO: Implement actual logic to save habits to local Room database
-        // Example: habitRepository.insertOrReplaceHabits(habits)
-        // Make sure the repository method is suspend or called from a coroutine scope.
         Log.w("HabitSyncWorker", "saveToLocalDatabase: Placeholder - not saving to local DB yet.")
-        // For example, if you had habitRepository:
-        // habitRepository.insertOrReplaceHabits(habits) 
     }
 }

@@ -5,6 +5,8 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 object FirebaseUtil {
     private val firestore = Firebase.firestore
@@ -25,8 +27,35 @@ object FirebaseUtil {
             "isEnabled" to habit.isEnabled,
             "reminderTime" to habit.reminderTime,
             "unlockedBadges" to habit.unlockedBadges,
-            "category" to habit.category
+            "category" to habit.category,
+            "lastUpdatedTimestamp" to Timestamp(habit.lastUpdatedTimestamp) // Add lastUpdatedTimestamp
         )
+    }
+
+    suspend fun backupHabitDataSuspend(userId: String, habits: List<Habit>) { // Renamed and made suspend
+        val userHabitsCollection = firestore.collection("users").document(userId).collection("habits")
+        val batch = firestore.batch()
+
+        for (habit in habits) {
+            val habitMap = habitToMap(habit.copy(lastUpdatedTimestamp = Date())) // Update timestamp before backup
+            val docRef = userHabitsCollection.document(habit.id)
+            batch.set(docRef, habitMap)
+        }
+        batch.commit().await() // Use await()
+    }
+
+    suspend fun fetchHabitDataSuspend(userId: String): Map<String, Map<String, Any>> { // Renamed and made suspend
+        val result = firestore.collection("users").document(userId).collection("habits")
+            .get()
+            .await() // Use await()
+        
+        val habitsMap = mutableMapOf<String, Map<String, Any>>()
+        for (document in result.documents) {
+            document.data?.let {
+                habitsMap[document.id] = it
+            }
+        }
+        return habitsMap
     }
 
     fun backupHabitData(userId: String, habits: List<Habit>, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
