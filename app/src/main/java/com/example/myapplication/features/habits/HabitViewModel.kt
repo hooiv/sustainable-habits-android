@@ -70,6 +70,13 @@ class HabitViewModel @Inject constructor(
             repository.updateHabit(habit)
         }
     }
+
+    fun restoreHabits(habitsToRestore: List<Habit>) {
+        viewModelScope.launch {
+            Log.d("HabitViewModel", "Restoring ${habitsToRestore.size} habits.")
+            repository.insertOrReplaceHabits(habitsToRestore) // Assuming this method exists in repository
+        }
+    }
     
     /**
      * Mark a habit as completed for the current day.

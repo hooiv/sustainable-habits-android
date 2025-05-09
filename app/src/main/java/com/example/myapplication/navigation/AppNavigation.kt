@@ -11,12 +11,17 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.background
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +34,7 @@ import com.example.myapplication.features.habits.EditHabitScreen
 import com.example.myapplication.features.habits.HabitListScreen
 import com.example.myapplication.features.stats.StatsScreen
 import com.example.myapplication.features.settings.SettingsScreen
+import com.example.myapplication.R
 import java.time.LocalDate
 import kotlin.math.pow
 
@@ -37,25 +43,41 @@ fun MainBottomBar(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = currentRoute == NavRoutes.HABIT_LIST,
-            onClick = { onNavigate(NavRoutes.HABIT_LIST) },
-            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Habits") },
-            label = { Text("Habits") }
-        )
-        NavigationBarItem(
-            selected = currentRoute == NavRoutes.STATS,
-            onClick = { onNavigate(NavRoutes.STATS) },
-            icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
-            label = { Text("Stats") }
-        )
-        NavigationBarItem(
-            selected = currentRoute == NavRoutes.SETTINGS,
-            onClick = { onNavigate(NavRoutes.SETTINGS) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-            label = { Text("Settings") }
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(
+                        colorResource(R.color.brand_gradient_start),
+                        colorResource(R.color.brand_gradient_end)
+                    )
+                )
+            )
+    ) {
+        NavigationBar(
+            containerColor = Color.Transparent,
+            contentColor = colorResource(R.color.brand_accent)
+        ) {
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.HABIT_LIST,
+                onClick = { onNavigate(NavRoutes.HABIT_LIST) },
+                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Habits") },
+                label = { Text("Habits") }
+            )
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.STATS,
+                onClick = { onNavigate(NavRoutes.STATS) },
+                icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
+                label = { Text("Stats") }
+            )
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.SETTINGS,
+                onClick = { onNavigate(NavRoutes.SETTINGS) },
+                icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                label = { Text("Settings") }
+            )
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 package com.example.myapplication.features.stats
 
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,11 +48,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myapplication.R
 import com.example.myapplication.data.model.Habit
+import com.example.myapplication.data.model.HabitFrequency
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.ui.animation.*
 import com.example.myapplication.ui.components.*
 import com.example.myapplication.ui.theme.*
+import com.google.firebase.auth.FirebaseAuth
+import com.example.myapplication.util.FirebaseUtil
+import com.google.firebase.Timestamp
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -61,10 +68,73 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
+
+// Helper function to parse Firebase data map to a Habit domain object
+private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
+    return try {
+        val name = data["name"] as? String ?: run {
+            Log.e("HabitParsing", "Habit name is null or not a String for ID $id. Skipping.")
+            return null
+        }
+        val description = data["description"] as? String
+        val frequencyString = data["frequency"] as? String ?: HabitFrequency.DAILY.name
+        val frequency = try { HabitFrequency.valueOf(frequencyString) } catch (e: IllegalArgumentException) {
+            Log.w("HabitParsing", "Invalid frequency string '$frequencyString' for ID $id. Defaulting to DAILY.")
+            HabitFrequency.DAILY
+        }
+
+        val goal = (data["goal"] as? Long)?.toInt() ?: 1
+        val goalProgress = (data["goalProgress"] as? Long)?.toInt() ?: 0
+        val streak = (data["streak"] as? Long)?.toInt() ?: 0
+
+        val createdTimestamp = data["createdDate"] as? Timestamp
+        val createdDate = createdTimestamp?.toDate() ?: run {
+            Log.w("HabitParsing", "createdDate is null or not a Timestamp for ID $id. Using current date as fallback.")
+            Date() // Fallback, ideally this should always come from Firebase and be valid
+        }
+        
+        val lastCompletedTimestamp = data["lastCompletedDate"] as? Timestamp
+        val lastCompletedDate = lastCompletedTimestamp?.toDate()
+
+        val completionHistoryFirebase = data["completionHistory"] as? List<*>
+        val completionHistory = completionHistoryFirebase?.mapNotNull {
+            (it as? Timestamp)?.toDate()
+        }?.toMutableList() ?: mutableListOf()
+
+        val isEnabled = data["isEnabled"] as? Boolean ?: true
+        val reminderTime = data["reminderTime"] as? String
+
+        val unlockedBadgesFirebase = data["unlockedBadges"] as? List<*>
+        val unlockedBadges = unlockedBadgesFirebase?.mapNotNull { (it as? Long)?.toInt() } ?: emptyList()
+        
+        val category = data["category"] as? String
+
+        Habit(
+            id = id, // Use the ID from the map key
+            name = name,
+            description = description,
+            frequency = frequency,
+            goal = goal,
+            goalProgress = goalProgress,
+            streak = streak,
+            createdDate = createdDate, // Use the parsed createdDate
+            lastCompletedDate = lastCompletedDate,
+            completionHistory = completionHistory,
+            isEnabled = isEnabled,
+            reminderTime = reminderTime,
+            unlockedBadges = unlockedBadges,
+            category = category
+        )
+    } catch (e: Exception) {
+        Log.e("HabitParsing", "Failed to parse habit with id $id: ${e.message}", e)
+        null
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,11 +192,22 @@ fun StatsScreen(navController: NavController) {
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { 
+            CenterAlignedTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                colorResource(R.color.brand_gradient_start),
+                                colorResource(R.color.brand_gradient_end)
+                            )
+                        )
+                    ),
+                title = {
                     Text(
-                        "Statistics Dashboard",
-                        fontWeight = FontWeight.Bold,
+                        text = "Statistics Dashboard",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        color = colorResource(R.color.brand_accent),
                         modifier = Modifier.alpha(chartAlpha)
                     )
                 },
@@ -136,14 +217,14 @@ fun StatsScreen(navController: NavController) {
                         modifier = Modifier.scale(if (isLoading) 0.8f else 1f)
                     ) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colorResource(R.color.brand_accent)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -181,8 +262,8 @@ fun StatsScreen(navController: NavController) {
                             .background(
                                 Brush.verticalGradient(
                                     listOf(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                                        colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
+                                        colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
                                     )
                                 )
                             )
@@ -229,8 +310,8 @@ fun StatsScreen(navController: NavController) {
                             .background(
                                 Brush.verticalGradient(
                                     listOf(
-                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
-                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
+                                        colorResource(R.color.brand_gradient_start).copy(alpha = 0.7f),
+                                        colorResource(R.color.brand_gradient_end).copy(alpha = 0.9f)
                                     )
                                 )
                             )
@@ -511,6 +592,107 @@ fun StatsScreen(navController: NavController) {
                 }
             }
             
+            // Firebase Backup and Restore Section
+            Text(
+                "Cloud Backup & Restore",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                JupiterGradientButton(
+                    text = "Backup Data",
+                    onClick = {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        if (userId != null) {
+                            FirebaseUtil.backupHabitData(userId, habits,
+                                onSuccess = {
+                                    coroutineScope.launch {
+                                        Toast.makeText(context, "Data backed up successfully!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                onFailure = { exception ->
+                                     coroutineScope.launch {
+                                        Toast.makeText(context, "Backup failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                                        Log.e("StatsScreenBackup", "Backup failed", exception)
+                                     }
+                                }
+                            )
+                        } else {
+                            coroutineScope.launch {
+                                Toast.makeText(context, "User not logged in for backup.", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+
+                JupiterGradientButton(
+                    text = "Restore Data",
+                    onClick = {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        if (userId != null) {
+                            FirebaseUtil.fetchHabitData(userId,
+                                onSuccess = { habitDataMap ->
+                                    coroutineScope.launch {
+                                        if (habitDataMap.isEmpty()) {
+                                            Toast.makeText(context, "No data found in backup to restore.", Toast.LENGTH_LONG).show()
+                                            Log.i("StatsScreenRestore", "No data found in backup for user $userId")
+                                            return@launch
+                                        }
+
+                                        val restoredHabits = mutableListOf<Habit>()
+                                        Log.d("StatsScreenRestore", "Fetched ${habitDataMap.size} items from Firebase for user $userId.")
+                                        for ((habitId, habitDetails) in habitDataMap) {
+                                            if (habitDetails is Map<*, *>) {
+                                                @Suppress("UNCHECKED_CAST")
+                                                val detailsMap = habitDetails as? Map<String, Any>
+                                                if (detailsMap != null) {
+                                                    Log.d("StatsScreenRestore", "Parsing habit with ID: $habitId")
+                                                    parseHabitMapToDomain(habitId, detailsMap)?.let { habit ->
+                                                        restoredHabits.add(habit)
+                                                    }
+                                                } else {
+                                                    Log.w("StatsScreenRestore", "Skipping habit ID $habitId: details not a Map<String, Any>: $habitDetails")
+                                                }
+                                            } else {
+                                                Log.w("StatsScreenRestore", "Skipping habit ID $habitId: details not a Map: $habitDetails")
+                                            }
+                                        }
+
+                                        if (restoredHabits.isNotEmpty()) {
+                                            Log.d("StatsScreenRestore", "Attempting to restore ${restoredHabits.size} habits.")
+                                            // Ensure HabitViewModel has a method like restoreHabits(List<Habit>)
+                                            // which uses a DAO with OnConflictStrategy.REPLACE
+                                            viewModel.restoreHabits(restoredHabits)
+                                            Toast.makeText(context, "Data restored: ${restoredHabits.size} habits processed.", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            Toast.makeText(context, "No valid habit data parsed from backup.", Toast.LENGTH_LONG).show()
+                                            Log.i("StatsScreenRestore", "No valid habits parsed from fetched data for user $userId.")
+                                        }
+                                    }
+                                },
+                                onFailure = { exception ->
+                                    coroutineScope.launch {
+                                        Log.e("StatsScreenRestore", "Restore failed for user $userId", exception)
+                                        Toast.makeText(context, "Restore failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            )
+                        } else {
+                             coroutineScope.launch {
+                                Toast.makeText(context, "User not logged in. Please log in to restore data.", Toast.LENGTH_LONG).show()
+                             }
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
             // Extra padding at bottom for scrolling
             Spacer(modifier = Modifier.height(40.dp))
         }

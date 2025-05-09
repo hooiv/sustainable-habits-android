@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.components
 
+import com.example.myapplication.R
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.animation.shimmerEffect
 
@@ -74,6 +76,27 @@ fun GradientButton(
             style = MaterialTheme.typography.labelLarge
         )
     }
+}
+
+/**
+ * Button with Jupiter to Fi gradient and accent color for consistent branding
+ */
+@Composable
+fun JupiterGradientButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    GradientButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        gradientColors = listOf(
+            colorResource(R.color.brand_gradient_start),
+            colorResource(R.color.brand_gradient_end)
+        ),
+        contentColor = colorResource(R.color.brand_accent)
+    )
 }
 
 /**

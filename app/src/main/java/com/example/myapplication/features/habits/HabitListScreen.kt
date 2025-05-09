@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
+import com.example.myapplication.ui.components.JupiterGradientButton
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,27 +58,32 @@ fun HabitListScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                colorResource(R.color.brand_gradient_start),
+                                colorResource(R.color.brand_gradient_end)
+                            )
+                        )
+                    ),
                 title = {
                     Text(
                         "My Habits",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = colorResource(R.color.brand_accent)
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = Color.Transparent
                 )
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    navController.navigate(NavRoutes.ADD_HABIT)
-                },
-                icon = { Icon(Icons.Filled.Add, contentDescription = "Add new habit") },
-                text = { Text("Add Habit") },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+            JupiterGradientButton(
+                text = "Add Habit",
+                onClick = { navController.navigate(NavRoutes.ADD_HABIT) }
             )
         }
     ) { innerPadding ->
@@ -180,15 +187,11 @@ fun HabitListScreen(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(bottom = 24.dp)
                             )
-                            Button(
+                            JupiterGradientButton(
+                                text = "Create First Habit",
                                 onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
-                                shape = MaterialTheme.shapes.large,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                Text("Create First Habit", color = MaterialTheme.colorScheme.onPrimary)
-                            }
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
                         }
                     }
                 } else {

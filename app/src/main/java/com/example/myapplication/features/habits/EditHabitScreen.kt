@@ -9,15 +9,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.R
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitFrequency
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.ui.components.JupiterGradientButton
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -87,17 +94,35 @@ fun EditHabitScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Edit Habit") },
+            CenterAlignedTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                colorResource(R.color.brand_gradient_start),
+                                colorResource(R.color.brand_gradient_end)
+                            )
+                        )
+                    ),
+                title = {
+                    Text(
+                        "Edit Habit",
+                        color = colorResource(R.color.brand_accent),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colorResource(R.color.brand_accent)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -254,7 +279,8 @@ fun EditHabitScreen(
 
             Spacer(modifier = Modifier.weight(1f)) // Pushes button to the bottom
 
-            Button(
+            JupiterGradientButton(
+                text = "Save Changes",
                 onClick = {
                     if (habitName.isNotBlank() && originalHabit != null) {
                         val goalValue = goal.toIntOrNull() ?: 1
@@ -272,11 +298,8 @@ fun EditHabitScreen(
                         navController.popBackStack() // Go back after saving
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = habitName.isNotBlank() && originalHabit != null // Enable button only if name is not blank and habit is loaded
-            ) {
-                Text("Save Changes")
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

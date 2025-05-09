@@ -1,5 +1,7 @@
 package com.example.myapplication.features.habits
 
+import com.example.myapplication.R
+
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -8,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,7 +20,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,6 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.model.HabitFrequency
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.ui.components.JupiterGradientButton
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -81,17 +89,35 @@ fun AddHabitScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Add New Habit") },
+            CenterAlignedTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                colorResource(R.color.brand_gradient_start),
+                                colorResource(R.color.brand_gradient_end)
+                            )
+                        )
+                    ),
+                title = {
+                    Text(
+                        "Add New Habit",
+                        color = colorResource(R.color.brand_accent),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colorResource(R.color.brand_accent)
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -229,7 +255,8 @@ fun AddHabitScreen(
 
             Spacer(modifier = Modifier.weight(1f)) // Pushes button to the bottom
 
-            Button(
+            JupiterGradientButton(
+                text = "Save Habit",
                 onClick = {
                     if (habitName.isNotBlank()) {
                         Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
@@ -248,11 +275,9 @@ fun AddHabitScreen(
                         navController.popBackStack() // Go back after saving
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = habitName.isNotBlank() // Enable button only if name is not blank
-            ) {
-                Text("Save Habit")
-            }
+                modifier = Modifier.fillMaxWidth()
+                // Note: button enabled when habitName is not blank
+            )
         }
     }
 }

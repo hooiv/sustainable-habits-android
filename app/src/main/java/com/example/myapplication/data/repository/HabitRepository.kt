@@ -33,6 +33,10 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
         habitDao.deleteHabit(habit)
     }
 
+    suspend fun insertOrReplaceHabits(habits: List<Habit>) {
+        habitDao.insertOrReplaceHabits(habits)
+    }
+
     // Example: Exposing the getHabitsByFrequency from DAO through repository
     fun getHabitsByFrequency(frequency: String): Flow<List<Habit>> {
         return habitDao.getHabitsByFrequency(frequency)

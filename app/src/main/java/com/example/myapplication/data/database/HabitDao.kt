@@ -15,6 +15,9 @@ interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHabit(habit: Habit)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplaceHabits(habits: List<Habit>) // New method for batch insert/replace
+
     @Update
     suspend fun updateHabit(habit: Habit)
 

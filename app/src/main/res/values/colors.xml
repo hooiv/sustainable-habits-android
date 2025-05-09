@@ -17,4 +17,12 @@
     <color name="md_theme_light_onSurface">#1C1B1F</color>
     <color name="md_theme_light_error">#B3261E</color>
     <color name="md_theme_light_onError">#FFFFFF</color>
+
+    <!--  inspired brand palette -->
+    <color name="brand_primary">#5A55AE</color>
+    <color name="brand_secondary">#55BEC9</color>
+    <color name="brand_gradient_start">#5A55AE</color>
+    <color name="brand_gradient_end">#55BEC9</color>
+    <color name="brand_accent">#F3BA2F</color>
+    <!-- End brand palette -->
 </resources>
