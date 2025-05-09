@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">My Application</string>
-    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
+    <string name="default_web_client_id">23851660716-vm06ak2goc6ppr77kn41itgsant5arbj.apps.googleusercontent.com</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
