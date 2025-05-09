@@ -34,7 +34,11 @@ class NeuralInterfaceViewModel @Inject constructor(
     private val hyperparameterOptimizer: HyperparameterOptimizer,
     private val anomalyDetector: AnomalyDetector,
     private val multiModalLearning: MultiModalLearning,
-    private val metaLearning: MetaLearning
+    private val metaLearning: MetaLearning,
+    private val biometricIntegration: com.example.myapplication.data.biometric.BiometricIntegration,
+    private val spatialComputing: com.example.myapplication.data.spatial.SpatialComputing,
+    private val voiceAndNlpProcessor: com.example.myapplication.data.nlp.VoiceAndNlpProcessor,
+    private val quantumVisualizer: com.example.myapplication.data.quantum.QuantumVisualizer
 ) : ViewModel() {
 
     // State for the current habit ID
@@ -147,6 +151,25 @@ class NeuralInterfaceViewModel @Inject constructor(
 
     private val _adaptationProgress = MutableStateFlow(0f)
     val adaptationProgress: StateFlow<Float> = _adaptationProgress.asStateFlow()
+
+    // State for biometric integration
+    val biometricData = biometricIntegration.getBiometricData()
+    val isMonitoring = biometricIntegration.isMonitoring
+
+    // State for spatial computing
+    val spatialObjects = spatialComputing.spatialObjects
+    val isSpatialTrackingActive = spatialComputing.isSpatialTrackingActive
+
+    // State for voice and NLP
+    val recognizedText = voiceAndNlpProcessor.recognizedText
+    val isListening = voiceAndNlpProcessor.isListening
+    val isSpeaking = voiceAndNlpProcessor.isSpeaking
+    val nlpIntent = voiceAndNlpProcessor.nlpIntent
+    val nlpConfidence = voiceAndNlpProcessor.confidence
+
+    // State for quantum visualization
+    private val _quantumVisualization = MutableStateFlow<com.example.myapplication.data.quantum.QuantumVisualization?>(null)
+    val quantumVisualization: StateFlow<com.example.myapplication.data.quantum.QuantumVisualization?> = _quantumVisualization.asStateFlow()
 
     /**
      * Load neural network for a habit
