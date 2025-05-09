@@ -36,6 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.features.habits.HabitViewModel
 import com.google.firebase.Timestamp
 import java.util.Date
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
 // Helper function to parse Firebase data map to a Habit domain object
 // Adapted from HabitSyncWorker.kt
@@ -154,6 +157,25 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
             var notificationSoundEnabled by remember { mutableStateOf(true) }
             var notificationCustomSoundUri by remember { mutableStateOf<String?>(null) }
 
+            val soundPickerLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent(),
+                onResult = { uri: Uri? ->
+                    notificationCustomSoundUri = uri?.toString()
+                    // Re-schedule notification with the new sound
+                    if (notificationsEnabled) {
+                        NotificationUtil.scheduleDailyNotification(
+                            context,
+                            notificationHour,
+                            notificationMinute,
+                            notificationText,
+                            notificationSoundEnabled,
+                            notificationCustomSoundUri
+                        )
+                        Toast.makeText(context, "Notification sound updated.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+
             HorizontalDivider()
             // Dark Mode Toggle
             Row(
@@ -247,8 +269,11 @@ fun SettingsScreen(context: Context, habitViewModel: HabitViewModel = hiltViewMo
                 }
                 // Custom sound picker (file picker intent)
                 Button(onClick = {
-                    // TODO: Implement file picker for custom sound URI
-                    Toast.makeText(context, "Custom sound picker not implemented in this demo.", Toast.LENGTH_SHORT).show()
+                    if (notificationSoundEnabled) {
+                        soundPickerLauncher.launch("audio/*")
+                    } else {
+                        Toast.makeText(context, "Enable notification sound first.", Toast.LENGTH_SHORT).show()
+                    }
                 }, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                     Text("Pick Custom Sound")
                 }
