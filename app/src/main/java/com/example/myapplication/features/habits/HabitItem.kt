@@ -378,6 +378,7 @@ fun HabitItem(
                                         HabitFrequency.DAILY -> Icons.Default.Today
                                         HabitFrequency.WEEKLY -> Icons.Default.DateRange
                                         HabitFrequency.MONTHLY -> Icons.Default.CalendarMonth
+                                        HabitFrequency.CUSTOM -> Icons.Default.Schedule
                                     },
                                     contentDescription = null,
                                     modifier = Modifier.size(14.dp),
@@ -389,6 +390,7 @@ fun HabitItem(
                                         HabitFrequency.DAILY -> "Daily"
                                         HabitFrequency.WEEKLY -> "Weekly"
                                         HabitFrequency.MONTHLY -> "Monthly"
+                                        HabitFrequency.CUSTOM -> "Custom"
                                     },
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer

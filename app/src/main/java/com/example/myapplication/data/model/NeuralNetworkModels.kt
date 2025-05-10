@@ -1,5 +1,6 @@
 package com.example.myapplication.data.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -131,35 +132,58 @@ data class NeuralActivation(
  * Data class representing a neural network with its nodes and connections
  */
 data class NetworkWithNodesAndConnections(
+    @Embedded
     val network: HabitNeuralNetwork,
     @Relation(
         parentColumn = "id",
         entityColumn = "networkId"
     )
-    val nodes: List<NeuralNode>,
+    val nodes: List<NeuralNode> = emptyList(),
     @Relation(
         parentColumn = "id",
         entityColumn = "networkId"
     )
-    val connections: List<NeuralConnection>
-)
+    val connections: List<NeuralConnection> = emptyList()
+) {
+    // Default constructor required by Room
+    constructor() : this(
+        HabitNeuralNetwork(
+            id = "",
+            habitId = "",
+            name = "",
+            createdAt = 0
+        )
+    )
+}
 
 /**
  * Data class representing a node with its connections
  */
 data class NodeWithConnections(
+    @Embedded
     val node: NeuralNode,
     @Relation(
         parentColumn = "id",
         entityColumn = "sourceNodeId"
     )
-    val outgoingConnections: List<NeuralConnection>,
+    val outgoingConnections: List<NeuralConnection> = emptyList(),
     @Relation(
         parentColumn = "id",
         entityColumn = "targetNodeId"
     )
-    val incomingConnections: List<NeuralConnection>
-)
+    val incomingConnections: List<NeuralConnection> = emptyList()
+) {
+    // Default constructor required by Room
+    constructor() : this(
+        NeuralNode(
+            id = "",
+            networkId = "",
+            type = NeuralNodeType.INPUT,
+            positionX = 0f,
+            positionY = 0f
+        )
+    )
+}
 
 /**
  * Data class representing a neural network training session

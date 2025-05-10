@@ -52,3 +52,8 @@ val CardDark = Color(0xFF2C2C2C)
 // Elevated surface colors
 val ElevatedSurfaceLight = Color(0xFFF5F5F5)
 val ElevatedSurfaceDark = Color(0xFF303030)
+
+// Additional colors needed for the app
+val Orange = Color(0xFFFF9800)
+val Brown = Color(0xFF795548)
+val CameraOff = Color(0xFFE57373)

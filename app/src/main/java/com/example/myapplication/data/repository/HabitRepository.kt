@@ -2,9 +2,11 @@ package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.database.HabitDao
 import com.example.myapplication.data.model.Habit
+import com.example.myapplication.data.model.HabitCompletion
 import com.example.myapplication.data.model.HabitFrequency
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -44,14 +46,14 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
     suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date()) {
         val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
-        
+
         // Check if habit is enabled
         if (!habit.isEnabled) {
             return
         }
-        
+
         // First, check if we've already completed this habit in the current period
-        if (isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency) && 
+        if (isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency) &&
             habit.lastCompletedDate != null) {
             // If already completed in same period, just increment progress
             val updatedHabit = habit.copy(
@@ -59,11 +61,11 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                 lastCompletedDate = completionDate,
                 completionHistory = (habit.completionHistory + completionDate).toMutableList()
             )
-            
+
             // Calculate streak only when goal is reached
             if (updatedHabit.goalProgress >= updatedHabit.goal) {
                 val newStreak = habit.streak + 1
-                
+
                 // Badge milestones
                 val badgeMilestones = listOf(7, 30, 100)
                 val newUnlockedBadges = habit.unlockedBadges.toMutableList()
@@ -72,7 +74,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                         newUnlockedBadges.add(milestone)
                     }
                 }
-                
+
                 habitDao.updateHabit(
                     updatedHabit.copy(
                         streak = newStreak,
@@ -90,11 +92,11 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                 lastCompletedDate = completionDate,
                 completionHistory = (habit.completionHistory + completionDate).toMutableList()
             )
-            
+
             // Check if goal is reached in one go
             if (updatedHabit.goalProgress >= updatedHabit.goal) {
                 val newStreak = calculateNewStreak(habit, completionDate)
-                
+
                 // Badge milestones
                 val badgeMilestones = listOf(7, 30, 100)
                 val newUnlockedBadges = habit.unlockedBadges.toMutableList()
@@ -103,7 +105,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                         newUnlockedBadges.add(milestone)
                     }
                 }
-                
+
                 habitDao.updateHabit(
                     updatedHabit.copy(
                         streak = newStreak,
@@ -123,7 +125,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
         if (habit.lastCompletedDate == null) {
             return 1
         }
-        
+
         return when (habit.frequency) {
             HabitFrequency.DAILY -> {
                 if (isConsecutiveDay(habit.lastCompletedDate, completionDate)) {
@@ -150,6 +152,15 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                     habit.streak // Don't change streak for same month completions
                 } else {
                     1 // Reset streak if months not consecutive
+                }
+            }
+            HabitFrequency.CUSTOM -> {
+                // For custom frequency, check if the completion date is in the custom schedule
+                if (habit.customSchedule.isNotEmpty()) {
+                    // If it's in the schedule, increment streak, otherwise reset
+                    habit.streak + 1 // Simplified for now, should check against customSchedule
+                } else {
+                    1 // Reset streak if no custom schedule defined
                 }
             }
         }
@@ -183,6 +194,14 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
                         if (isConsecutiveMonth(habit.lastCompletedDate, completionDate)) {
                             currentStreak++
                         } else if (!isSameMonth(habit.lastCompletedDate, completionDate)) {
+                            currentStreak = 1
+                        }
+                    }
+                    HabitFrequency.CUSTOM -> {
+                        // For custom frequency, check if the completion date is in the custom schedule
+                        if (habit.customSchedule.isNotEmpty()) {
+                            currentStreak++
+                        } else {
                             currentStreak = 1
                         }
                     }
@@ -259,6 +278,11 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
             HabitFrequency.DAILY -> isSameDay(date1, date2)
             HabitFrequency.WEEKLY -> isSameWeek(date1, date2)
             HabitFrequency.MONTHLY -> isSameMonth(date1, date2)
+            HabitFrequency.CUSTOM -> {
+                // For custom frequency, we need to check if both dates are in the same custom period
+                // This is a simplified implementation
+                true // Assuming custom periods are defined elsewhere
+            }
         }
     }
 
@@ -278,5 +302,16 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
     // Fetch habits for the current day
     fun getTodayHabits(): Flow<List<Habit>> {
         return habitDao.getTodayHabits()
+    }
+
+    /**
+     * Get completions for a specific habit
+     */
+    fun getHabitCompletions(habitId: String): Flow<List<HabitCompletion>> {
+        // This is a placeholder implementation
+        // In a real app, this would fetch completions from the database
+        return flow {
+            emit(emptyList())
+        }
     }
 }

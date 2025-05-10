@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,8 +36,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -891,7 +897,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                                         )
                                     )
                                 } else {
-                                    Brush.solidColor(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                        )
+                                    )
                                 }
                             )
                     )
@@ -1054,7 +1065,8 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                                         .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
                                 ) {
                                     // Simple chart visualization
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
+                                    val primaryColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                                         val width = size.width
                                         val height = size.height
                                         val barWidth = width / 7
@@ -1063,9 +1075,9 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                                         for (i in 0 until 7) {
                                             val barHeight = (0.3f + (i % 3) * 0.2f) * height
                                             drawRect(
-                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                                color = primaryColor,
                                                 topLeft = Offset(i * barWidth + 4, height - barHeight),
-                                                size = androidx.compose.ui.geometry.Size(barWidth - 8, barHeight)
+                                                size = Size(barWidth - 8, barHeight)
                                             )
                                         }
                                     }

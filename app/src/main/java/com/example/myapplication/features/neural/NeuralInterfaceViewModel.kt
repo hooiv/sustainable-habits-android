@@ -4,7 +4,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
-import androidx.compose.ui.geometry.Offset
+import com.example.myapplication.data.ml.HabitRecommendation
+import com.example.myapplication.data.ml.ReinforcementAction
+import com.example.myapplication.data.ml.TestResult
+import com.example.myapplication.data.ml.CompressionStats
+import com.example.myapplication.data.ml.Hyperparameters
+import com.example.myapplication.data.ml.TrialResult
+import com.example.myapplication.data.ml.HabitAnomaly
+import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.data.model.HabitCategory
 import com.example.myapplication.data.ml.*
 import com.example.myapplication.data.model.*
 import java.nio.ByteBuffer
@@ -544,14 +552,6 @@ class NeuralInterfaceViewModel @Inject constructor(
                 _adaptationProgress.value = progress
             }
         }
-    }
-
-    /**
-     * Clean up resources when ViewModel is cleared
-     */
-    override fun onCleared() {
-        super.onCleared()
-        contextFeatureCollector.stopCollecting()
     }
 
     /**

@@ -74,7 +74,7 @@ class NeuralNetworkRepository @Inject constructor(
                                 NeuralNodeType.RECURRENT -> com.example.myapplication.features.neural.NeuralNodeType.RECURRENT
                             },
                             position = Offset(node.positionX, node.positionY),
-                            connections = nodeConnections[node.id]?.map { it.targetNodeId } ?: mutableListOf(),
+                            connections = nodeConnections[node.id]?.map { it.targetNodeId }?.toMutableList() ?: mutableListOf(),
                             activationLevel = node.activationLevel,
                             label = node.label
                         )
@@ -307,20 +307,31 @@ class NeuralNetworkRepository @Inject constructor(
      * Propagate activation through the network
      */
     suspend fun propagateActivation(networkId: String) = withContext(Dispatchers.IO) {
-        val nodes = neuralNetworkDao.getNodesForNetwork(networkId).map { it }
-        val connections = neuralNetworkDao.getConnectionsForNetwork(networkId).map { it }
+        // Collect nodes and connections
+        val nodesList = mutableListOf<NeuralNode>()
+        val connectionsList = mutableListOf<NeuralConnection>()
+
+        // Collect nodes
+        neuralNetworkDao.getNodesForNetwork(networkId).collect { nodes ->
+            nodesList.addAll(nodes)
+        }
+
+        // Collect connections
+        neuralNetworkDao.getConnectionsForNetwork(networkId).collect { connections ->
+            connectionsList.addAll(connections)
+        }
 
         // Get active nodes
-        val activeNodes = nodes.filter { it.activationLevel > 0.1f }
+        val activeNodes = nodesList.filter { node -> node.activationLevel > 0.1f }
 
         // For each active node, propagate activation to connected nodes
         for (node in activeNodes) {
             // Find outgoing connections
-            val outgoingConnections = connections.filter { it.sourceNodeId == node.id }
+            val outgoingConnections = connectionsList.filter { conn -> conn.sourceNodeId == node.id }
 
             // Propagate activation to target nodes
             for (connection in outgoingConnections) {
-                val targetNode = nodes.find { it.id == connection.targetNodeId }
+                val targetNode = nodesList.find { n -> n.id == connection.targetNodeId }
                 if (targetNode != null) {
                     val newActivation = (targetNode.activationLevel + node.activationLevel * connection.weight).coerceIn(0f, 1f)
                     val updatedNode = targetNode.copy(activationLevel = newActivation)
