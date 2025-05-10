@@ -143,8 +143,8 @@ fun BiometricMonitoringCard(
                 
                 BiometricMeterItem(
                     label = "Sleep Quality",
-                    value = biometricData.sleepQuality,
-                    color = lerp(Color.Red, Color.Green, biometricData.sleepQuality)
+                    value = biometricData.sleepQuality ?: 0f,
+                    color = lerp(Color.Red, Color.Green, biometricData.sleepQuality ?: 0f)
                 )
             }
             
@@ -602,7 +602,7 @@ fun SpatialVisualization(
                     paint.color = android.graphics.Color.WHITE
                     paint.textSize = 8.sp.toPx()
                     paint.textAlign = Paint.Align.CENTER
-                    drawString(obj.label, x, y + size/2 + 15, paint)
+                    drawText(obj.label, x, y + size/2 + 15, paint)
                 }
             }
         }

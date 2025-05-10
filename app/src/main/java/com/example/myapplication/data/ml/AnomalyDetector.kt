@@ -89,12 +89,12 @@ class AnomalyDetector @Inject constructor() {
         
         // Calculate mean and standard deviation
         val mean = hours.average()
-        val stdDev = calculateStandardDeviation(hours, mean)
+        val stdDev = calculateStandardDeviation(hours.map { it.toDouble() }, mean)
         
         // Detect anomalies using Z-score
         for (i in completions.indices) {
             val hour = hours[i]
-            val zScore = abs((hour - mean) / stdDev)
+            val zScore = abs((hour - mean) / stdDev).toFloat()
             
             if (zScore > Z_SCORE_THRESHOLD) {
                 val completion = completions[i]
@@ -149,7 +149,7 @@ class AnomalyDetector @Inject constructor() {
         // Detect anomalies using Z-score
         for (i in timeDiffs.indices) {
             val diff = timeDiffs[i]
-            val zScore = abs((diff - mean) / stdDev)
+            val zScore = abs((diff - mean) / stdDev).toFloat()
             
             if (zScore > Z_SCORE_THRESHOLD) {
                 val completion = sortedCompletions[i + 1]

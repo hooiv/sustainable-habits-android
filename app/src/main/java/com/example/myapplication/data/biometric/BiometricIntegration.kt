@@ -15,6 +15,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.core.Camera
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -150,13 +151,10 @@ class BiometricIntegration @Inject constructor(
                 // Unbind any bound use cases
                 cameraProvider?.unbindAll()
                 
-                // Select back camera
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                
                 // Bind camera to lifecycle
                 cameraProvider?.bindToLifecycle(
                     lifecycleOwner,
-                    cameraSelector,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
                     imageAnalyzer
                 )
                 

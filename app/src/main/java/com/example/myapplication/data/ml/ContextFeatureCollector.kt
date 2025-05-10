@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.sqrt
 
 /**
  * Collects contextual features for neural network training
@@ -269,10 +270,10 @@ class ContextFeatureCollector @Inject constructor(
         val month = calendar.get(Calendar.MONTH)
         
         // Simulate seasonal variations
-        val seasonalFactor = when {
-            month in 2..4 -> 0.7f // Spring
-            month in 5..7 -> 0.9f // Summer
-            month in 8..10 -> 0.6f // Fall
+        val seasonalFactor = when (month) {
+            in 2..4 -> 0.7f // Spring
+            in 5..7 -> 0.9f // Summer
+            in 8..10 -> 0.6f // Fall
             else -> 0.3f // Winter
         }
         
@@ -325,7 +326,7 @@ class ContextFeatureCollector @Inject constructor(
                 val z = event.values[2]
                 
                 // Calculate magnitude of acceleration
-                val magnitude = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+                val magnitude = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
                 
                 // Normalize to 0-1 scale (assuming range 0-20)
                 activityLevel = (magnitude / 20f).coerceIn(0f, 1f)
@@ -347,6 +348,7 @@ class ContextFeatureCollector @Inject constructor(
         updateLocationFeatures()
     }
     
+    @Deprecated("Deprecated in Java")
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
         // Not used
     }

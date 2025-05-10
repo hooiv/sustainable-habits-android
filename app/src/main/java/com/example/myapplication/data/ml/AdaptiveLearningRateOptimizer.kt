@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
@@ -124,7 +125,7 @@ class AdaptiveLearningRateOptimizer @Inject constructor() {
         val threshold = mean * 0.01 // 1% threshold
         
         // Check if all recent losses are within threshold of mean
-        return recentLosses.all { Math.abs(it - mean) < threshold }
+        return recentLosses.all { abs(it - mean) < threshold }
     }
     
     /**
@@ -170,7 +171,7 @@ class AdaptiveLearningRateOptimizer @Inject constructor() {
         
         // Cosine annealing
         if (progress > 0.5f) {
-            val cosineDecay = 0.5f * (1 + kotlin.math.cos(kotlin.math.PI * progress))
+            val cosineDecay = 0.5f * (1 + kotlin.math.cos(kotlin.math.PI * progress)).toFloat()
             val newLR = MIN_LEARNING_RATE + (INITIAL_LEARNING_RATE - MIN_LEARNING_RATE) * cosineDecay
             _learningRate.value = newLR
             Log.d(TAG, "Applied cosine annealing at epoch $epoch, new learning rate: ${_learningRate.value}")

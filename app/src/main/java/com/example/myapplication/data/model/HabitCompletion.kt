@@ -15,7 +15,7 @@ import java.util.UUID
 data class HabitCompletion(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val habitId: String, // Foreign key to Habit
-    val timestamp: Date = Date(),
+    val completionDate: Long, // Timestamp for this completion
     val note: String? = null, // Optional note for this completion
     val mood: Int? = null, // Optional mood rating (1-5)
     val location: String? = null, // Optional location info

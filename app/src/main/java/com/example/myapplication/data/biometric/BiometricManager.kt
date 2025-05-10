@@ -273,19 +273,16 @@ class BiometricManager @Inject constructor(
         // In a real app, this would use a more sophisticated algorithm
         // For this demo, we'll use a simple approach based on movement variability
         
-        var stressLevel = 0f
-        
-        if (accelerometerHistory.size > 10 && gyroscopeHistory.size > 10) {
+        val stressLevel = if (accelerometerHistory.size > 10 && gyroscopeHistory.size > 10) {
             // Calculate movement variability
             val accVariability = calculateVariability(accelerometerHistory)
             val gyroVariability = calculateVariability(gyroscopeHistory)
             
             // Combine variabilities to estimate stress level (0-1 scale)
-            stressLevel = (accVariability + gyroVariability) / 2f
-            stressLevel = stressLevel.coerceIn(0f, 1f)
+            ((accVariability + gyroVariability) / 2f).coerceIn(0f, 1f)
         } else {
             // Simulate stress level if not enough sensor data
-            stressLevel = (Math.random() * 0.5 + 0.25).toFloat()
+            (Math.random() * 0.5 + 0.25).toFloat()
         }
         
         _stressLevel.value = stressLevel
