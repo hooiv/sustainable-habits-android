@@ -72,15 +72,15 @@ fun VoiceAndNlpCard(
                         .size(32.dp)
                         .padding(end = 8.dp)
                 )
-                
+
                 Text(
                     text = "Voice & Natural Language",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Status indicators
                 Row {
                     StatusIndicator(
@@ -88,9 +88,9 @@ fun VoiceAndNlpCard(
                         label = "Listening",
                         activeColor = Color.Green
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     StatusIndicator(
                         isActive = isSpeaking,
                         label = "Speaking",
@@ -98,9 +98,9 @@ fun VoiceAndNlpCard(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Voice visualization
             VoiceVisualization(
                 isListening = isListening,
@@ -108,18 +108,18 @@ fun VoiceAndNlpCard(
                     .fillMaxWidth()
                     .height(80.dp)
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Recognized text
             Text(
                 text = "Recognized Text:",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,15 +130,15 @@ fun VoiceAndNlpCard(
                 Text(
                     text = recognizedText.ifEmpty { "Say something..." },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (recognizedText.isEmpty()) 
+                    color = if (recognizedText.isEmpty())
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    else 
+                    else
                         MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // NLP intent
             if (nlpIntent != null) {
                 Row(
@@ -149,14 +149,14 @@ fun VoiceAndNlpCard(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Text(
                         text = nlpIntent.action.replaceFirstChar { it.uppercase() },
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     LinearProgressIndicator(
                         progress = confidence,
                         modifier = Modifier
@@ -165,9 +165,9 @@ fun VoiceAndNlpCard(
                             .clip(RoundedCornerShape(3.dp))
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Entities
                 if (nlpIntent.entities.isNotEmpty()) {
                     Text(
@@ -175,9 +175,9 @@ fun VoiceAndNlpCard(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Spacer(modifier = Modifier.height(4.dp))
-                    
+
                     nlpIntent.entities.forEach { (key, value) ->
                         Row {
                             Text(
@@ -185,7 +185,7 @@ fun VoiceAndNlpCard(
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium
                             )
-                            
+
                             Text(
                                 text = value,
                                 style = MaterialTheme.typography.bodySmall
@@ -193,12 +193,12 @@ fun VoiceAndNlpCard(
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Response
                 val response = generateResponse(nlpIntent)
-                
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -214,9 +214,9 @@ fun VoiceAndNlpCard(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Action buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -225,9 +225,9 @@ fun VoiceAndNlpCard(
                 Button(
                     onClick = if (isListening) onStopListening else onStartListening,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isListening) 
-                            MaterialTheme.colorScheme.error 
-                        else 
+                        containerColor = if (isListening)
+                            MaterialTheme.colorScheme.error
+                        else
                             MaterialTheme.colorScheme.primary
                     )
                 ) {
@@ -263,9 +263,9 @@ fun StatusIndicator(
                 .clip(CircleShape)
                 .background(if (isActive) activeColor else Color.Gray)
         )
-        
+
         Spacer(modifier = Modifier.width(4.dp))
-        
+
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
@@ -291,18 +291,22 @@ fun VoiceVisualization(
             repeatMode = RepeatMode.Restart
         )
     )
-    
+
+    // Get colors outside of Canvas
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            .background(surfaceVariantColor.copy(alpha = 0.3f))
             .padding(8.dp)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val width = size.width
             val height = size.height
             val centerY = height / 2
-            
+
             // Draw baseline
             drawLine(
                 color = Color.Gray.copy(alpha = 0.5f),
@@ -310,13 +314,13 @@ fun VoiceVisualization(
                 end = Offset(width, centerY),
                 strokeWidth = 1.dp.toPx()
             )
-            
+
             if (isListening) {
                 // Draw voice waveform
                 val numBars = 30
                 val barWidth = width / numBars
                 val maxBarHeight = height * 0.8f
-                
+
                 for (i in 0 until numBars) {
                     val x = i * barWidth
                     val seed = (i / numBars.toFloat() + animationProgress) * 10f
@@ -325,11 +329,11 @@ fun VoiceVisualization(
                     } else {
                         maxBarHeight * 0.1f
                     }
-                    
-                    val barColor = MaterialTheme.colorScheme.primary.copy(
+
+                    val barColor = primaryColor.copy(
                         alpha = if (isListening) 0.7f else 0.3f
                     )
-                    
+
                     drawLine(
                         color = barColor,
                         start = Offset(x + barWidth / 2, centerY - barHeight / 2),
@@ -341,21 +345,21 @@ fun VoiceVisualization(
                 // Draw flat line with small ripples
                 val path = Path()
                 path.moveTo(0f, centerY)
-                
+
                 for (x in 0 until width.toInt() step 4) {
                     val progress = (x.toFloat() / width + animationProgress) % 1f
                     val y = centerY + height * 0.05f * sin(progress * PI.toFloat() * 10)
                     path.lineTo(x.toFloat(), y)
                 }
-                
+
                 drawPath(
                     path = path,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    color = primaryColor.copy(alpha = 0.3f),
                     style = Stroke(width = 2.dp.toPx())
                 )
             }
         }
-        
+
         if (!isListening) {
             Text(
                 text = "Tap to speak",
@@ -376,7 +380,7 @@ private fun generateResponse(nlpIntent: NlpIntent): String {
             val habitName = nlpIntent.entities["habit_name"] ?: "new habit"
             val time = nlpIntent.entities["time"]
             val frequency = nlpIntent.entities["frequency"]
-            
+
             if (time != null && frequency != null) {
                 "I'll create a $habitName habit for you, scheduled for $time, $frequency."
             } else if (time != null) {
@@ -445,16 +449,16 @@ fun QuantumVisualizationCard(
                         .size(32.dp)
                         .padding(end = 8.dp)
                 )
-                
+
                 Text(
                     text = "Quantum-Inspired Visualization",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             if (quantumVisualization != null) {
                 // Quantum state info
                 Row(
@@ -465,20 +469,20 @@ fun QuantumVisualizationCard(
                         label = "Amplitude",
                         value = String.format("%.2f", quantumVisualization.amplitude)
                     )
-                    
+
                     QuantumStateItem(
                         label = "Phase",
                         value = String.format("%.2f°", quantumVisualization.phase * 180 / PI.toFloat())
                     )
-                    
+
                     QuantumStateItem(
                         label = "Energy",
                         value = "Level ${quantumVisualization.energyLevel}"
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Quantum particle visualization
                 QuantumParticleVisualization(
                     particles = quantumVisualization.particles,
@@ -487,9 +491,9 @@ fun QuantumVisualizationCard(
                         .fillMaxWidth()
                         .height(200.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Particle count
                 Text(
                     text = "${quantumVisualization.particles.size} quantum particles, " +
@@ -515,9 +519,9 @@ fun QuantumVisualizationCard(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Update button
             Button(
                 onClick = onUpdateSimulation,
@@ -552,7 +556,7 @@ fun QuantumStateItem(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
@@ -579,7 +583,7 @@ fun QuantumParticleVisualization(
             repeatMode = RepeatMode.Restart
         )
     )
-    
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -591,27 +595,27 @@ fun QuantumParticleVisualization(
             val height = size.height
             val centerX = width / 2
             val centerY = height / 2
-            
+
             // Draw entanglements
             entanglements.forEach { entanglement ->
                 // Find particles for each qubit
                 val qubit1Particles = particles.filter { it.qubitIndex == entanglement.qubit1Index }
                 val qubit2Particles = particles.filter { it.qubitIndex == entanglement.qubit2Index }
-                
+
                 // Draw entanglement lines between some particles
                 val numLines = (qubit1Particles.size.coerceAtMost(qubit2Particles.size) * entanglement.strength).toInt().coerceAtLeast(1)
-                
+
                 for (i in 0 until numLines) {
                     if (i < qubit1Particles.size && i < qubit2Particles.size) {
                         val particle1 = qubit1Particles[i]
                         val particle2 = qubit2Particles[i]
-                        
+
                         // Calculate positions
                         val x1 = centerX + particle1.position.x
                         val y1 = centerY + particle1.position.y
                         val x2 = centerX + particle2.position.x
                         val y2 = centerY + particle2.position.y
-                        
+
                         // Draw entanglement line
                         drawLine(
                             color = Color(entanglement.color).copy(alpha = 0.3f * entanglement.strength),
@@ -623,42 +627,42 @@ fun QuantumParticleVisualization(
                     }
                 }
             }
-            
+
             // Draw particles
             particles.forEach { particle ->
                 // Calculate position with animation
                 val angle = particle.phase + animationProgress * 2 * PI.toFloat()
                 val distance = particle.amplitude * 20f
                 val wobble = sin(animationProgress * 4 * PI.toFloat() + particle.phase) * 5f
-                
+
                 val x = centerX + particle.position.x + cos(angle) * distance + wobble
                 val y = centerY + particle.position.y + sin(angle) * distance + wobble
-                
+
                 // Calculate size based on amplitude
                 val size = 2.dp.toPx() + particle.amplitude * 6.dp.toPx()
-                
+
                 // Draw particle
                 drawCircle(
                     color = Color(particle.color).copy(alpha = 0.7f),
                     center = Offset(x, y),
                     radius = size
                 )
-                
+
                 // Draw particle trail
                 val trailPath = Path()
                 trailPath.moveTo(x, y)
-                
+
                 for (i in 1..5) {
                     val trailAngle = particle.phase + (animationProgress - i * 0.05f) * 2 * PI.toFloat()
                     val trailDistance = particle.amplitude * 20f * (1f - i * 0.15f)
                     val trailWobble = sin((animationProgress - i * 0.05f) * 4 * PI.toFloat() + particle.phase) * 5f * (1f - i * 0.15f)
-                    
+
                     val trailX = centerX + particle.position.x + cos(trailAngle) * trailDistance + trailWobble
                     val trailY = centerY + particle.position.y + sin(trailAngle) * trailDistance + trailWobble
-                    
+
                     trailPath.lineTo(trailX, trailY)
                 }
-                
+
                 drawPath(
                     path = trailPath,
                     color = Color(particle.color).copy(alpha = 0.3f),

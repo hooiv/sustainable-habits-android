@@ -549,129 +549,7 @@ fun NeuralInterfaceScreen(
                                 )
 
                                 // Simple line chart for accuracy and loss
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .padding(8.dp)
-                                ) {
-                                    Canvas(modifier = Modifier.fillMaxSize()) {
-                                        val width = size.width
-                                        val height = size.height
-                                        val padding = 16f
-
-                                        // Draw grid
-                                        val gridColor = Color.Gray.copy(alpha = 0.2f)
-                                        val gridLines = 5
-
-                                        for (i in 0..gridLines) {
-                                            val y = padding + (height - 2 * padding) * i / gridLines
-
-                                            drawLine(
-                                                color = gridColor,
-                                                start = Offset(padding, y),
-                                                end = Offset(width - padding, y),
-                                                strokeWidth = 1f
-                                            )
-                                        }
-
-                                        // Draw accuracy curve
-                                        if (trainingEpochs.size > 1) {
-                                            val path = Path()
-                                            val pointCount = trainingEpochs.size
-
-                                            trainingEpochs.forEachIndexed { index, epoch ->
-                                                val x = padding + (width - 2 * padding) * index / (pointCount - 1)
-                                                val y = height - padding - (height - 2 * padding) * epoch.accuracy
-
-                                                if (index == 0) {
-                                                    path.moveTo(x, y)
-                                                } else {
-                                                    path.lineTo(x, y)
-                                                }
-                                            }
-
-                                            // Store the color outside of the drawPath call
-                                            val primaryColor = MaterialTheme.colorScheme.primary
-                                            drawPath(
-                                                path = path,
-                                                color = primaryColor,
-                                                style = Stroke(width = 2f)
-                                            )
-                                        }
-
-                                        // Draw loss curve
-                                        if (trainingEpochs.size > 1) {
-                                            val path = Path()
-                                            val pointCount = trainingEpochs.size
-                                            val maxLoss = trainingEpochs.maxOfOrNull { it.loss } ?: 1f
-
-                                            trainingEpochs.forEachIndexed { index, epoch ->
-                                                val x = padding + (width - 2 * padding) * index / (pointCount - 1)
-                                                val normalizedLoss = (epoch.loss / maxLoss).coerceIn(0f, 1f)
-                                                val y = padding + (height - 2 * padding) * normalizedLoss
-
-                                                if (index == 0) {
-                                                    path.moveTo(x, y)
-                                                } else {
-                                                    path.lineTo(x, y)
-                                                }
-                                            }
-
-                                            // Store the color outside of the drawPath call
-                                            val errorColor = MaterialTheme.colorScheme.error
-                                            drawPath(
-                                                path = path,
-                                                color = errorColor,
-                                                style = Stroke(width = 2f)
-                                            )
-                                        }
-                                    }
-
-                                    // Legend
-                                    Row(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(8.dp)
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.padding(end = 8.dp)
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(12.dp)
-                                                    .background(MaterialTheme.colorScheme.primary)
-                                            )
-
-                                            Spacer(modifier = Modifier.width(4.dp))
-
-                                            Text(
-                                                text = "Accuracy",
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
-
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(12.dp)
-                                                    .background(MaterialTheme.colorScheme.error)
-                                            )
-
-                                            Spacer(modifier = Modifier.width(4.dp))
-
-                                            Text(
-                                                text = "Loss",
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
-                                    }
-                                }
+                                TrainingProgressChart(trainingEpochs = trainingEpochs)
                             }
                         }
 
@@ -799,7 +677,7 @@ fun NeuralInterfaceScreen(
                             )
 
                             // Reinforcement learning action
-                            // Convert from data.ml.ReinforcementAction to data.model.SimpleReinforcementAction if needed
+                            // Convert from data.ml.ReinforcementAction to data.model.SimpleReinforcementAction
                             val modelAction = reinforcementAction?.let { mlAction ->
                                 com.example.myapplication.data.model.SimpleReinforcementAction(
                                     actionId = mlAction.actionType.ordinal
@@ -809,7 +687,13 @@ fun NeuralInterfaceScreen(
                             ReinforcementActionCard(
                                 action = modelAction,
                                 actionDescription = reinforcementAction?.let {
-                                    viewModel.getActionDescription(it)
+                                    // Convert from data.ml.ReinforcementAction to data.model.ReinforcementAction
+                                    val action = com.example.myapplication.data.model.ReinforcementAction(
+                                        habitId = viewModel.currentHabitId.value ?: "",
+                                        actionType = com.example.myapplication.data.model.ActionType.values()[it.actionType.ordinal % com.example.myapplication.data.model.ActionType.values().size],
+                                        timestamp = it.timestamp
+                                    )
+                                    viewModel.getActionDescription(action)
                                 } ?: "No recommendation available yet",
                                 onFeedback = { feedback ->
                                     viewModel.provideReinforcementFeedback(feedback)
@@ -1010,11 +894,9 @@ fun NeuralInterfaceScreen(
                                 onStartMonitoring = {
                                     // In a real app, this would use the actual lifecycle owner
                                     // For this demo, we'll just show a message
-                                    // Get the LifecycleOwner from the ViewModelStoreOwner
-                                    val lifecycleOwner = LocalViewModelStoreOwner.current as? LifecycleOwner
-                                    if (lifecycleOwner != null) {
-                                        viewModel.startBiometricMonitoring(lifecycleOwner)
-                                    }
+                                    // In a real app, this would use the actual lifecycle owner
+                                    // For this demo, we'll just call the method directly
+                                    viewModel.startBiometricMonitoring(null)
                                 },
                                 onStopMonitoring = { viewModel.stopBiometricMonitoring() }
                             )
@@ -1054,6 +936,136 @@ fun NeuralInterfaceScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * A composable function for displaying training progress chart
+ */
+@Composable
+private fun TrainingProgressChart(trainingEpochs: List<com.example.myapplication.data.model.NeuralTrainingEpoch>) {
+    // Extract theme colors before Canvas
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val errorColor = MaterialTheme.colorScheme.error
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(8.dp)
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+            val padding = 16f
+
+            // Draw grid
+            val gridColor = Color.Gray.copy(alpha = 0.2f)
+            val gridLines = 5
+
+            for (i in 0..gridLines) {
+                val y = padding + (height - 2 * padding) * i / gridLines
+
+                drawLine(
+                    color = gridColor,
+                    start = Offset(padding, y),
+                    end = Offset(width - padding, y),
+                    strokeWidth = 1f
+                )
+            }
+
+            // Draw accuracy curve
+            if (trainingEpochs.size > 1) {
+                val path = Path()
+                val pointCount = trainingEpochs.size
+
+                trainingEpochs.forEachIndexed { index, epoch ->
+                    val x = padding + (width - 2 * padding) * index / (pointCount - 1)
+                    val y = height - padding - (height - 2 * padding) * epoch.accuracy
+
+                    if (index == 0) {
+                        path.moveTo(x, y)
+                    } else {
+                        path.lineTo(x, y)
+                    }
+                }
+
+                drawPath(
+                    path = path,
+                    color = primaryColor,
+                    style = Stroke(width = 2f)
+                )
+            }
+
+            // Draw loss curve
+            if (trainingEpochs.size > 1) {
+                val path = Path()
+                val pointCount = trainingEpochs.size
+                val maxLoss = trainingEpochs.maxOfOrNull { it.loss } ?: 1f
+
+                trainingEpochs.forEachIndexed { index, epoch ->
+                    val x = padding + (width - 2 * padding) * index / (pointCount - 1)
+                    val normalizedLoss = (epoch.loss / maxLoss).coerceIn(0f, 1f)
+                    val y = padding + (height - 2 * padding) * normalizedLoss
+
+                    if (index == 0) {
+                        path.moveTo(x, y)
+                    } else {
+                        path.lineTo(x, y)
+                    }
+                }
+
+                drawPath(
+                    path = path,
+                    color = errorColor,
+                    style = Stroke(width = 2f)
+                )
+            }
+        }
+
+        // Legend
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(primaryColor)
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "Accuracy",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(errorColor)
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "Loss",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

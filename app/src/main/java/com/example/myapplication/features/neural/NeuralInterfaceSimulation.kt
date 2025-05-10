@@ -36,6 +36,39 @@ fun NeuralInterfaceSimulation(
     // State for animation
     val coroutineScope = rememberCoroutineScope()
 
+    // Define propagation function
+    val propagateActivation = object {
+        operator fun invoke() {
+            // Create a copy of nodes to work with
+            val updatedNodes = nodes.toMutableList()
+
+            // For each node, propagate activation to connected nodes
+            for (node in nodes) {
+                if (node.activationLevel > 0.1f) {
+                    for (connectedNodeId in node.connections) {
+                        val connectedNodeIndex = updatedNodes.indexOfFirst { it.id == connectedNodeId }
+                        if (connectedNodeIndex >= 0) {
+                            val connectedNode = updatedNodes[connectedNodeIndex]
+                            val newActivation = (connectedNode.activationLevel + node.activationLevel * 0.7f).coerceIn(0f, 1f)
+                            updatedNodes[connectedNodeIndex] = connectedNode.copy(activationLevel = newActivation)
+                        }
+                    }
+                }
+            }
+
+            // Update nodes
+            nodes = updatedNodes
+
+            // Continue propagation if any node is still active
+            if (updatedNodes.any { it.activationLevel > 0.1f }) {
+                coroutineScope.launch {
+                    delay(300)
+                    invoke()
+                }
+            }
+        }
+    }
+
     // Function to activate a node
     fun activateNode(nodeId: String) {
         nodes = nodes.map { node ->
@@ -53,65 +86,9 @@ fun NeuralInterfaceSimulation(
         }
     }
 
-    // Function to propagate activation through the network
-    fun propagateActivation() {
-        // Create a copy of nodes to work with
-        val updatedNodes = nodes.toMutableList()
-
-        // For each node, propagate activation to connected nodes
-        for (node in nodes) {
-            if (node.activationLevel > 0.1f) {
-                for (connectedNodeId in node.connections) {
-                    val connectedNodeIndex = updatedNodes.indexOfFirst { it.id == connectedNodeId }
-                    if (connectedNodeIndex >= 0) {
-                        val connectedNode = updatedNodes[connectedNodeIndex]
-                        val newActivation = (connectedNode.activationLevel + node.activationLevel * 0.7f).coerceIn(0f, 1f)
-                        updatedNodes[connectedNodeIndex] = connectedNode.copy(activationLevel = newActivation)
-                    }
-                }
-            }
-        }
-
-        // Update nodes
-        nodes = updatedNodes
-
-        // Continue propagation if any node is still active
-        if (updatedNodes.any { it.activationLevel > 0.1f }) {
-            coroutineScope.launch {
-                delay(300)
-                propagateActivation()
-            }
-        }
-    }
-
-    // Initialize propagation
+    // Initialize propagation if needed
     LaunchedEffect(Unit) {
-        // Define propagation function
-        fun propagateActivation() {
-            // Create a copy of nodes to work with
-            val updatedNodes = nodes.toMutableList()
-
-            // For each node, propagate activation to connected nodes
-            for (i in nodes.indices) {
-                val node = nodes[i]
-                if (node.activationLevel > 0.1f) {
-                    for (connectedNodeId in node.connections) {
-                        val connectedNodeIndex = updatedNodes.indexOfFirst { it.id == connectedNodeId }
-                        if (connectedNodeIndex >= 0) {
-                            val connectedNode = updatedNodes[connectedNodeIndex]
-                            val newActivation = (connectedNode.activationLevel + node.activationLevel * 0.7f).coerceIn(0f, 1f)
-                            updatedNodes[connectedNodeIndex] = connectedNode.copy(activationLevel = newActivation)
-                        }
-                    }
-
-                    // Decay activation of current node
-                    updatedNodes[i] = node.copy(activationLevel = (node.activationLevel * 0.8f).coerceIn(0f, 1f))
-                }
-            }
-
-            // Update nodes
-            nodes = updatedNodes
-        }
+        // Initial setup if needed
     }
 
     Box(modifier = modifier) {
@@ -163,11 +140,11 @@ fun NeuralInterfaceSimulation(
 
                 // Determine node color based on type and activation
                 val nodeColor = when (node.type) {
-                    NeuralNodeType.INPUT -> Color(0xFF4CAF50)
-                    NeuralNodeType.HIDDEN -> Color(0xFF2196F3)
-                    NeuralNodeType.OUTPUT -> Color(0xFFF44336)
-                    NeuralNodeType.BIAS -> Color(0xFFFF9800)
-                    NeuralNodeType.RECURRENT -> Color(0xFF9C27B0)
+                    com.example.myapplication.data.model.NeuralNodeType.INPUT -> Color(0xFF4CAF50)
+                    com.example.myapplication.data.model.NeuralNodeType.HIDDEN -> Color(0xFF2196F3)
+                    com.example.myapplication.data.model.NeuralNodeType.OUTPUT -> Color(0xFFF44336)
+                    com.example.myapplication.data.model.NeuralNodeType.BIAS -> Color(0xFFFF9800)
+                    com.example.myapplication.data.model.NeuralNodeType.RECURRENT -> Color(0xFF9C27B0)
                 }.copy(alpha = 0.5f + node.activationLevel * 0.5f)
 
                 // Node size based on activation

@@ -66,13 +66,7 @@ class NeuralNetworkRepository @Inject constructor(
                     nodes.map { node ->
                         UINeuralNode(
                             id = node.id,
-                            type = when (node.type) {
-                                NeuralNodeType.INPUT -> com.example.myapplication.features.neural.NeuralNodeType.INPUT
-                                NeuralNodeType.HIDDEN -> com.example.myapplication.features.neural.NeuralNodeType.HIDDEN
-                                NeuralNodeType.OUTPUT -> com.example.myapplication.features.neural.NeuralNodeType.OUTPUT
-                                NeuralNodeType.BIAS -> com.example.myapplication.features.neural.NeuralNodeType.BIAS
-                                NeuralNodeType.RECURRENT -> com.example.myapplication.features.neural.NeuralNodeType.RECURRENT
-                            },
+                            type = node.type,
                             position = Offset(node.positionX, node.positionY),
                             connections = nodeConnections[node.id]?.map { it.targetNodeId }?.toMutableList() ?: mutableListOf(),
                             activationLevel = node.activationLevel,
@@ -230,7 +224,7 @@ class NeuralNetworkRepository @Inject constructor(
      */
     suspend fun addNode(
         networkId: String,
-        type: com.example.myapplication.features.neural.NeuralNodeType,
+        type: com.example.myapplication.data.model.NeuralNodeType,
         position: Offset,
         label: String?
     ): String = withContext(Dispatchers.IO) {
@@ -238,13 +232,7 @@ class NeuralNetworkRepository @Inject constructor(
         val node = NeuralNode(
             id = nodeId,
             networkId = networkId,
-            type = when (type) {
-                com.example.myapplication.features.neural.NeuralNodeType.INPUT -> NeuralNodeType.INPUT
-                com.example.myapplication.features.neural.NeuralNodeType.HIDDEN -> NeuralNodeType.HIDDEN
-                com.example.myapplication.features.neural.NeuralNodeType.OUTPUT -> NeuralNodeType.OUTPUT
-                com.example.myapplication.features.neural.NeuralNodeType.BIAS -> NeuralNodeType.BIAS
-                com.example.myapplication.features.neural.NeuralNodeType.RECURRENT -> NeuralNodeType.RECURRENT
-            },
+            type = type,
             label = label,
             positionX = position.x,
             positionY = position.y,

@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import com.example.myapplication.data.model.NeuralNode
+import com.example.myapplication.data.model.NeuralNodeType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,29 +42,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.*
 
-/**
- * Data class representing a neural node
- */
-data class NeuralNode(
-    val id: String = UUID.randomUUID().toString(),
-    val type: NeuralNodeType,
-    var position: Offset,
-    var connections: MutableList<String> = mutableListOf(),
-    var activationLevel: Float = 0f,
-    var label: String? = null,
-    var metadata: Map<String, Any> = emptyMap()
-)
-
-/**
- * Enum for different types of neural nodes
- */
-enum class NeuralNodeType {
-    INPUT,
-    HIDDEN,
-    OUTPUT,
-    BIAS,
-    RECURRENT
-}
+// Using NeuralNode and NeuralNodeType from data.model package
 
 /**
  * A component that simulates a neural interface for habit formation visualization
@@ -145,7 +125,7 @@ fun NeuralInterfaceSimulation(
                     onLongPress = { offset ->
                         // Create a new node at this position
                         viewModel.addNode(
-                            type = NeuralNodeType.values().random(),
+                            type = com.example.myapplication.data.model.NeuralNodeType.values().random(),
                             position = offset,
                             label = "Node ${nodes.size + 1}"
                         )
@@ -292,11 +272,11 @@ fun NeuralInterfaceSimulation(
 
                 // Node color based on type and activation
                 val baseColor = when (node.type) {
-                    NeuralNodeType.INPUT -> Color.Green
-                    NeuralNodeType.HIDDEN -> Color.Blue
-                    NeuralNodeType.OUTPUT -> Color.Red
-                    NeuralNodeType.BIAS -> Color.Yellow
-                    NeuralNodeType.RECURRENT -> Color.Magenta
+                    com.example.myapplication.data.model.NeuralNodeType.INPUT -> Color.Green
+                    com.example.myapplication.data.model.NeuralNodeType.HIDDEN -> Color.Blue
+                    com.example.myapplication.data.model.NeuralNodeType.OUTPUT -> Color.Red
+                    com.example.myapplication.data.model.NeuralNodeType.BIAS -> Color.Yellow
+                    com.example.myapplication.data.model.NeuralNodeType.RECURRENT -> Color.Magenta
                 }
 
                 // Blend with activation color
@@ -341,7 +321,7 @@ fun NeuralInterfaceSimulation(
 
                 // Draw node type indicator
                 when (node.type) {
-                    NeuralNodeType.INPUT -> {
+                    com.example.myapplication.data.model.NeuralNodeType.INPUT -> {
                         // Draw triangle
                         val triangleSize = nodeSize * 0.5f
                         val trianglePath = Path().apply {
@@ -355,7 +335,7 @@ fun NeuralInterfaceSimulation(
                             color = Color.White.copy(alpha = 0.8f)
                         )
                     }
-                    NeuralNodeType.OUTPUT -> {
+                    com.example.myapplication.data.model.NeuralNodeType.OUTPUT -> {
                         // Draw circle
                         drawCircle(
                             color = Color.White.copy(alpha = 0.8f),
@@ -363,7 +343,7 @@ fun NeuralInterfaceSimulation(
                             center = node.position
                         )
                     }
-                    NeuralNodeType.HIDDEN -> {
+                    com.example.myapplication.data.model.NeuralNodeType.HIDDEN -> {
                         // Draw cross
                         val crossSize = nodeSize * 0.4f
                         drawLine(
@@ -379,7 +359,7 @@ fun NeuralInterfaceSimulation(
                             strokeWidth = 2f
                         )
                     }
-                    NeuralNodeType.BIAS -> {
+                    com.example.myapplication.data.model.NeuralNodeType.BIAS -> {
                         // Draw plus
                         val plusSize = nodeSize * 0.4f
                         drawLine(
@@ -395,7 +375,7 @@ fun NeuralInterfaceSimulation(
                             strokeWidth = 3f
                         )
                     }
-                    NeuralNodeType.RECURRENT -> {
+                    com.example.myapplication.data.model.NeuralNodeType.RECURRENT -> {
                         // Draw circular arrow
                         val arrowRadius = nodeSize * 0.4f
                         val arrowPath = Path().apply {
@@ -469,7 +449,7 @@ fun NeuralInterfaceSimulation(
             IconButton(
                 onClick = {
                     // Activate random input nodes
-                    val inputNodes = nodes.filter { it.type == NeuralNodeType.INPUT }
+                    val inputNodes = nodes.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.INPUT }
                     if (inputNodes.isNotEmpty()) {
                         val randomInput = inputNodes.random()
                         viewModel.activateNode(randomInput.id)

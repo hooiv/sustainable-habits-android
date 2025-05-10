@@ -281,7 +281,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Add a new node
      */
-    fun addNode(type: NeuralNodeType, position: Offset, label: String? = null) {
+    fun addNode(type: com.example.myapplication.data.model.NeuralNodeType, position: Offset, label: String? = null) {
         viewModelScope.launch {
             try {
                 val networkId = _currentNetworkId.value ?: return@launch
@@ -622,8 +622,11 @@ class NeuralInterfaceViewModel @Inject constructor(
                 // Get habit category
                 val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
 
+                // Convert String to HabitCategory
+                val habitCategory = HabitCategory.fromString(habit.category)
+
                 // Export model
-                val uri = federatedLearningManager.exportModel(habitId, habit.category, ByteBuffer.allocate(0))
+                val uri = federatedLearningManager.exportModel(habitId, habitCategory, ByteBuffer.allocate(0))
 
                 // In a real app, you would share this URI with other users
                 // For now, just show a success message
@@ -665,8 +668,9 @@ class NeuralInterfaceViewModel @Inject constructor(
                 // Get habit category
                 val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
 
-                // Aggregate models
-                val success = federatedLearningManager.aggregateModels(habit.category)
+                // Aggregate models - convert String to HabitCategory
+                val habitCategory = HabitCategory.fromString(habit.category)
+                val success = federatedLearningManager.aggregateModels(habitCategory)
 
                 if (success) {
                     // Update imported model count
@@ -750,7 +754,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                     _trialResults.value = _trialResults.value + result
 
                     // Simulate delay
-                    kotlinx.coroutines.delay(500)
+                    kotlinx.coroutines.runBlocking { kotlinx.coroutines.delay(500) }
 
                     score + randomness
                 }
@@ -811,8 +815,10 @@ class NeuralInterfaceViewModel @Inject constructor(
      * Explain an anomaly
      */
     fun explainAnomaly(anomaly: HabitAnomaly) {
-        val explanation = anomalyDetector.getAnomalyExplanation(anomaly)
-        _errorMessage.value = explanation
+        viewModelScope.launch {
+            val explanation = anomalyDetector.getAnomalyExplanation(anomaly)
+            _errorMessage.value = explanation
+        }
     }
 
     /**
@@ -918,6 +924,9 @@ class NeuralInterfaceViewModel @Inject constructor(
                     return@launch
                 }
 
+                // Convert String to HabitCategory if needed
+                val habitCategory = HabitCategory.fromString(habit.category)
+
                 // Adapt to habit
                 val (adaptedInputToHidden, adaptedHiddenToOutput) = metaLearning.adaptToHabit(habit, completions)
 
@@ -934,8 +943,13 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Start biometric monitoring
      */
-    fun startBiometricMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
-        biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
+    fun startBiometricMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner?) {
+        if (lifecycleOwner != null) {
+            biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
+        } else {
+            // For demo purposes, we'll just log a message
+            _errorMessage.value = "Biometric monitoring requires a valid LifecycleOwner"
+        }
     }
 
     /**

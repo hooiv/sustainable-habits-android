@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.CameraAlt
-import androidx.compose.material.icons.outlined.CameraOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -334,7 +333,7 @@ fun ARHabitVisualization(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Icon(
-                        imageVector = if (cameraActive) Icons.Default.CameraAlt else Icons.Outlined.CameraOff,
+                        imageVector = if (cameraActive) Icons.Outlined.CameraAlt else Icons.Default.CameraAlt,
                         contentDescription = if (cameraActive) "Camera On" else "Camera Off"
                     )
                 }

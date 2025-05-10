@@ -125,16 +125,19 @@ fun HabitCorrelationMatrix(
             },
         contentAlignment = Alignment.Center
     ) {
-        // 3D Matrix visualization
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    this.rotationX = rotationX
-                    this.rotationY = rotationY
-                    this.cameraDistance = 12f * density
-                }
-        ) {
+        // Create text measurer outside of Canvas
+    val textMeasurer = rememberTextMeasurer()
+
+    // 3D Matrix visualization
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                this.rotationX = rotationX
+                this.rotationY = rotationY
+                this.cameraDistance = 12f * density
+            }
+    ) {
             val cellSize = size.width / habits.size
 
             // Draw matrix cells
@@ -180,8 +183,7 @@ fun HabitCorrelationMatrix(
                             size = Size(cellSize * cellScale, cellSize * cellScale)
                         )
 
-                        // Draw correlation value
-                        val textMeasurer = rememberTextMeasurer()
+                        // Draw correlation value - using a pre-created text measurer
                         drawText(
                             textMeasurer = textMeasurer,
                             text = String.format("%.2f", correlation),
@@ -202,9 +204,8 @@ fun HabitCorrelationMatrix(
             // Draw habit labels on axes
             for (i in habits.indices) {
                 // Y-axis labels (rows)
-                val rowTextMeasurer = rememberTextMeasurer()
                 drawText(
-                    textMeasurer = rowTextMeasurer,
+                    textMeasurer = textMeasurer,
                     text = habits[i].name.take(10),
                     topLeft = Offset(0f, i * cellSize + cellSize / 3f),
                     style = TextStyle(
@@ -216,9 +217,8 @@ fun HabitCorrelationMatrix(
 
                 // X-axis labels (columns)
                 rotate(90f) {
-                    val colTextMeasurer = rememberTextMeasurer()
                     drawText(
-                        textMeasurer = colTextMeasurer,
+                        textMeasurer = textMeasurer,
                         text = habits[i].name.take(10),
                         topLeft = Offset(0f, -((i + 1) * cellSize) + cellSize / 3f),
                         style = TextStyle(

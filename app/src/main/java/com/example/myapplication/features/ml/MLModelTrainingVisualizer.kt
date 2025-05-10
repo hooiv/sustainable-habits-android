@@ -34,9 +34,9 @@ fun MLModelTrainingVisualizer(
     var epoch by remember { mutableStateOf(0) }
     var loss by remember { mutableStateOf(0.8f) }
     var accuracy by remember { mutableStateOf(0.2f) }
-    
+
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Start training animation
     LaunchedEffect(Unit) {
         isTraining = true
@@ -50,7 +50,7 @@ fun MLModelTrainingVisualizer(
             isTraining = false
         }
     }
-    
+
     // Animation for neural network nodes
     val animatedProgress = remember { Animatable(0f) }
     LaunchedEffect(isTraining) {
@@ -62,7 +62,7 @@ fun MLModelTrainingVisualizer(
             )
         )
     }
-    
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
@@ -75,7 +75,7 @@ fun MLModelTrainingVisualizer(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -92,7 +92,7 @@ fun MLModelTrainingVisualizer(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            
+
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "Accuracy: ${String.format("%.1f", accuracy * 100)}%",
@@ -105,7 +105,12 @@ fun MLModelTrainingVisualizer(
                 )
             }
         }
-        
+
+        // Extract theme colors before Canvas
+        val primaryColor = MaterialTheme.colorScheme.primary
+        val secondaryColor = MaterialTheme.colorScheme.secondary
+        val tertiaryColor = MaterialTheme.colorScheme.tertiary
+
         // Neural network visualization
         Canvas(
             modifier = Modifier
@@ -114,31 +119,31 @@ fun MLModelTrainingVisualizer(
         ) {
             val width = size.width
             val height = size.height
-            
+
             // Define node positions
             val inputLayer = List(4) { i ->
                 Offset(width * 0.2f, height * (0.2f + i * 0.2f))
             }
-            
+
             val hiddenLayer = List(6) { i ->
                 Offset(width * 0.5f, height * (0.1f + i * 0.15f))
             }
-            
+
             val outputLayer = List(3) { i ->
                 Offset(width * 0.8f, height * (0.25f + i * 0.25f))
             }
-            
+
             // Draw connections
             for (input in inputLayer) {
                 for (hidden in hiddenLayer) {
                     // Calculate animation offset for this connection
                     val animOffset = (input.x + input.y + hidden.x + hidden.y) % 100 / 100f
                     val animPosition = (animatedProgress.value + animOffset) % 1f
-                    
+
                     // Interpolate position along the line
                     val x = input.x + (hidden.x - input.x) * animPosition
                     val y = input.y + (hidden.y - input.y) * animPosition
-                    
+
                     // Draw connection line
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.3f),
@@ -146,26 +151,26 @@ fun MLModelTrainingVisualizer(
                         end = hidden,
                         strokeWidth = 1f
                     )
-                    
+
                     // Draw moving particle
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                        color = primaryColor.copy(alpha = 0.7f),
                         radius = 3f,
                         center = Offset(x, y)
                     )
                 }
             }
-            
+
             for (hidden in hiddenLayer) {
                 for (output in outputLayer) {
                     // Calculate animation offset for this connection
                     val animOffset = (hidden.x + hidden.y + output.x + output.y) % 100 / 100f
                     val animPosition = (animatedProgress.value + animOffset) % 1f
-                    
+
                     // Interpolate position along the line
                     val x = hidden.x + (output.x - hidden.x) * animPosition
                     val y = hidden.y + (output.y - hidden.y) * animPosition
-                    
+
                     // Draw connection line
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.3f),
@@ -173,36 +178,36 @@ fun MLModelTrainingVisualizer(
                         end = output,
                         strokeWidth = 1f
                     )
-                    
+
                     // Draw moving particle
                     drawCircle(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                        color = secondaryColor.copy(alpha = 0.7f),
                         radius = 3f,
                         center = Offset(x, y)
                     )
                 }
             }
-            
+
             // Draw nodes
             for (node in inputLayer) {
                 drawCircle(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor,
                     radius = 8f,
                     center = node
                 )
             }
-            
+
             for (node in hiddenLayer) {
                 drawCircle(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = secondaryColor,
                     radius = 8f,
                     center = node
                 )
             }
-            
+
             for (node in outputLayer) {
                 drawCircle(
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = tertiaryColor,
                     radius = 8f,
                     center = node
                 )

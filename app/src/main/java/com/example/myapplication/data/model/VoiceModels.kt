@@ -11,6 +11,8 @@ enum class VoiceIntent {
     VIEW_HABIT,
     VIEW_STATS,
     SET_REMINDER,
+    CHECK_PROGRESS,
+    GET_STATS,
     UNKNOWN
 }
 

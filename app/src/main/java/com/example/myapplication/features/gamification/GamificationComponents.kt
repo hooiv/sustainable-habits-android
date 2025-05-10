@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -74,7 +75,7 @@ fun ExperienceBar(
                 val progress = (elapsedTime / duration.toFloat()).coerceIn(0f, 1f)
 
                 // Use easing for smoother animation
-                val easedProgress = AnimeEasing.EaseOutQuart(progress)
+                val easedProgress = androidx.compose.animation.core.EaseOutQuart.transform(progress)
                 animatedXp = startXp + ((targetXp - startXp) * easedProgress).toInt()
 
                 if (animatedXp >= maxXp) {
@@ -95,7 +96,7 @@ fun ExperienceBar(
         targetValue = if (showLevelUpEffect) 1.2f else 1f,
         animationSpec = tween(
             durationMillis = 500,
-            easing = AnimeEasing.EaseOutBack
+            easing = androidx.compose.animation.core.EaseOutBack
         ),
         finishedListener = {
             if (showLevelUpEffect) {
@@ -214,7 +215,7 @@ fun AchievementBadge(
         initialValue = 0.2f,
         targetValue = 0.8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = AnimeEasing.EaseInOutSine),
+            animation = tween(2000, easing = androidx.compose.animation.core.EaseInOutSine),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glowAlpha"
@@ -224,7 +225,7 @@ fun AchievementBadge(
         initialValue = -5f,
         targetValue = 5f,
         animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = AnimeEasing.EaseInOutSine),
+            animation = tween(4000, easing = androidx.compose.animation.core.EaseInOutSine),
             repeatMode = RepeatMode.Reverse
         ),
         label = "badgeRotation"

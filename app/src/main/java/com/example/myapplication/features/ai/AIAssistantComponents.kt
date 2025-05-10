@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -33,6 +34,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.*
+
+@OptIn(ExperimentalMaterial3Api::class)
 
 /**
  * Data class representing an AI suggestion
@@ -210,7 +213,8 @@ fun AIAssistantCard(
                 }
 
                 // Quick suggestions
-                FlowRow(
+                @OptIn(ExperimentalLayoutApi::class)
+                androidx.compose.foundation.layout.FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
@@ -272,7 +276,7 @@ fun AIAnimatedAvatar(
         initialValue = 1f,
         targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = AnimeEasing.EaseInOutQuad),
+            animation = tween(1000, easing = androidx.compose.animation.core.EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
         label = "avatarScale"

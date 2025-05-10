@@ -453,6 +453,8 @@ fun NLPResultDisplay(
                                 VoiceIntent.CHECK_PROGRESS -> MaterialTheme.colorScheme.tertiary
                                 VoiceIntent.SET_REMINDER -> MaterialTheme.colorScheme.primaryContainer
                                 VoiceIntent.GET_STATS -> MaterialTheme.colorScheme.secondaryContainer
+                                VoiceIntent.VIEW_HABIT -> MaterialTheme.colorScheme.tertiaryContainer
+                                VoiceIntent.VIEW_STATS -> MaterialTheme.colorScheme.inversePrimary
                                 VoiceIntent.UNKNOWN -> MaterialTheme.colorScheme.error
                             }.copy(alpha = 0.2f)
                         ),
@@ -465,6 +467,8 @@ fun NLPResultDisplay(
                             VoiceIntent.CHECK_PROGRESS -> Icons.Default.ShowChart
                             VoiceIntent.SET_REMINDER -> Icons.Default.Alarm
                             VoiceIntent.GET_STATS -> Icons.Default.BarChart
+                            VoiceIntent.VIEW_HABIT -> Icons.Default.Visibility
+                            VoiceIntent.VIEW_STATS -> Icons.Default.Assessment
                             VoiceIntent.UNKNOWN -> Icons.Default.Help
                         },
                         contentDescription = command.intent.name,
@@ -474,6 +478,8 @@ fun NLPResultDisplay(
                             VoiceIntent.CHECK_PROGRESS -> MaterialTheme.colorScheme.tertiary
                             VoiceIntent.SET_REMINDER -> MaterialTheme.colorScheme.primary
                             VoiceIntent.GET_STATS -> MaterialTheme.colorScheme.secondary
+                            VoiceIntent.VIEW_HABIT -> MaterialTheme.colorScheme.tertiary
+                            VoiceIntent.VIEW_STATS -> MaterialTheme.colorScheme.primary
                             VoiceIntent.UNKNOWN -> MaterialTheme.colorScheme.error
                         }
                     )
@@ -492,6 +498,8 @@ fun NLPResultDisplay(
                             VoiceIntent.CHECK_PROGRESS -> "Check Progress"
                             VoiceIntent.SET_REMINDER -> "Set Reminder"
                             VoiceIntent.GET_STATS -> "Get Statistics"
+                            VoiceIntent.VIEW_HABIT -> "View Habit"
+                            VoiceIntent.VIEW_STATS -> "View Statistics"
                             VoiceIntent.UNKNOWN -> "Unknown Command"
                         },
                         style = MaterialTheme.typography.titleMedium,

@@ -171,13 +171,16 @@ fun HeartRateMonitor(
 
             // Glow effect
             if (isAnimating) {
+                // Get color outside of Canvas
+                val primaryColor = MaterialTheme.colorScheme.primary
+
                 Canvas(
                     modifier = Modifier
                         .matchParentSize()
                         .alpha(0.3f)
                 ) {
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = primaryColor,
                         radius = size.minDimension / 2 * pulseScale,
                         style = Stroke(width = 20f * pulseScale)
                     )
@@ -221,6 +224,13 @@ fun HeartRateMonitor(
                         shape = RoundedCornerShape(16.dp)
                     )
             ) {
+                // Create text measurer outside of Canvas
+                val textMeasurer = rememberTextMeasurer()
+
+                // Get colors outside of Canvas
+                val primaryColor = MaterialTheme.colorScheme.primary
+                val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
@@ -247,12 +257,13 @@ fun HeartRateMonitor(
 
                         // Draw value labels
                         val value = maxValue - (valueRange * i / gridLines)
+                        // Use pre-created text measurer
                         drawText(
-                            textMeasurer = rememberTextMeasurer(),
+                            textMeasurer = textMeasurer,
                             text = value.toString(),
                             topLeft = Offset(4f, y - 8f),
                             style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                color = onSurfaceColor.copy(alpha = 0.7f),
                                 fontSize = 10.sp
                             )
                         )
@@ -276,7 +287,7 @@ fun HeartRateMonitor(
 
                             // Draw points
                             drawCircle(
-                                color = MaterialTheme.colorScheme.primary,
+                                color = primaryColor,
                                 radius = 3f,
                                 center = Offset(x, y)
                             )
@@ -285,7 +296,7 @@ fun HeartRateMonitor(
                         // Draw line
                         drawPath(
                             path = path,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = primaryColor,
                             style = Stroke(width = 2f)
                         )
 
@@ -301,8 +312,8 @@ fun HeartRateMonitor(
                             path = filledPath,
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.0f)
+                                    primaryColor.copy(alpha = 0.3f),
+                                    primaryColor.copy(alpha = 0.0f)
                                 )
                             )
                         )
@@ -507,15 +518,24 @@ fun SleepQualityVisualizer(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
+            // Create text measurer outside of Canvas
+            val textMeasurer = rememberTextMeasurer()
+
+            // Get colors outside of Canvas
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+            val surfaceColor = MaterialTheme.colorScheme.surface
+            val outlineColor = MaterialTheme.colorScheme.outline
+
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(surfaceColor)
                     .border(
                         width = 1.dp,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = outlineColor,
                         shape = RoundedCornerShape(8.dp)
                     )
             ) {
@@ -534,12 +554,13 @@ fun SleepQualityVisualizer(
                         strokeWidth = 1f
                     )
 
+                    // Use pre-created text measurer
                     drawText(
-                        textMeasurer = rememberTextMeasurer(),
+                        textMeasurer = textMeasurer,
                         text = "${hour + 10}:00",
                         topLeft = Offset(x - 12f, height - padding),
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            color = onSurfaceColor.copy(alpha = 0.7f),
                             fontSize = 10.sp
                         )
                     )
@@ -557,12 +578,13 @@ fun SleepQualityVisualizer(
                         strokeWidth = 1f
                     )
 
+                    // Use pre-created text measurer
                     drawText(
-                        textMeasurer = rememberTextMeasurer(),
+                        textMeasurer = textMeasurer,
                         text = stage,
                         topLeft = Offset(4f, y - 8f),
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            color = onSurfaceColor.copy(alpha = 0.7f),
                             fontSize = 10.sp
                         )
                     )
@@ -619,7 +641,7 @@ fun SleepQualityVisualizer(
                 // Draw the path
                 drawPath(
                     path = path,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor,
                     style = Stroke(width = 2f)
                 )
             }
@@ -709,10 +731,14 @@ fun BiometricReadingCard(
                             BiometricType.SLEEP_QUALITY -> MaterialTheme.colorScheme.tertiary
                             BiometricType.STRESS_LEVEL -> MaterialTheme.colorScheme.error
                             BiometricType.ENERGY_LEVEL -> MaterialTheme.colorScheme.primary
-                            BiometricType.FOCUS_LEVEL -> MaterialTheme.colorScheme.secondary
                             BiometricType.MOOD -> MaterialTheme.colorScheme.tertiary
                             BiometricType.STEPS -> MaterialTheme.colorScheme.primary
                             BiometricType.CALORIES_BURNED -> MaterialTheme.colorScheme.secondary
+                            BiometricType.BLOOD_PRESSURE -> MaterialTheme.colorScheme.error
+                            BiometricType.BLOOD_OXYGEN -> MaterialTheme.colorScheme.primary
+                            BiometricType.BODY_TEMPERATURE -> MaterialTheme.colorScheme.error
+                            BiometricType.RESPIRATORY_RATE -> MaterialTheme.colorScheme.tertiary
+                            else -> MaterialTheme.colorScheme.secondary // For any other types including FOCUS_LEVEL
                         }.copy(alpha = 0.2f)
                     ),
                 contentAlignment = Alignment.Center
@@ -723,10 +749,14 @@ fun BiometricReadingCard(
                         BiometricType.SLEEP_QUALITY -> Icons.Default.Bedtime
                         BiometricType.STRESS_LEVEL -> Icons.Default.Psychology
                         BiometricType.ENERGY_LEVEL -> Icons.Default.BatteryChargingFull
-                        BiometricType.FOCUS_LEVEL -> Icons.Default.Visibility
                         BiometricType.MOOD -> Icons.Default.EmojiEmotions
                         BiometricType.STEPS -> Icons.Default.DirectionsWalk
                         BiometricType.CALORIES_BURNED -> Icons.Default.LocalFireDepartment
+                        BiometricType.BLOOD_PRESSURE -> Icons.Default.Favorite
+                        BiometricType.BLOOD_OXYGEN -> Icons.Default.Air
+                        BiometricType.BODY_TEMPERATURE -> Icons.Default.Thermostat
+                        BiometricType.RESPIRATORY_RATE -> Icons.Default.Air
+                        else -> Icons.Default.Visibility // For any other types including FOCUS_LEVEL
                     },
                     contentDescription = reading.type.name,
                     tint = when (reading.type) {
@@ -734,10 +764,14 @@ fun BiometricReadingCard(
                         BiometricType.SLEEP_QUALITY -> MaterialTheme.colorScheme.tertiary
                         BiometricType.STRESS_LEVEL -> MaterialTheme.colorScheme.error
                         BiometricType.ENERGY_LEVEL -> MaterialTheme.colorScheme.primary
-                        BiometricType.FOCUS_LEVEL -> MaterialTheme.colorScheme.secondary
                         BiometricType.MOOD -> MaterialTheme.colorScheme.tertiary
                         BiometricType.STEPS -> MaterialTheme.colorScheme.primary
                         BiometricType.CALORIES_BURNED -> MaterialTheme.colorScheme.secondary
+                        BiometricType.BLOOD_PRESSURE -> MaterialTheme.colorScheme.error
+                        BiometricType.BLOOD_OXYGEN -> MaterialTheme.colorScheme.primary
+                        BiometricType.BODY_TEMPERATURE -> MaterialTheme.colorScheme.error
+                        BiometricType.RESPIRATORY_RATE -> MaterialTheme.colorScheme.tertiary
+                        else -> MaterialTheme.colorScheme.secondary // For any other types including FOCUS_LEVEL
                     }
                 )
             }
@@ -754,10 +788,14 @@ fun BiometricReadingCard(
                         BiometricType.SLEEP_QUALITY -> "Sleep Quality"
                         BiometricType.STRESS_LEVEL -> "Stress Level"
                         BiometricType.ENERGY_LEVEL -> "Energy Level"
-                        BiometricType.FOCUS_LEVEL -> "Focus Level"
                         BiometricType.MOOD -> "Mood"
                         BiometricType.STEPS -> "Steps"
                         BiometricType.CALORIES_BURNED -> "Calories Burned"
+                        BiometricType.BLOOD_PRESSURE -> "Blood Pressure"
+                        BiometricType.BLOOD_OXYGEN -> "Blood Oxygen"
+                        BiometricType.BODY_TEMPERATURE -> "Body Temperature"
+                        BiometricType.RESPIRATORY_RATE -> "Respiratory Rate"
+                        else -> "Focus Level" // For any other types including FOCUS_LEVEL
                     },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold

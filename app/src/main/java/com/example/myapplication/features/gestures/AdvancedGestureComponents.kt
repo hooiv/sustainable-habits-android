@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.*
@@ -58,7 +59,7 @@ fun RadialGestureMenu(
     var selectedActionIndex by remember { mutableStateOf<Int?>(null) }
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Animation for menu appearance
     val menuScale by animateFloatAsState(
         targetValue = if (menuVisible) 1f else 0f,
@@ -68,7 +69,7 @@ fun RadialGestureMenu(
         ),
         label = "menuScale"
     )
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -98,23 +99,23 @@ fun RadialGestureMenu(
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Main)
                             val position = event.changes.firstOrNull()?.position ?: continue
-                            
+
                             // Calculate angle and distance from menu center
                             val dx = position.x - menuPosition.x
                             val dy = position.y - menuPosition.y
                             val distance = sqrt(dx * dx + dy * dy)
-                            
+
                             // Only process if pointer is within menu radius range
                             if (distance > 50f && distance < 150f) {
                                 // Calculate angle in degrees (0 is right, going clockwise)
                                 var angle = atan2(dy, dx) * 180 / PI.toFloat()
                                 if (angle < 0) angle += 360
-                                
+
                                 // Determine which action is selected based on angle
                                 val actionCount = actions.size
                                 val sectorAngle = 360f / actionCount
                                 val newSelectedIndex = ((angle + sectorAngle / 2) % 360 / sectorAngle).toInt()
-                                
+
                                 if (selectedActionIndex != newSelectedIndex) {
                                     selectedActionIndex = newSelectedIndex
                                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -122,7 +123,7 @@ fun RadialGestureMenu(
                             } else {
                                 selectedActionIndex = null
                             }
-                            
+
                             // Check for pointer up to execute action
                             if (event.changes.any { it.changedToUp() }) {
                                 selectedActionIndex?.let { index ->
@@ -143,6 +144,9 @@ fun RadialGestureMenu(
     ) {
         // Draw radial menu when visible
         if (menuVisible) {
+            // Extract colors outside of Canvas
+            val primaryColor = MaterialTheme.colorScheme.primary
+
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
@@ -151,30 +155,30 @@ fun RadialGestureMenu(
                 val menuRadius = 150f
                 val innerRadius = 50f
                 val actionCount = actions.size
-                
+
                 // Draw semi-transparent background overlay
                 drawRect(
                     color = Color.Black.copy(alpha = 0.3f),
                     size = size
                 )
-                
+
                 // Draw center circle
                 drawCircle(
                     color = Color.White.copy(alpha = 0.9f),
                     radius = innerRadius,
                     center = menuPosition
                 )
-                
+
                 // Draw sectors for each action
                 val sectorAngle = 360f / actionCount
                 for (i in actions.indices) {
                     val startAngle = i * sectorAngle
                     val isSelected = selectedActionIndex == i
-                    
+
                     // Draw sector
                     drawArc(
                         color = if (isSelected) {
-                            MaterialTheme.colorScheme.primary
+                            primaryColor
                         } else {
                             Color.White.copy(alpha = 0.7f)
                         },
@@ -188,7 +192,7 @@ fun RadialGestureMenu(
                         size = Size(menuRadius * 2, menuRadius * 2),
                         alpha = if (isSelected) 0.9f else 0.7f
                     )
-                    
+
                     // Draw sector outline
                     drawArc(
                         color = Color.White,
@@ -203,13 +207,13 @@ fun RadialGestureMenu(
                         style = Stroke(width = 2f),
                         alpha = 0.5f
                     )
-                    
+
                     // Calculate position for icon
                     val iconAngle = (startAngle + sectorAngle / 2) * PI.toFloat() / 180
                     val iconRadius = (innerRadius + menuRadius) / 2
                     val iconX = menuPosition.x + cos(iconAngle) * iconRadius
                     val iconY = menuPosition.y + sin(iconAngle) * iconRadius
-                    
+
                     // Draw icon placeholder (in a real implementation, you would draw the actual icon)
                     drawCircle(
                         color = if (isSelected) {
@@ -222,7 +226,7 @@ fun RadialGestureMenu(
                     )
                 }
             }
-            
+
             // Draw action icons and labels
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -233,9 +237,9 @@ fun RadialGestureMenu(
                     val iconRadius = 100f // Between innerRadius and menuRadius
                     val iconX = menuPosition.x + cos(iconAngle) * iconRadius
                     val iconY = menuPosition.y + sin(iconAngle) * iconRadius
-                    
+
                     val isSelected = selectedActionIndex == index
-                    
+
                     // Icon
                     Icon(
                         imageVector = action.icon,
@@ -249,14 +253,14 @@ fun RadialGestureMenu(
                             )
                             .scale(if (isSelected) 1.2f else 1f)
                     )
-                    
+
                     // Label (only show for selected action)
                     if (isSelected) {
                         val labelAngle = iconAngle
                         val labelRadius = 180f
                         val labelX = menuPosition.x + cos(labelAngle) * labelRadius
                         val labelY = menuPosition.y + sin(labelAngle) * labelRadius
-                        
+
                         Text(
                             text = action.name,
                             color = Color.White,
@@ -277,7 +281,7 @@ fun RadialGestureMenu(
                         )
                     }
                 }
-                
+
                 // Center text
                 Text(
                     text = "Menu",
@@ -314,14 +318,14 @@ fun SwipeGestureArea(
     var swipeProgress by remember { mutableStateOf(0f) }
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Animation for swipe indicator
     val indicatorAlpha by animateFloatAsState(
         targetValue = if (swipeDirection != null) 0.7f else 0f,
         animationSpec = tween(200),
         label = "indicatorAlpha"
     )
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -337,7 +341,7 @@ fun SwipeGestureArea(
                             }
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
-                        
+
                         // Reset after a short delay
                         coroutineScope.launch {
                             delay(200)
@@ -349,7 +353,7 @@ fun SwipeGestureArea(
                         change.consume()
                         swipeProgress += dragAmount
                         swipeDirection = if (dragAmount > 0) "right" else "left"
-                        
+
                         // Provide haptic feedback at threshold
                         if (abs(swipeProgress) > swipeThreshold && abs(swipeProgress - dragAmount) <= swipeThreshold) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -369,7 +373,7 @@ fun SwipeGestureArea(
                             }
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
-                        
+
                         // Reset after a short delay
                         coroutineScope.launch {
                             delay(200)
@@ -381,7 +385,7 @@ fun SwipeGestureArea(
                         change.consume()
                         swipeProgress += dragAmount
                         swipeDirection = if (dragAmount > 0) "down" else "up"
-                        
+
                         // Provide haptic feedback at threshold
                         if (abs(swipeProgress) > swipeThreshold && abs(swipeProgress - dragAmount) <= swipeThreshold) {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -392,7 +396,10 @@ fun SwipeGestureArea(
     ) {
         // Main content
         content()
-        
+
+        // Extract colors outside of Box
+        val primaryColor = MaterialTheme.colorScheme.primary
+
         // Swipe indicators
         Box(
             modifier = Modifier
@@ -409,7 +416,7 @@ fun SwipeGestureArea(
                         .background(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
+                                    primaryColor,
                                     Color.Transparent
                                 )
                             )
@@ -425,7 +432,7 @@ fun SwipeGestureArea(
                     )
                 }
             }
-            
+
             // Right indicator
             if (swipeDirection == "right") {
                 Box(
@@ -437,7 +444,7 @@ fun SwipeGestureArea(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    MaterialTheme.colorScheme.primary
+                                    primaryColor
                                 )
                             )
                         )
@@ -452,7 +459,7 @@ fun SwipeGestureArea(
                     )
                 }
             }
-            
+
             // Up indicator
             if (swipeDirection == "up") {
                 Box(
@@ -463,7 +470,7 @@ fun SwipeGestureArea(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
+                                    primaryColor,
                                     Color.Transparent
                                 )
                             )
@@ -479,7 +486,7 @@ fun SwipeGestureArea(
                     )
                 }
             }
-            
+
             // Down indicator
             if (swipeDirection == "down") {
                 Box(
@@ -491,7 +498,7 @@ fun SwipeGestureArea(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    MaterialTheme.colorScheme.primary
+                                    primaryColor
                                 )
                             )
                         )

@@ -132,31 +132,31 @@ fun UltraAdvancedFeaturesDemo(
     val sampleNeuralNodes = remember {
         val nodes = listOf(
             NeuralNode(
-                type = com.example.myapplication.features.neural.NeuralNodeType.INPUT,
+                type = com.example.myapplication.data.model.NeuralNodeType.INPUT,
                 position = Offset(100f, 100f),
                 label = "Habit Trigger",
                 activationLevel = 0.8f
             ),
             NeuralNode(
-                type = com.example.myapplication.features.neural.NeuralNodeType.INPUT,
+                type = com.example.myapplication.data.model.NeuralNodeType.INPUT,
                 position = Offset(100f, 250f),
                 label = "Environment",
                 activationLevel = 0.6f
             ),
             NeuralNode(
-                type = com.example.myapplication.features.neural.NeuralNodeType.HIDDEN,
+                type = com.example.myapplication.data.model.NeuralNodeType.HIDDEN,
                 position = Offset(300f, 150f),
                 label = "Motivation",
                 activationLevel = 0.7f
             ),
             NeuralNode(
-                type = com.example.myapplication.features.neural.NeuralNodeType.HIDDEN,
+                type = com.example.myapplication.data.model.NeuralNodeType.HIDDEN,
                 position = Offset(300f, 300f),
                 label = "Difficulty",
                 activationLevel = 0.4f
             ),
             NeuralNode(
-                type = com.example.myapplication.features.neural.NeuralNodeType.OUTPUT,
+                type = com.example.myapplication.data.model.NeuralNodeType.OUTPUT,
                 position = Offset(500f, 200f),
                 label = "Habit Completion",
                 activationLevel = 0.5f

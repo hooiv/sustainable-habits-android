@@ -70,15 +70,15 @@ fun BiometricMonitoringCard(
                         .size(32.dp)
                         .padding(end = 8.dp)
                 )
-                
+
                 Text(
                     text = "Biometric Integration",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Monitoring status indicator
                 Box(
                     modifier = Modifier
@@ -87,9 +87,9 @@ fun BiometricMonitoringCard(
                         .background(if (isMonitoring) Color.Green else Color.Red)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Heart rate visualization
             HeartRateVisualization(
                 heartRate = biometricData.heartRate,
@@ -98,9 +98,9 @@ fun BiometricMonitoringCard(
                     .fillMaxWidth()
                     .height(100.dp)
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Biometric data
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -112,14 +112,14 @@ fun BiometricMonitoringCard(
                     value = "${biometricData.heartRate} BPM",
                     color = MaterialTheme.colorScheme.primary
                 )
-                
+
                 BiometricDataItem(
                     icon = Icons.Default.DirectionsWalk,
                     label = "Steps",
                     value = "${biometricData.stepCount}",
                     color = MaterialTheme.colorScheme.secondary
                 )
-                
+
                 BiometricDataItem(
                     icon = Icons.Default.LocalFireDepartment,
                     label = "Calories",
@@ -127,9 +127,9 @@ fun BiometricMonitoringCard(
                     color = MaterialTheme.colorScheme.tertiary
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Additional metrics
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -140,16 +140,16 @@ fun BiometricMonitoringCard(
                     value = biometricData.stressLevel,
                     color = lerp(Color.Green, Color.Red, biometricData.stressLevel)
                 )
-                
+
                 BiometricMeterItem(
                     label = "Sleep Quality",
                     value = biometricData.sleepQuality ?: 0f,
                     color = lerp(Color.Red, Color.Green, biometricData.sleepQuality ?: 0f)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Start/Stop button
             Button(
                 onClick = if (isMonitoring) onStopMonitoring else onStartMonitoring,
@@ -190,18 +190,22 @@ fun HeartRateVisualization(
             repeatMode = RepeatMode.Restart
         )
     )
-    
+
+    // Get the color outside of the Canvas
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            .background(surfaceVariantColor.copy(alpha = 0.3f))
             .padding(8.dp)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val width = size.width
             val height = size.height
             val centerY = height / 2
-            
+
             // Draw baseline
             drawLine(
                 color = Color.Gray.copy(alpha = 0.5f),
@@ -209,11 +213,11 @@ fun HeartRateVisualization(
                 end = Offset(width, centerY),
                 strokeWidth = 1.dp.toPx()
             )
-            
+
             // Draw heart rate waveform
             val path = Path()
             path.moveTo(0f, centerY)
-            
+
             for (x in 0 until width.toInt() step 4) {
                 val progress = (x.toFloat() / width + animatedHeartbeat) % 1f
                 val y = when {
@@ -225,15 +229,15 @@ fun HeartRateVisualization(
                 }
                 path.lineTo(x.toFloat(), y)
             }
-            
+
             // Draw the path
             drawPath(
                 path = path,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = confidence),
+                color = primaryColor.copy(alpha = confidence),
                 style = Stroke(width = 2.dp.toPx())
             )
         }
-        
+
         // Heart rate text
         Text(
             text = "$heartRate BPM",
@@ -265,15 +269,15 @@ fun BiometricDataItem(
             tint = color,
             modifier = Modifier.size(24.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
@@ -301,9 +305,9 @@ fun BiometricMeterItem(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Box(
             modifier = Modifier
                 .width(80.dp)
@@ -319,9 +323,9 @@ fun BiometricMeterItem(
                     .background(color)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Text(
             text = "${(value * 100).toInt()}%",
             style = MaterialTheme.typography.bodyMedium,
@@ -367,15 +371,15 @@ fun SpatialComputingCard(
                         .size(32.dp)
                         .padding(end = 8.dp)
                 )
-                
+
                 Text(
                     text = "Spatial Computing",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.weight(1f))
-                
+
                 // Tracking status indicator
                 Box(
                     modifier = Modifier
@@ -384,9 +388,9 @@ fun SpatialComputingCard(
                         .background(if (isSpatialTrackingActive) Color.Green else Color.Red)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Spatial visualization
             SpatialVisualization(
                 spatialObjects = spatialObjects,
@@ -394,9 +398,9 @@ fun SpatialComputingCard(
                     .fillMaxWidth()
                     .height(200.dp)
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Object count
             Text(
                 text = "${spatialObjects.size} objects in spatial environment",
@@ -404,9 +408,9 @@ fun SpatialComputingCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Action buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -415,9 +419,9 @@ fun SpatialComputingCard(
                 Button(
                     onClick = if (isSpatialTrackingActive) onStopTracking else onStartTracking,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSpatialTrackingActive) 
-                            MaterialTheme.colorScheme.error 
-                        else 
+                        containerColor = if (isSpatialTrackingActive)
+                            MaterialTheme.colorScheme.error
+                        else
                             MaterialTheme.colorScheme.primary
                     )
                 ) {
@@ -428,7 +432,7 @@ fun SpatialComputingCard(
                     )
                     Text(if (isSpatialTrackingActive) "Stop Tracking" else "Start Tracking")
                 }
-                
+
                 Button(
                     onClick = onPlaceObject,
                     enabled = isSpatialTrackingActive
@@ -462,7 +466,7 @@ fun SpatialVisualization(
             repeatMode = RepeatMode.Restart
         )
     )
-    
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -474,11 +478,11 @@ fun SpatialVisualization(
             val height = size.height
             val centerX = width / 2
             val centerY = height / 2
-            
+
             // Draw grid
             val gridSize = 20
             val gridColor = Color.Gray.copy(alpha = 0.2f)
-            
+
             for (i in 0..gridSize) {
                 val x = width * i / gridSize
                 drawLine(
@@ -488,7 +492,7 @@ fun SpatialVisualization(
                     strokeWidth = 1.dp.toPx()
                 )
             }
-            
+
             for (i in 0..gridSize) {
                 val y = height * i / gridSize
                 drawLine(
@@ -498,14 +502,14 @@ fun SpatialVisualization(
                     strokeWidth = 1.dp.toPx()
                 )
             }
-            
+
             // Draw objects
             spatialObjects.forEach { obj ->
                 // Calculate position on screen (simplified 3D to 2D projection)
                 val x = centerX + (obj.position.x * 20).toFloat() % width
                 val y = centerY + (obj.position.z * 20).toFloat() % height
                 val size = (30 * obj.scale).toFloat().coerceIn(10f, 50f)
-                
+
                 // Draw object
                 when (obj.type) {
                     com.example.myapplication.data.spatial.SpatialObjectType.HABIT -> {
@@ -516,7 +520,7 @@ fun SpatialVisualization(
                             size = Size(size, size),
                             style = Stroke(width = 2.dp.toPx())
                         )
-                        
+
                         // Draw inner cube with animation
                         val innerSize = size * (0.6f + 0.2f * sin(animationProgress * 2 * PI.toFloat()))
                         drawRect(
@@ -533,7 +537,7 @@ fun SpatialVisualization(
                             radius = size / 2,
                             style = Stroke(width = 2.dp.toPx())
                         )
-                        
+
                         // Draw inner circle with animation
                         val innerRadius = size / 2 * (0.6f + 0.2f * sin(animationProgress * 2 * PI.toFloat()))
                         drawCircle(
@@ -548,13 +552,13 @@ fun SpatialVisualization(
                         val outerRadius = size / 2
                         val innerRadius = outerRadius * 0.4f
                         val numPoints = 5
-                        
+
                         for (i in 0 until numPoints * 2) {
                             val radius = if (i % 2 == 0) outerRadius else innerRadius
                             val angle = i * PI.toFloat() / numPoints
                             val px = x + radius * cos(angle + animationProgress * 2 * PI.toFloat())
                             val py = y + radius * sin(angle + animationProgress * 2 * PI.toFloat())
-                            
+
                             if (i == 0) {
                                 path.moveTo(px, py)
                             } else {
@@ -562,13 +566,13 @@ fun SpatialVisualization(
                             }
                         }
                         path.close()
-                        
+
                         drawPath(
                             path = path,
                             color = Color(obj.color).copy(alpha = 0.7f),
                             style = Stroke(width = 2.dp.toPx())
                         )
-                        
+
                         drawPath(
                             path = path,
                             color = Color(obj.color).copy(alpha = 0.3f)
@@ -582,20 +586,20 @@ fun SpatialVisualization(
                         path.lineTo(x, y + size/2)
                         path.lineTo(x - size/2, y)
                         path.close()
-                        
+
                         drawPath(
                             path = path,
                             color = Color(obj.color).copy(alpha = 0.7f),
                             style = Stroke(width = 2.dp.toPx())
                         )
-                        
+
                         drawPath(
                             path = path,
                             color = Color(obj.color).copy(alpha = 0.3f)
                         )
                     }
                 }
-                
+
                 // Draw label
                 drawContext.canvas.nativeCanvas.apply {
                     val paint = Paint()

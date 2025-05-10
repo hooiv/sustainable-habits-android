@@ -68,7 +68,7 @@ fun CalendarHeatmap(
             targetValue = 1f,
             animationSpec = tween(
                 durationMillis = 1000,
-                easing = AnimeEasing.EaseOutQuart
+                easing = androidx.compose.animation.core.EaseOutQuart
             )
         )
     }
@@ -188,7 +188,7 @@ fun RadialProgressChart(
             targetValue = progress,
             animationSpec = tween(
                 durationMillis = animationDuration,
-                easing = AnimeEasing.EaseOutQuart
+                easing = androidx.compose.animation.core.EaseOutQuart
             )
         )
     }
@@ -254,6 +254,9 @@ fun StreakTimeline(
     // Text measurer for drawing text
     val textMeasurer = rememberTextMeasurer()
 
+    // Extract theme colors before Canvas
+    val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+
     // Animation for timeline appearance
     val animatedProgress = remember { Animatable(0f) }
 
@@ -262,7 +265,7 @@ fun StreakTimeline(
             targetValue = 1f,
             animationSpec = tween(
                 durationMillis = 1000,
-                easing = AnimeEasing.EaseOutQuart
+                easing = androidx.compose.animation.core.EaseOutQuart
             )
         )
     }
@@ -356,7 +359,7 @@ fun StreakTimeline(
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = onBackgroundColor
                 )
             )
         }

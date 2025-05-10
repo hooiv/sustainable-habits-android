@@ -31,6 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.graphics.nativeCanvas
+import android.graphics.Paint
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.data.model.Habit
@@ -75,6 +78,31 @@ enum class PredictionType {
     HABIT_ABANDONMENT,
     OPTIMAL_TIME,
     DIFFICULTY_CHANGE
+}
+
+/**
+ * Helper function to draw text on Canvas using the native canvas
+ */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawText(
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    text: String,
+    topLeft: Offset,
+    style: TextStyle
+) {
+    val paint = Paint().apply {
+        color = style.color.toArgb()
+        textSize = style.fontSize.toPx()
+        if (style.fontWeight == FontWeight.Bold) {
+            isFakeBoldText = true
+        }
+    }
+
+    this.drawContext.canvas.nativeCanvas.drawText(
+        text,
+        topLeft.x,
+        topLeft.y + style.fontSize.toPx(), // Adjust y position to account for baseline
+        paint
+    )
 }
 
 /**
@@ -294,6 +322,11 @@ fun MLModelTrainingVisualizer(
             // Create text measurer for drawing text
             val textMeasurer = rememberTextMeasurer()
 
+            // Extract theme colors before Canvas
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val errorColor = MaterialTheme.colorScheme.error
+            val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
             // Draw loss and accuracy curves
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val width = size.width
@@ -344,7 +377,7 @@ fun MLModelTrainingVisualizer(
 
                     drawPath(
                         path = lossPath,
-                        color = MaterialTheme.colorScheme.error,
+                        color = errorColor,
                         style = Stroke(width = 3f)
                     )
                 }
@@ -367,14 +400,14 @@ fun MLModelTrainingVisualizer(
 
                     drawPath(
                         path = accuracyPath,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = primaryColor,
                         style = Stroke(width = 3f)
                     )
                 }
 
                 // Draw legend
                 drawRect(
-                    color = MaterialTheme.colorScheme.error,
+                    color = errorColor,
                     topLeft = Offset(width - 100f, 20f),
                     size = Size(20f, 10f)
                 )
@@ -384,13 +417,13 @@ fun MLModelTrainingVisualizer(
                     text = "Loss",
                     topLeft = Offset(width - 70f, 20f),
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = onSurfaceColor,
                         fontSize = 12.sp
                     )
                 )
 
                 drawRect(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor,
                     topLeft = Offset(width - 100f, 40f),
                     size = Size(20f, 10f)
                 )
@@ -400,7 +433,7 @@ fun MLModelTrainingVisualizer(
                     text = "Accuracy",
                     topLeft = Offset(width - 70f, 40f),
                     style = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = onSurfaceColor,
                         fontSize = 12.sp
                     )
                 )
@@ -408,84 +441,97 @@ fun MLModelTrainingVisualizer(
 
             // Neural network visualization during training
             if (isTraining) {
-                val infiniteTransition = rememberInfiniteTransition(label = "neuralViz")
-                val pulseScale by infiniteTransition.animateFloat(
-                    initialValue = 0.8f,
-                    targetValue = 1.2f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1000, easing = AnimeEasing.EaseInOutQuad),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "pulseScale"
+                // Create a separate composable for the neural network visualization
+                NeuralNetworkVisualization(trainingProgress)
+            }
+        }
+    }
+}
+
+/**
+ * A composable for visualizing a neural network during training
+ */
+@Composable
+private fun NeuralNetworkVisualization(trainingProgress: Float) {
+    val infiniteTransition = rememberInfiniteTransition(label = "neuralViz")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = androidx.compose.animation.core.EaseInOutQuad),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
+
+    // Extract theme colors before Canvas
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(0.3f)
+    ) {
+        val width = size.width
+        val height = size.height
+
+        // Draw neural network layers
+        val layers = 4
+        val nodesPerLayer = intArrayOf(5, 8, 8, 3)
+
+        for (layer in 0 until layers) {
+            val layerX = width * (layer + 1) / (layers + 1)
+
+            for (node in 0 until nodesPerLayer[layer]) {
+                val nodeY = height * (node + 1) / (nodesPerLayer[layer] + 1)
+
+                // Draw node
+                drawCircle(
+                    color = primaryColor,
+                    radius = 5f * pulseScale,
+                    center = Offset(layerX, nodeY)
                 )
 
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.3f)
-                ) {
-                    val width = size.width
-                    val height = size.height
+                // Draw connections to previous layer
+                if (layer > 0) {
+                    for (prevNode in 0 until nodesPerLayer[layer - 1]) {
+                        val prevLayerX = width * layer / (layers + 1)
+                        val prevNodeY = height * (prevNode + 1) / (nodesPerLayer[layer - 1] + 1)
 
-                    // Draw neural network layers
-                    val layers = 4
-                    val nodesPerLayer = intArrayOf(5, 8, 8, 3)
-
-                    for (layer in 0 until layers) {
-                        val layerX = width * (layer + 1) / (layers + 1)
-
-                        for (node in 0 until nodesPerLayer[layer]) {
-                            val nodeY = height * (node + 1) / (nodesPerLayer[layer] + 1)
-
-                            // Draw node
-                            drawCircle(
-                                color = MaterialTheme.colorScheme.primary,
-                                radius = 5f * pulseScale,
-                                center = Offset(layerX, nodeY)
-                            )
-
-                            // Draw connections to previous layer
-                            if (layer > 0) {
-                                for (prevNode in 0 until nodesPerLayer[layer - 1]) {
-                                    val prevLayerX = width * layer / (layers + 1)
-                                    val prevNodeY = height * (prevNode + 1) / (nodesPerLayer[layer - 1] + 1)
-
-                                    drawLine(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                        start = Offset(prevLayerX, prevNodeY),
-                                        end = Offset(layerX, nodeY),
-                                        strokeWidth = 1f
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Draw data flow animation
-                    for (i in 0 until 3) {
-                        val animProgress = (trainingProgress * 3 + i / 3f) % 1f
-
-                        for (layer in 0 until layers - 1) {
-                            val startX = width * (layer + 1) / (layers + 1)
-                            val endX = width * (layer + 2) / (layers + 1)
-                            val x = startX + (endX - startX) * animProgress
-
-                            // Random position between nodes
-                            val startNodeIdx = Random().nextInt(nodesPerLayer[layer])
-                            val endNodeIdx = Random().nextInt(nodesPerLayer[layer + 1])
-
-                            val startY = height * (startNodeIdx + 1) / (nodesPerLayer[layer] + 1)
-                            val endY = height * (endNodeIdx + 1) / (nodesPerLayer[layer + 1] + 1)
-                            val y = startY + (endY - startY) * animProgress
-
-                            drawCircle(
-                                color = MaterialTheme.colorScheme.tertiary,
-                                radius = 3f,
-                                center = Offset(x, y)
-                            )
-                        }
+                        drawLine(
+                            color = primaryColor.copy(alpha = 0.3f),
+                            start = Offset(prevLayerX, prevNodeY),
+                            end = Offset(layerX, nodeY),
+                            strokeWidth = 1f
+                        )
                     }
                 }
+            }
+        }
+
+        // Draw data flow animation
+        for (i in 0 until 3) {
+            val animProgress = (trainingProgress * 3 + i / 3f) % 1f
+
+            for (layer in 0 until layers - 1) {
+                val startX = width * (layer + 1) / (layers + 1)
+                val endX = width * (layer + 2) / (layers + 1)
+                val x = startX + (endX - startX) * animProgress
+
+                // Random position between nodes
+                val startNodeIdx = Random().nextInt(nodesPerLayer[layer])
+                val endNodeIdx = Random().nextInt(nodesPerLayer[layer + 1])
+
+                val startY = height * (startNodeIdx + 1) / (nodesPerLayer[layer] + 1)
+                val endY = height * (endNodeIdx + 1) / (nodesPerLayer[layer + 1] + 1)
+                val y = startY + (endY - startY) * animProgress
+
+                drawCircle(
+                    color = tertiaryColor,
+                    radius = 3f,
+                    center = Offset(x, y)
+                )
             }
         }
     }
