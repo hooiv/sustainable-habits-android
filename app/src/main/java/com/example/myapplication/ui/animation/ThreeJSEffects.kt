@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -229,6 +229,11 @@ fun ThreeJSCube(
     enableTexture: Boolean = false,
     onClick: () -> Unit = {}
 ) {
+    // Fix: Use different variable names to avoid shadowing and allow mutation
+    var mutableRotationY = rotationY
+    var mutableRotationX = rotationX
+    var mutableRotationZ = rotationZ
+
     // Calculate half size for positioning faces
     val halfSize = size / 2
     val density = LocalDensity.current
@@ -275,13 +280,13 @@ fun ThreeJSCube(
             .graphicsLayer {
                 scaleX = scale * breatheScale
                 scaleY = scale * breatheScale
-                rotationX = rotationX
-                rotationY = rotationY
-                rotationZ = rotationZ
-                cameraDistance = 12f * density
+                this.rotationX = mutableRotationX
+                this.rotationY = mutableRotationY
+                this.rotationZ = mutableRotationZ
+                cameraDistance = 12f * density.density // Fix: use density.density for Float multiplication
             }
             .pointerInput(Unit) {
-                forEachGesture {
+                awaitEachGesture { // Fix: use awaitEachGesture instead of deprecated forEachGesture
                     awaitFirstDown().also { isPressed = true }
                     waitForUpOrCancellation()?.also {
                         isPressed = false
@@ -323,8 +328,8 @@ fun ThreeJSCube(
                 .align(Alignment.Center)
         ) {
             // Calculate face positions based on rotation
-            val rotY = (rotationY % 360 + 360) % 360
-            val rotX = (rotationX % 360 + 360) % 360
+            val rotY = (mutableRotationY % 360 + 360) % 360
+            val rotX = (mutableRotationX % 360 + 360) % 360
 
             // Front face (visible when rotY is between -90 and 90 degrees)
             if (rotY < 90 || rotY > 270) {

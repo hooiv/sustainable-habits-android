@@ -27,7 +27,6 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 /**
  * Implements biometric integration using camera and sensors
@@ -276,7 +275,7 @@ class BiometricIntegration @Inject constructor(
             // Calculate heart rate from peaks
             if (peaks.size >= 2) {
                 val timePerPeak = HEART_RATE_SAMPLE_PERIOD * redIntensities.size / peaks.size
-                val beatsPerMinute = (60 * 1000 / timePerPeak).roundToInt()
+                val beatsPerMinute = (60 * 1000.0 / timePerPeak.toDouble()).toInt() // Use toInt() for Double
                 
                 // Filter out unreasonable values
                 if (beatsPerMinute in 40..200) {
@@ -336,7 +335,7 @@ class BiometricIntegration @Inject constructor(
         val caloriesPerMinute = (LIGHT_ACTIVITY_METS * USER_WEIGHT_KG * 3.5) / 200
         val caloriesThisUpdate = caloriesPerMinute / 60.0 // Calories for one second interval
         
-        _caloriesBurned.value += caloriesThisUpdate.roundToInt()
+        _caloriesBurned.value += caloriesThisUpdate.toInt() // Fix: use toInt() instead of roundToInt() for Double
     }
     
     /**

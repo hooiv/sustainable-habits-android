@@ -2,7 +2,6 @@ package com.example.myapplication.data.ml
 
 import android.content.Context
 import android.util.Log
-import com.example.myapplication.data.model.HabitCategory
 import com.example.myapplication.data.model.HabitFrequency
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -45,8 +44,8 @@ class ModelManager @Inject constructor(
     
     private val modelsDir: File by lazy {
         File(context.filesDir, MODELS_DIR).apply {
-            if (!exists()) {
-                mkdirs()
+            if (!this.exists()) {
+                this.mkdirs()
             }
         }
     }
@@ -56,7 +55,7 @@ class ModelManager @Inject constructor(
      */
     suspend fun getBestModelForHabit(
         habitId: String,
-        category: HabitCategory?,
+        category: String?, // Changed from HabitCategory? to String?
         frequency: HabitFrequency
     ): MappedByteBuffer = withContext(Dispatchers.IO) {
         try {
@@ -69,9 +68,9 @@ class ModelManager @Inject constructor(
             
             // Next, check if there's a model for this category
             if (category != null) {
-                val categoryModel = getCategoryModel(category.name)
+                val categoryModel = getCategoryModel(category)
                 if (categoryModel != null) {
-                    Log.d(TAG, "Using category model for category: ${category.name}")
+                    Log.d(TAG, "Using category model for category: $category")
                     return@withContext categoryModel
                 }
             }
@@ -139,7 +138,7 @@ class ModelManager @Inject constructor(
             return null
         }
         
-        val modelFile = File(modelsDir, "category_$categoryGroup.tflite")
+        val modelFile = File(modelsDir, "category_${categoryGroup}.tflite")
         if (!modelFile.exists()) {
             return null
         }

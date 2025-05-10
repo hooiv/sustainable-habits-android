@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.myapplication.data.database.AppDatabase
 import com.example.myapplication.data.database.HabitDao
+import com.example.myapplication.data.database.NeuralNetworkDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

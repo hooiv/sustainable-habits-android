@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.myapplication.data.model.HabitCompletion
 
 /**
  * Represents multi-modal features extracted from habit completions
