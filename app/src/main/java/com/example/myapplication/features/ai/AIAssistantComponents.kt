@@ -1,6 +1,7 @@
 package com.example.myapplication.features.ai
 
 import androidx.compose.animation.core.*
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,7 +75,7 @@ fun AIAssistantCard(
     var userQuestion by remember { mutableStateOf("") }
     var isThinking by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -102,9 +103,9 @@ fun AIAssistantCard(
                     modifier = Modifier.size(60.dp),
                     isThinking = isThinking
                 )
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 // Assistant info
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -112,14 +113,14 @@ fun AIAssistantCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Text(
                         text = if (isThinking) "Thinking..." else "How can I help you today?",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                 }
-                
+
                 // Expand/collapse button
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
@@ -129,11 +130,11 @@ fun AIAssistantCard(
                     )
                 }
             }
-            
+
             // Expanded content
             if (expanded) {
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // AI suggestions
                 if (suggestions.isNotEmpty()) {
                     Text(
@@ -142,7 +143,7 @@ fun AIAssistantCard(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -155,10 +156,10 @@ fun AIAssistantCard(
                             )
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                
+
                 // Ask AI section
                 Text(
                     text = "Ask AI Assistant",
@@ -166,7 +167,7 @@ fun AIAssistantCard(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -183,9 +184,9 @@ fun AIAssistantCard(
                             unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     // Send button
                     Button(
                         onClick = {
@@ -207,7 +208,7 @@ fun AIAssistantCard(
                         )
                     }
                 }
-                
+
                 // Quick suggestions
                 FlowRow(
                     modifier = Modifier
@@ -226,7 +227,7 @@ fun AIAssistantCard(
                             }
                         }
                     )
-                    
+
                     QuickSuggestionChip(
                         text = "Optimize my schedule",
                         onClick = {
@@ -238,7 +239,7 @@ fun AIAssistantCard(
                             }
                         }
                     )
-                    
+
                     QuickSuggestionChip(
                         text = "Improve motivation",
                         onClick = {
@@ -265,7 +266,7 @@ fun AIAnimatedAvatar(
     isThinking: Boolean = false
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "avatarAnimation")
-    
+
     // Pulse animation
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -276,7 +277,7 @@ fun AIAnimatedAvatar(
         ),
         label = "avatarScale"
     )
-    
+
     // Color animation
     val colorTransition by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -287,14 +288,14 @@ fun AIAnimatedAvatar(
         ),
         label = "colorTransition"
     )
-    
+
     // Thinking animation
     val thinkingAlpha by animateFloatAsState(
         targetValue = if (isThinking) 1f else 0f,
         animationSpec = tween(500),
         label = "thinkingAlpha"
     )
-    
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -331,7 +332,7 @@ fun AIAnimatedAvatar(
                     shape = CircleShape
                 )
         )
-        
+
         // AI icon
         Icon(
             imageVector = Icons.Default.Psychology,
@@ -341,7 +342,7 @@ fun AIAnimatedAvatar(
                 .size(30.dp)
                 .alpha(1f - thinkingAlpha)
         )
-        
+
         // Thinking animation
         if (isThinking) {
             ParticleSystem(
@@ -373,7 +374,7 @@ fun AISuggestionItem(
         suggestion.confidence > 0.5f -> MaterialTheme.colorScheme.secondary
         else -> MaterialTheme.colorScheme.tertiary
     }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -410,9 +411,9 @@ fun AISuggestionItem(
                     tint = confidenceColor
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             // Suggestion content
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -420,7 +421,7 @@ fun AISuggestionItem(
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = suggestion.description,
                     style = MaterialTheme.typography.bodySmall,
@@ -428,7 +429,7 @@ fun AISuggestionItem(
                     maxLines = 2
                 )
             }
-            
+
             // Confidence indicator
             Box(
                 modifier = Modifier

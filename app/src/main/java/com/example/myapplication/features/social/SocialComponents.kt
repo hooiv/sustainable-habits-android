@@ -2,8 +2,11 @@ package com.example.myapplication.features.social
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -83,7 +86,7 @@ fun UserProfileCard(
     onViewProfile: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -145,7 +148,7 @@ fun UserProfileCard(
                             )
                         }
                     }
-                    
+
                     // Online indicator
                     if (userProfile.isOnline) {
                         val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -158,7 +161,7 @@ fun UserProfileCard(
                             ),
                             label = "onlinePulse"
                         )
-                        
+
                         Box(
                             modifier = Modifier
                                 .size(16.dp)
@@ -169,9 +172,9 @@ fun UserProfileCard(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 // User info
                 Column(
                     modifier = Modifier.weight(1f)
@@ -181,20 +184,20 @@ fun UserProfileCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Text(
                         text = "Level ${userProfile.level}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
-                    
+
                     Text(
                         text = "${userProfile.habitCount} habits • ${userProfile.streakCount} day streak",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 }
-                
+
                 // Friend action button
                 if (isFriend) {
                     IconButton(onClick = onRemoveFriend) {
@@ -214,7 +217,7 @@ fun UserProfileCard(
                     }
                 }
             }
-            
+
             // Expanded content
             AnimatedVisibility(
                 visible = isExpanded,
@@ -235,7 +238,7 @@ fun UserProfileCard(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
-                    
+
                     // Badges
                     if (userProfile.badges.isNotEmpty()) {
                         Text(
@@ -244,7 +247,7 @@ fun UserProfileCard(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        
+
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -266,7 +269,7 @@ fun UserProfileCard(
                             }
                         }
                     }
-                    
+
                     // View profile button
                     Button(
                         onClick = onViewProfile,
@@ -295,7 +298,7 @@ fun ChallengeCard(
 ) {
     val isParticipating = challenge.participantIds.contains(currentUserId)
     val creatorProfile = userProfiles[challenge.creatorId]
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -319,16 +322,16 @@ fun ChallengeCard(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(32.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = challenge.name,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     creatorProfile?.let {
                         Text(
                             text = "Created by ${it.name}",
@@ -337,7 +340,7 @@ fun ChallengeCard(
                         )
                     }
                 }
-                
+
                 // Join/Leave button
                 if (isParticipating) {
                     TextButton(onClick = onLeaveChallenge) {
@@ -349,9 +352,9 @@ fun ChallengeCard(
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Challenge description
             Text(
                 text = challenge.description,
@@ -360,9 +363,9 @@ fun ChallengeCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Participants
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -372,13 +375,13 @@ fun ChallengeCard(
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.width(8.dp))
-                
+
                 // Participant avatars
                 Box {
                     val visibleParticipants = challenge.participantIds.take(3)
-                    
+
                     Row {
                         visibleParticipants.forEachIndexed { index, userId ->
                             Box(
@@ -401,7 +404,7 @@ fun ChallengeCard(
                             }
                         }
                     }
-                    
+
                     // More participants indicator
                     if (challenge.participantIds.size > 3) {
                         Box(

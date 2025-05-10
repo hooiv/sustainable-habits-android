@@ -19,7 +19,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.model.*
+import com.example.myapplication.data.model.Habit
+import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.data.model.BiometricReading
+import com.example.myapplication.data.model.BiometricType
+import com.example.myapplication.data.model.BiometricTrend
+import com.example.myapplication.features.neural.NeuralNode
+import com.example.myapplication.data.model.NeuralNodeType
+import com.example.myapplication.data.model.Offset3D
+import com.example.myapplication.data.model.Rotation3D
+import com.example.myapplication.data.model.SpatialObject
+import com.example.myapplication.data.model.SpatialObjectType
+import com.example.myapplication.data.ml.PredictionType
+import com.example.myapplication.data.ml.HabitPrediction
+import com.example.myapplication.data.ml.PredictionFactor
+import com.example.myapplication.data.model.VoiceCommand
+import com.example.myapplication.data.model.VoiceIntent
+import com.example.myapplication.data.model.VoiceEntity
+import com.example.myapplication.data.model.EntityType
+import com.example.myapplication.ui.components.SwipeGestureArea
 import com.example.myapplication.features.biometric.*
 import com.example.myapplication.features.ml.*
 import com.example.myapplication.features.neural.*
@@ -27,6 +45,7 @@ import com.example.myapplication.features.quantum.*
 import com.example.myapplication.features.spatial.*
 import com.example.myapplication.features.voice.*
 import com.example.myapplication.ui.animation.*
+import java.util.Date
 import java.util.*
 import kotlin.math.*
 
@@ -111,45 +130,47 @@ fun UltraAdvancedFeaturesDemo(
 
     // Create sample neural nodes
     val sampleNeuralNodes = remember {
-        listOf(
+        val nodes = listOf(
             NeuralNode(
-                type = NeuralNodeType.INPUT,
+                type = com.example.myapplication.features.neural.NeuralNodeType.INPUT,
                 position = Offset(100f, 100f),
                 label = "Habit Trigger",
                 activationLevel = 0.8f
             ),
             NeuralNode(
-                type = NeuralNodeType.INPUT,
+                type = com.example.myapplication.features.neural.NeuralNodeType.INPUT,
                 position = Offset(100f, 250f),
                 label = "Environment",
                 activationLevel = 0.6f
             ),
             NeuralNode(
-                type = NeuralNodeType.HIDDEN,
+                type = com.example.myapplication.features.neural.NeuralNodeType.HIDDEN,
                 position = Offset(300f, 150f),
                 label = "Motivation",
                 activationLevel = 0.7f
             ),
             NeuralNode(
-                type = NeuralNodeType.HIDDEN,
+                type = com.example.myapplication.features.neural.NeuralNodeType.HIDDEN,
                 position = Offset(300f, 300f),
                 label = "Difficulty",
                 activationLevel = 0.4f
             ),
             NeuralNode(
-                type = NeuralNodeType.OUTPUT,
+                type = com.example.myapplication.features.neural.NeuralNodeType.OUTPUT,
                 position = Offset(500f, 200f),
                 label = "Habit Completion",
                 activationLevel = 0.5f
             )
-        ).apply {
-            // Add connections
-            this[0].connections.add(this[2].id)
-            this[0].connections.add(this[3].id)
-            this[1].connections.add(this[2].id)
-            this[2].connections.add(this[4].id)
-            this[3].connections.add(this[4].id)
-        }
+        )
+
+        // Add connections
+        nodes[0].connections.add(nodes[2].id)
+        nodes[0].connections.add(nodes[3].id)
+        nodes[1].connections.add(nodes[2].id)
+        nodes[2].connections.add(nodes[4].id)
+        nodes[3].connections.add(nodes[4].id)
+
+        nodes
     }
 
     // Create sample ML predictions
@@ -491,7 +512,7 @@ fun UltraAdvancedFeaturesDemo(
                                     .padding(bottom = 24.dp)
                             )
 
-                            BiometricReadingsList(
+                            com.example.myapplication.features.biometric.BiometricComponents.BiometricReadingsList(
                                 readings = sampleBiometricReadings,
                                 modifier = Modifier.fillMaxWidth()
                             )
@@ -546,16 +567,16 @@ fun UltraAdvancedFeaturesDemo(
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
 
-                            VoiceRecognitionInterface(
+                            com.example.myapplication.features.voice.VoiceComponents.VoiceRecognitionInterface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 24.dp),
-                                onVoiceCommand = { command ->
+                                onVoiceCommand = { command: com.example.myapplication.data.model.VoiceCommand ->
                                     sampleVoiceCommand = command
                                 }
                             )
 
-                            NLPResultDisplay(
+                            com.example.myapplication.features.voice.VoiceComponents.NLPResultDisplay(
                                 command = sampleVoiceCommand,
                                 modifier = Modifier.fillMaxWidth()
                             )

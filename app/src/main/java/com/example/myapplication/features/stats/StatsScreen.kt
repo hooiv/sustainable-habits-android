@@ -221,7 +221,7 @@ fun StatsScreen(navController: NavController) {
                         onClick = { navController.popBackStack() },
                         modifier = Modifier.scale(if (isLoading) 0.8f else 1f)
                     ) {
-                        Icon(
+                        androidx.compose.material3.Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = colorResource(R.color.brand_accent)
@@ -299,7 +299,7 @@ fun StatsScreen(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(
+                            androidx.compose.material3.Icon(
                                 Icons.AutoMirrored.Filled.List,
                                 contentDescription = "Total Habits",
                                 tint = MaterialTheme.colorScheme.primary,
@@ -346,7 +346,7 @@ fun StatsScreen(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(
+                            androidx.compose.material3.Icon(
                                 Icons.Default.CheckCircle,
                                 contentDescription = "Completed Habits",
                                 tint = MaterialTheme.colorScheme.secondary,
@@ -444,8 +444,8 @@ fun StatsScreen(navController: NavController) {
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        Icon(
-                                            icon,
+                                        androidx.compose.material3.Icon(
+                                            imageVector = icon,
                                             contentDescription = title,
                                             tint = if (isSelected)
                                                 MaterialTheme.colorScheme.onPrimary
@@ -562,8 +562,8 @@ fun StatsScreen(navController: NavController) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (index < 3) {
-                                    Icon(
-                                        when (index) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = when (index) {
                                             0 -> Icons.Default.EmojiEvents
                                             1 -> Icons.Default.EmojiEvents
                                             else -> Icons.Default.EmojiEvents
@@ -596,8 +596,8 @@ fun StatsScreen(navController: NavController) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        Icons.Default.LocalFireDepartment,
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.Default.LocalFireDepartment,
                                         contentDescription = "Streak",
                                         tint = when {
                                             habit.streak > 20 -> Color(0xFFFF1744)
@@ -801,8 +801,8 @@ fun CompletionPieChart(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    Icons.Default.PieChart,
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.PieChart,
                     contentDescription = "No Data",
                     modifier = Modifier
                         .size(48.dp)

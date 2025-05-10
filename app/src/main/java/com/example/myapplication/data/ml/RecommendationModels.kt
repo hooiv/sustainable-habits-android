@@ -1,5 +1,6 @@
 package com.example.myapplication.data.ml
 
+import com.example.myapplication.data.model.ActionType
 import java.util.UUID
 
 /**
@@ -39,15 +40,4 @@ data class ReinforcementAction(
     val timestamp: Long = System.currentTimeMillis()
 )
 
-/**
- * Enum for action types
- */
-enum class ActionType {
-    SEND_NOTIFICATION,
-    ADJUST_DIFFICULTY,
-    SUGGEST_PAIRING,
-    PROVIDE_ENCOURAGEMENT,
-    SUGGEST_ENVIRONMENT_CHANGE,
-    SUGGEST_TIME_CHANGE,
-    SUGGEST_SOCIAL_SUPPORT
-}
+// Using ActionType from com.example.myapplication.data.model.ActionType

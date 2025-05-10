@@ -24,7 +24,7 @@ data class ReinforcementState(
 /**
  * Represents an action in the reinforcement learning environment
  */
-data class ReinforcementAction(
+data class SimpleReinforcementAction(
     val actionId: Int // 0-4 (different timing recommendations)
 ) {
     override fun toString(): String {

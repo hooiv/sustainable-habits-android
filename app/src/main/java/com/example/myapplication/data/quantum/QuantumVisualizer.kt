@@ -20,60 +20,60 @@ import kotlin.math.*
 class QuantumVisualizer @Inject constructor() {
     companion object {
         private const val TAG = "QuantumVisualizer"
-        
+
         // Quantum simulation parameters
         private const val NUM_QUBITS = 8
         private const val NUM_PARTICLES = 100
         private const val ENTANGLEMENT_THRESHOLD = 0.7f
         private const val SUPERPOSITION_FACTOR = 0.5f
         private const val INTERFERENCE_FACTOR = 0.3f
-        
+
         // Visualization parameters
         private const val VISUALIZATION_SCALE = 100f
         private const val TIME_STEP = 0.05f
         private const val MAX_ENERGY_LEVEL = 5
     }
-    
+
     // Quantum state
     private val _quantumState = MutableStateFlow<QuantumState?>(null)
     val quantumState: StateFlow<QuantumState?> = _quantumState.asStateFlow()
-    
+
     // Particle system
     private val _particles = MutableStateFlow<List<QuantumParticle>>(emptyList())
     val particles: StateFlow<List<QuantumParticle>> = _particles.asStateFlow()
-    
+
     // Entanglement connections
     private val _entanglements = MutableStateFlow<List<QuantumEntanglement>>(emptyList())
     val entanglements: StateFlow<List<QuantumEntanglement>> = _entanglements.asStateFlow()
-    
+
     // Energy levels
     private val _energyLevels = MutableStateFlow<Map<String, Int>>(emptyMap())
     val energyLevels: StateFlow<Map<String, Int>> = _energyLevels.asStateFlow()
-    
+
     // Simulation time
     private var simulationTime = 0f
-    
+
     // Random number generator
     private val random = Random()
-    
+
     /**
      * Initialize quantum state from habits
      */
     fun initializeQuantumState(habits: List<Habit>, completions: Map<String, List<HabitCompletion>>) {
         // Create quantum state
         val qubits = Array(NUM_QUBITS) { ComplexNumber(0.0, 0.0) }
-        
+
         // Initialize qubits based on habits
         habits.forEachIndexed { index, habit ->
             if (index < NUM_QUBITS) {
                 // Calculate amplitude based on habit streak and completion rate
                 val streak = habit.streak.toDouble()
                 val completionRate = calculateCompletionRate(habit, completions[habit.id] ?: emptyList())
-                
+
                 // Convert to quantum amplitude (normalized between 0 and 1)
                 val amplitude = sqrt(completionRate)
                 val phase = streak * PI / 10.0 // Phase based on streak
-                
+
                 // Set qubit state using amplitude and phase
                 qubits[index] = ComplexNumber(
                     amplitude * cos(phase),
@@ -81,65 +81,65 @@ class QuantumVisualizer @Inject constructor() {
                 )
             }
         }
-        
+
         // Normalize quantum state
         normalizeQubits(qubits)
-        
+
         // Create quantum state
         val state = QuantumState(
             qubits = qubits,
             habitIds = habits.take(NUM_QUBITS).map { it.id }
         )
-        
+
         _quantumState.value = state
-        
+
         // Initialize particles
         initializeParticles(state)
-        
+
         // Initialize entanglements
         initializeEntanglements(habits, completions)
-        
+
         // Initialize energy levels
         initializeEnergyLevels(habits)
-        
+
         Log.d(TAG, "Initialized quantum state with ${habits.size} habits")
     }
-    
+
     /**
      * Initialize quantum particles
      */
     private fun initializeParticles(state: QuantumState) {
         val particles = mutableListOf<QuantumParticle>()
-        
+
         // Create particles for each qubit
         for (i in 0 until NUM_QUBITS) {
             val qubit = state.qubits[i]
             val habitId = if (i < state.habitIds.size) state.habitIds[i] else null
-            
+
             // Calculate number of particles based on qubit amplitude
             val amplitude = qubit.magnitude()
             val numParticles = (amplitude * amplitude * NUM_PARTICLES / NUM_QUBITS).toInt()
-            
+
             // Create particles
             for (j in 0 until numParticles) {
                 // Calculate position based on qubit state
                 val angle = random.nextDouble() * 2 * PI
                 val radius = random.nextDouble() * VISUALIZATION_SCALE * amplitude
-                
+
                 val position = Offset(
                     (cos(angle) * radius).toFloat(),
                     (sin(angle) * radius).toFloat()
                 )
-                
+
                 // Calculate velocity based on qubit phase
                 val phase = qubit.phase()
                 val speed = (1.0 + random.nextDouble()) * 10.0
-                
+
                 val velocity = Offset(
                     (cos(phase + angle) * speed).toFloat(),
                     (sin(phase + angle) * speed).toFloat()
                 )
-                
+
                 // Create particle
                 val particle = QuantumParticle(
                     id = UUID.randomUUID().toString(),
@@ -151,14 +151,14 @@ class QuantumVisualizer @Inject constructor() {
                     habitId = habitId,
                     color = generateColorForQubit(i)
                 )
-                
+
                 particles.add(particle)
             }
         }
-        
+
         _particles.value = particles
     }
-    
+
     /**
      * Initialize quantum entanglements
      */
@@ -168,20 +168,20 @@ class QuantumVisualizer @Inject constructor() {
     ) {
         val entanglements = mutableListOf<QuantumEntanglement>()
         val state = _quantumState.value ?: return
-        
+
         // Create entanglements between related habits
         for (i in 0 until min(habits.size, NUM_QUBITS)) {
             for (j in i + 1 until min(habits.size, NUM_QUBITS)) {
                 val habit1 = habits[i]
                 val habit2 = habits[j]
-                
+
                 // Calculate correlation between habits
                 val correlation = calculateHabitCorrelation(
                     habit1, habit2,
                     completions[habit1.id] ?: emptyList(),
                     completions[habit2.id] ?: emptyList()
                 )
-                
+
                 // Create entanglement if correlation is above threshold
                 if (correlation > ENTANGLEMENT_THRESHOLD) {
                     val entanglement = QuantumEntanglement(
@@ -196,52 +196,52 @@ class QuantumVisualizer @Inject constructor() {
                             generateColorForQubit(j)
                         )
                     )
-                    
+
                     entanglements.add(entanglement)
                 }
             }
         }
-        
+
         _entanglements.value = entanglements
     }
-    
+
     /**
      * Initialize energy levels
      */
     private fun initializeEnergyLevels(habits: List<Habit>) {
         val energyLevels = mutableMapOf<String, Int>()
-        
+
         // Calculate energy level for each habit
         for (habit in habits) {
             // Energy level based on streak and difficulty
             val energyLevel = min(
-                (habit.streak / 5 + habit.difficulty / 2).toInt(),
+                (habit.streak / 5 + habit.difficulty.ordinal / 2).toInt(),
                 MAX_ENERGY_LEVEL
             )
-            
+
             energyLevels[habit.id] = energyLevel
         }
-        
+
         _energyLevels.value = energyLevels
     }
-    
+
     /**
      * Update quantum simulation
      */
     fun updateSimulation() {
         val state = _quantumState.value ?: return
         val currentParticles = _particles.value
-        
+
         // Update simulation time
         simulationTime += TIME_STEP
-        
+
         // Apply quantum gates
         applyHadamardGate(0) // Apply Hadamard gate to first qubit
         applyPhaseGate(1, simulationTime) // Apply phase gate to second qubit
-        
+
         // Apply entanglement effects
         applyEntanglementEffects()
-        
+
         // Update particles
         val updatedParticles = currentParticles.map { particle ->
             // Update position
@@ -249,33 +249,33 @@ class QuantumVisualizer @Inject constructor() {
                 particle.position.x + particle.velocity.x * TIME_STEP,
                 particle.position.y + particle.velocity.y * TIME_STEP
             )
-            
+
             // Apply quantum effects
             val qubitIndex = particle.qubitIndex
             val qubit = state.qubits[qubitIndex]
-            
+
             // Update amplitude and phase based on qubit state
             val newAmplitude = (particle.amplitude + (qubit.magnitude().toFloat() - particle.amplitude) * 0.1f)
                 .coerceIn(0.1f, 1.0f)
-            
+
             val newPhase = particle.phase + 0.1f * sin(simulationTime)
-            
+
             // Apply superposition effect
             val superpositionEffect = sin(simulationTime * 2) * SUPERPOSITION_FACTOR
-            
+
             // Apply interference effect
             val interferenceEffect = cos(particle.position.x / 20 + simulationTime) * INTERFERENCE_FACTOR
-            
+
             // Calculate new velocity
             val speed = particle.velocity.x * particle.velocity.x + particle.velocity.y * particle.velocity.y
-            val direction = atan2(particle.velocity.y, particle.velocity.x) + 
+            val direction = atan2(particle.velocity.y, particle.velocity.x) +
                             superpositionEffect + interferenceEffect
-            
+
             val newVelocity = Offset(
                 (sqrt(speed) * cos(direction)).toFloat(),
                 (sqrt(speed) * sin(direction)).toFloat()
             )
-            
+
             // Create updated particle
             particle.copy(
                 position = newPosition,
@@ -284,69 +284,69 @@ class QuantumVisualizer @Inject constructor() {
                 phase = newPhase
             )
         }
-        
+
         _particles.value = updatedParticles
     }
-    
+
     /**
      * Apply Hadamard gate to a qubit
      */
     private fun applyHadamardGate(qubitIndex: Int) {
         val state = _quantumState.value ?: return
         if (qubitIndex >= state.qubits.size) return
-        
+
         val qubit = state.qubits[qubitIndex]
-        
+
         // Hadamard transform: |0⟩ -> (|0⟩ + |1⟩)/√2, |1⟩ -> (|0⟩ - |1⟩)/√2
         val newQubit = ComplexNumber(
             (qubit.real + qubit.imaginary) / sqrt(2.0),
             (qubit.real - qubit.imaginary) / sqrt(2.0)
         )
-        
+
         // Update qubit
         state.qubits[qubitIndex] = newQubit
-        
+
         // Normalize quantum state
         normalizeQubits(state.qubits)
     }
-    
+
     /**
      * Apply phase gate to a qubit
      */
     private fun applyPhaseGate(qubitIndex: Int, phase: Float) {
         val state = _quantumState.value ?: return
         if (qubitIndex >= state.qubits.size) return
-        
+
         val qubit = state.qubits[qubitIndex]
-        
+
         // Phase gate: |0⟩ -> |0⟩, |1⟩ -> e^(iθ)|1⟩
         val newQubit = ComplexNumber(
             qubit.real * cos(phase.toDouble()) - qubit.imaginary * sin(phase.toDouble()),
             qubit.real * sin(phase.toDouble()) + qubit.imaginary * cos(phase.toDouble())
         )
-        
+
         // Update qubit
         state.qubits[qubitIndex] = newQubit
-        
+
         // Normalize quantum state
         normalizeQubits(state.qubits)
     }
-    
+
     /**
      * Apply entanglement effects
      */
     private fun applyEntanglementEffects() {
         val state = _quantumState.value ?: return
         val entanglements = _entanglements.value
-        
+
         for (entanglement in entanglements) {
             val qubit1Index = entanglement.qubit1Index
             val qubit2Index = entanglement.qubit2Index
-            
+
             if (qubit1Index < state.qubits.size && qubit2Index < state.qubits.size) {
                 val qubit1 = state.qubits[qubit1Index]
                 val qubit2 = state.qubits[qubit2Index]
-                
+
                 // Apply CNOT gate (simplified)
                 if (qubit1.magnitude() > 0.5) {
                     // Flip qubit2 if qubit1 is in |1⟩ state
@@ -354,11 +354,11 @@ class QuantumVisualizer @Inject constructor() {
                 }
             }
         }
-        
+
         // Normalize quantum state
         normalizeQubits(state.qubits)
     }
-    
+
     /**
      * Normalize qubits to ensure valid quantum state
      */
@@ -369,7 +369,7 @@ class QuantumVisualizer @Inject constructor() {
             val magnitude = qubit.magnitude()
             totalProbability += magnitude * magnitude
         }
-        
+
         // Normalize if needed
         if (totalProbability > 0) {
             val normalizationFactor = 1.0 / sqrt(totalProbability)
@@ -381,18 +381,18 @@ class QuantumVisualizer @Inject constructor() {
             }
         }
     }
-    
+
     /**
      * Calculate completion rate for a habit
      */
     private fun calculateCompletionRate(habit: Habit, completions: List<HabitCompletion>): Double {
         if (completions.isEmpty()) return 0.0
-        
+
         // Calculate days since habit creation
         val now = System.currentTimeMillis()
-        val creationDate = habit.creationDate ?: now
+        val creationDate = habit.createdDate?.time ?: now
         val daysSinceCreation = (now - creationDate) / (1000 * 60 * 60 * 24)
-        
+
         // Calculate expected completions based on frequency
         val expectedCompletions = when (habit.frequency) {
             com.example.myapplication.data.model.HabitFrequency.DAILY -> daysSinceCreation
@@ -400,7 +400,7 @@ class QuantumVisualizer @Inject constructor() {
             com.example.myapplication.data.model.HabitFrequency.MONTHLY -> daysSinceCreation / 30
             else -> daysSinceCreation
         }
-        
+
         // Calculate completion rate
         return if (expectedCompletions > 0) {
             (completions.size.toDouble() / expectedCompletions).coerceIn(0.0, 1.0)
@@ -408,7 +408,7 @@ class QuantumVisualizer @Inject constructor() {
             0.0
         }
     }
-    
+
     /**
      * Calculate correlation between two habits
      */
@@ -420,20 +420,20 @@ class QuantumVisualizer @Inject constructor() {
     ): Float {
         // Simple correlation based on completion dates
         if (completions1.isEmpty() || completions2.isEmpty()) return 0f
-        
+
         // Get completion dates
         val dates1 = completions1.map { it.completionDate }.sorted()
         val dates2 = completions2.map { it.completionDate }.sorted()
-        
+
         // Count completions on the same day
         var sameDay = 0
         var i = 0
         var j = 0
-        
+
         while (i < dates1.size && j < dates2.size) {
             val day1 = dates1[i] / (1000 * 60 * 60 * 24)
             val day2 = dates2[j] / (1000 * 60 * 60 * 24)
-            
+
             when {
                 day1 == day2 -> {
                     sameDay++
@@ -444,7 +444,7 @@ class QuantumVisualizer @Inject constructor() {
                 else -> j++
             }
         }
-        
+
         // Calculate correlation
         val totalCompletions = dates1.size + dates2.size
         return if (totalCompletions > 0) {
@@ -453,7 +453,7 @@ class QuantumVisualizer @Inject constructor() {
             0f
         }
     }
-    
+
     /**
      * Generate color for a qubit
      */
@@ -462,7 +462,7 @@ class QuantumVisualizer @Inject constructor() {
         val hue = (index * 360f / NUM_QUBITS) % 360f
         return Color.HSVToColor(floatArrayOf(hue, 0.8f, 0.9f))
     }
-    
+
     /**
      * Blend two colors
      */
@@ -472,7 +472,7 @@ class QuantumVisualizer @Inject constructor() {
         val b = (Color.blue(color1) + Color.blue(color2)) / 2
         return Color.rgb(r, g, b)
     }
-    
+
     /**
      * Get quantum visualization data for a habit
      */
@@ -480,21 +480,21 @@ class QuantumVisualizer @Inject constructor() {
         val state = _quantumState.value ?: return null
         val habitIndex = state.habitIds.indexOf(habitId)
         if (habitIndex < 0) return null
-        
+
         // Get qubit state
         val qubit = state.qubits[habitIndex]
-        
+
         // Get particles for this habit
         val habitParticles = _particles.value.filter { it.habitId == habitId }
-        
+
         // Get entanglements for this habit
-        val habitEntanglements = _entanglements.value.filter { 
-            it.habit1Id == habitId || it.habit2Id == habitId 
+        val habitEntanglements = _entanglements.value.filter {
+            it.habit1Id == habitId || it.habit2Id == habitId
         }
-        
+
         // Get energy level
         val energyLevel = _energyLevels.value[habitId] ?: 0
-        
+
         return QuantumVisualization(
             habitId = habitId,
             amplitude = qubit.magnitude().toFloat(),
@@ -514,7 +514,7 @@ data class ComplexNumber(
     val imaginary: Double
 ) {
     fun magnitude(): Double = sqrt(real * real + imaginary * imaginary)
-    
+
     fun phase(): Double = atan2(imaginary, real)
 }
 

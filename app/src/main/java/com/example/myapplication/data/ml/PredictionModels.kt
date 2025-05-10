@@ -39,9 +39,9 @@ data class PredictionFactor(
 )
 
 /**
- * Data class for habit recommendations
+ * Data class for habit prediction recommendations
  */
-data class HabitRecommendation(
+data class HabitPredictionRecommendation(
     val id: String = UUID.randomUUID().toString(),
     val title: String,
     val description: String,

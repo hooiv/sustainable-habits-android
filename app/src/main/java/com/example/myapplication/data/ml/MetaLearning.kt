@@ -452,24 +452,18 @@ class MetaLearning @Inject constructor() {
 
             // Category (encoded)
             features[5] = habit.category?.let {
-                if (it is HabitCategory) {
-                    encodeCategory(it)
-                } else if (it is String) {
-                    encodeCategory(HabitCategory.fromString(it))
-                } else {
-                    0.5f
-                }
+                encodeCategory(it)
             } ?: 0.5f
 
             // Mood (normalized)
             features[6] = completion.mood?.toFloat()?.div(5f) ?: 0.5f
 
             // Difficulty (normalized)
-            features[7] = habit.difficulty.toFloat() / 5f
+            features[7] = habit.difficulty.ordinal.toFloat() / 5f
 
             // Days since creation (normalized)
-            val daysSinceCreation = if (habit.creationDate != null) {
-                (completion.completionDate - habit.creationDate) / (1000 * 60 * 60 * 24)
+            val daysSinceCreation = if (habit.createdDate != null) {
+                (completion.completionDate - habit.createdDate.time) / (1000 * 60 * 60 * 24)
             } else {
                 0L
             }
@@ -527,13 +521,19 @@ class MetaLearning @Inject constructor() {
     /**
      * Encode habit category
      */
-    private fun encodeCategory(category: HabitCategory): Float {
-        return when (category.name.lowercase()) {
-            "health", "fitness", "exercise" -> 0.1f
-            "productivity", "work", "study" -> 0.3f
-            "mindfulness", "meditation", "mental health" -> 0.5f
-            "social", "relationships" -> 0.7f
-            "creativity", "hobby" -> 0.9f
+    private fun encodeCategory(category: Any): Float {
+        val categoryName = when (category) {
+            is HabitCategory -> category.name
+            is String -> category
+            else -> ""
+        }.toString().lowercase()
+
+        return when {
+            categoryName.contains("health") || categoryName.contains("fitness") || categoryName.contains("exercise") -> 0.1f
+            categoryName.contains("productivity") || categoryName.contains("work") || categoryName.contains("study") -> 0.3f
+            categoryName.contains("mindfulness") || categoryName.contains("meditation") || categoryName.contains("mental") -> 0.5f
+            categoryName.contains("social") || categoryName.contains("relationship") -> 0.7f
+            categoryName.contains("creativity") || categoryName.contains("hobby") -> 0.9f
             else -> 0.5f
         }
     }

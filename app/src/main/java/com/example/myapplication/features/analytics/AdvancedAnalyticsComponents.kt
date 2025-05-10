@@ -1,6 +1,7 @@
 package com.example.myapplication.features.analytics
 
 import androidx.compose.animation.core.*
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import com.example.myapplication.ui.theme.Orange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -81,7 +83,7 @@ fun HabitCorrelationMatrix(
     var rotationY by remember { mutableStateOf(20f) }
     var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Animation for cell selection
     val selectedCellScale by animateFloatAsState(
         targetValue = if (selectedCell != null) 1.2f else 1f,
@@ -91,27 +93,28 @@ fun HabitCorrelationMatrix(
         ),
         label = "cellScale"
     )
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     // Convert tap position to matrix cell
+                    val size = this.size
                     val cellSize = size.width / habits.size
                     val row = (offset.y / cellSize).toInt().coerceIn(0, habits.size - 1)
                     val col = (offset.x / cellSize).toInt().coerceIn(0, habits.size - 1)
-                    
+
                     if (row != col) { // Ignore diagonal (self-correlation)
                         val habitA = habits[row]
                         val habitB = habits[col]
                         val correlation = correlationData[Pair(habitA.id, habitB.id)]
                             ?: correlationData[Pair(habitB.id, habitA.id)]
                             ?: 0f
-                        
+
                         selectedCell = Pair(row, col)
                         onCellClick(habitA, habitB, correlation)
-                        
+
                         // Auto-clear selection after a delay
                         coroutineScope.launch {
                             delay(3000)
@@ -133,7 +136,7 @@ fun HabitCorrelationMatrix(
                 }
         ) {
             val cellSize = size.width / habits.size
-            
+
             // Draw matrix cells
             for (i in habits.indices) {
                 for (j in habits.indices) {
@@ -150,36 +153,37 @@ fun HabitCorrelationMatrix(
                         val correlation = correlationData[Pair(habits[i].id, habits[j].id)]
                             ?: correlationData[Pair(habits[j].id, habits[i].id)]
                             ?: 0f
-                        
+
                         // Determine cell color based on correlation
                         val cellColor = when {
                             correlation > 0.7f -> Color.Green.copy(alpha = 0.7f)
                             correlation > 0.3f -> Color.Yellow.copy(alpha = 0.7f)
                             correlation > -0.3f -> Color.Gray.copy(alpha = 0.3f)
-                            correlation > -0.7f -> Color.Orange.copy(alpha = 0.7f)
+                            correlation > -0.7f -> com.example.myapplication.ui.theme.Orange.copy(alpha = 0.7f)
                             else -> Color.Red.copy(alpha = 0.7f)
                         }
-                        
+
                         // Check if this is the selected cell
                         val isSelected = selectedCell?.let { it.first == i && it.second == j } ?: false
                         val cellScale = if (isSelected) selectedCellScale else 1f
-                        
+
                         // Calculate cell position with potential scaling for selected cell
                         val cellOffset = Offset(
                             j * cellSize + (cellSize * (1f - cellScale) / 2f),
                             i * cellSize + (cellSize * (1f - cellScale) / 2f)
                         )
-                        
+
                         // Draw cell
                         drawRect(
                             color = cellColor,
                             topLeft = cellOffset,
                             size = Size(cellSize * cellScale, cellSize * cellScale)
                         )
-                        
+
                         // Draw correlation value
+                        val textMeasurer = rememberTextMeasurer()
                         drawText(
-                            textMeasurer = rememberTextMeasurer(),
+                            textMeasurer = textMeasurer,
                             text = String.format("%.2f", correlation),
                             topLeft = Offset(
                                 j * cellSize + cellSize / 4f,
@@ -194,12 +198,13 @@ fun HabitCorrelationMatrix(
                     }
                 }
             }
-            
+
             // Draw habit labels on axes
             for (i in habits.indices) {
                 // Y-axis labels (rows)
+                val rowTextMeasurer = rememberTextMeasurer()
                 drawText(
-                    textMeasurer = rememberTextMeasurer(),
+                    textMeasurer = rowTextMeasurer,
                     text = habits[i].name.take(10),
                     topLeft = Offset(0f, i * cellSize + cellSize / 3f),
                     style = TextStyle(
@@ -208,11 +213,12 @@ fun HabitCorrelationMatrix(
                         fontWeight = FontWeight.Bold
                     )
                 )
-                
+
                 // X-axis labels (columns)
                 rotate(90f) {
+                    val colTextMeasurer = rememberTextMeasurer()
                     drawText(
-                        textMeasurer = rememberTextMeasurer(),
+                        textMeasurer = colTextMeasurer,
                         text = habits[i].name.take(10),
                         topLeft = Offset(0f, -((i + 1) * cellSize) + cellSize / 3f),
                         style = TextStyle(
@@ -224,7 +230,7 @@ fun HabitCorrelationMatrix(
                 }
             }
         }
-        
+
         // Matrix controls
         Row(
             modifier = Modifier
@@ -244,7 +250,7 @@ fun HabitCorrelationMatrix(
                     contentDescription = "Rotate X+"
                 )
             }
-            
+
             IconButton(
                 onClick = { rotationX = (rotationX - 10 + 360) % 360 },
                 modifier = Modifier
@@ -258,7 +264,7 @@ fun HabitCorrelationMatrix(
                     contentDescription = "Rotate X-"
                 )
             }
-            
+
             IconButton(
                 onClick = { rotationY = (rotationY + 10) % 360 },
                 modifier = Modifier
@@ -272,7 +278,7 @@ fun HabitCorrelationMatrix(
                     contentDescription = "Rotate Y+"
                 )
             }
-            
+
             IconButton(
                 onClick = { rotationY = (rotationY - 10 + 360) % 360 },
                 modifier = Modifier
@@ -286,7 +292,7 @@ fun HabitCorrelationMatrix(
                     contentDescription = "Rotate Y-"
                 )
             }
-            
+
             IconButton(
                 onClick = {
                     rotationX = 20f
@@ -304,7 +310,7 @@ fun HabitCorrelationMatrix(
                 )
             }
         }
-        
+
         // Legend
         Column(
             modifier = Modifier
@@ -321,7 +327,7 @@ fun HabitCorrelationMatrix(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -337,7 +343,7 @@ fun HabitCorrelationMatrix(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -353,7 +359,7 @@ fun HabitCorrelationMatrix(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -369,7 +375,7 @@ fun HabitCorrelationMatrix(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -377,7 +383,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color.Orange.copy(alpha = 0.7f))
+                        .background(com.example.myapplication.ui.theme.Orange.copy(alpha = 0.7f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -385,7 +391,7 @@ fun HabitCorrelationMatrix(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -415,7 +421,7 @@ fun AnalyticsInsightsPanel(
     onInsightClick: (AnalyticsInsight) -> Unit = {}
 ) {
     var expandedInsightId by remember { mutableStateOf<String?>(null) }
-    
+
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -433,14 +439,14 @@ fun AnalyticsInsightsPanel(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(insights.sortedByDescending { it.score }) { insight ->
                     val isExpanded = expandedInsightId == insight.id
-                    
+
                     InsightCard(
                         insight = insight,
                         isExpanded = isExpanded,
@@ -473,7 +479,7 @@ fun InsightCard(
         InsightType.RECOMMENDATION -> MaterialTheme.colorScheme.secondaryContainer
         InsightType.ACHIEVEMENT -> MaterialTheme.colorScheme.tertiaryContainer
     }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -519,9 +525,9 @@ fun InsightCard(
                         tint = backgroundColor
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 // Insight title and score
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -529,7 +535,7 @@ fun InsightCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -538,9 +544,9 @@ fun InsightCard(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
-                        
+
                         Spacer(modifier = Modifier.width(8.dp))
-                        
+
                         // Score indicator
                         LinearProgressIndicator(
                             progress = insight.score,
@@ -552,7 +558,7 @@ fun InsightCard(
                         )
                     }
                 }
-                
+
                 // Expand/collapse icon
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
@@ -560,30 +566,30 @@ fun InsightCard(
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
-            
+
             // Expanded content
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = insight.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-                
+
                 if (insight.relatedHabitIds.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = "Related Habits: ${insight.relatedHabitIds.size}",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                
+
                 // Timestamp
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "Generated: ${SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(insight.timestamp)}",
                     style = MaterialTheme.typography.bodySmall,

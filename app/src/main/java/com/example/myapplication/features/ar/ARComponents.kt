@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.CameraOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,10 +30,12 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.ui.animation.*
+import com.example.myapplication.ui.theme.Brown
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -80,10 +84,10 @@ fun ARHabitVisualization(
     var draggedObjectId by remember { mutableStateOf<String?>(null) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Mutable list of AR objects that can be modified
     val mutableARObjects = remember { arObjects.toMutableStateList() }
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -97,7 +101,7 @@ fun ARHabitVisualization(
                             val distance = (arObject.position - offset).getDistance()
                             distance < objectRadius
                         }
-                        
+
                         if (tappedObject != null) {
                             selectedObject = tappedObject
                             onObjectClick(tappedObject)
@@ -109,7 +113,7 @@ fun ARHabitVisualization(
                                     // For now, just add a random object
                                     val randomType = ARObjectType.values().random()
                                     onAddObject(randomType, offset)
-                                    
+
                                     // Add the object to our local list
                                     mutableARObjects.add(
                                         ARObject(
@@ -124,7 +128,7 @@ fun ARHabitVisualization(
                                     )
                                 }
                             }
-                            
+
                             selectedObject = null
                         }
                     }
@@ -139,14 +143,14 @@ fun ARHabitVisualization(
                             val distance = (arObject.position - offset).getDistance()
                             distance < objectRadius
                         }
-                        
+
                         draggedObjectId = draggedObject?.id
                         dragOffset = offset
                     },
                     onDrag = { change, dragAmount ->
                         change.consume()
                         dragOffset += dragAmount
-                        
+
                         // Update position of dragged object
                         draggedObjectId?.let { id ->
                             val index = mutableARObjects.indexOfFirst { it.id == id }
@@ -172,7 +176,7 @@ fun ARHabitVisualization(
             Canvas(modifier = Modifier.matchParentSize()) {
                 val gridSize = 50f
                 val gridColor = Color.White.copy(alpha = 0.1f)
-                
+
                 // Draw horizontal grid lines
                 for (y in 0..(size.height / gridSize).toInt()) {
                     drawLine(
@@ -182,7 +186,7 @@ fun ARHabitVisualization(
                         strokeWidth = 1f
                     )
                 }
-                
+
                 // Draw vertical grid lines
                 for (x in 0..(size.width / gridSize).toInt()) {
                     drawLine(
@@ -193,7 +197,7 @@ fun ARHabitVisualization(
                     )
                 }
             }
-            
+
             // Particle effect to enhance AR feel
             ParticleSystem(
                 modifier = Modifier.matchParentSize(),
@@ -208,12 +212,12 @@ fun ARHabitVisualization(
                 glowEffect = true
             )
         }
-        
+
         // Render AR objects
         mutableARObjects.forEach { arObject ->
             val isSelected = selectedObject?.id == arObject.id
             val isDragged = draggedObjectId == arObject.id
-            
+
             ARObjectRenderer(
                 arObject = arObject,
                 isSelected = isSelected,
@@ -221,7 +225,7 @@ fun ARHabitVisualization(
                 onClick = { onObjectClick(arObject) }
             )
         }
-        
+
         // AR controls overlay
         Column(
             modifier = Modifier
@@ -247,7 +251,7 @@ fun ARHabitVisualization(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         if (selected.relatedHabitId != null) {
                             Text(
                                 text = "Related to habit ID: ${selected.relatedHabitId}",
@@ -255,7 +259,7 @@ fun ARHabitVisualization(
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
                         }
-                        
+
                         // Object controls
                         Row(
                             modifier = Modifier
@@ -276,7 +280,7 @@ fun ARHabitVisualization(
                                     contentDescription = "Scale Up"
                                 )
                             }
-                            
+
                             IconButton(onClick = {
                                 val index = mutableARObjects.indexOfFirst { it.id == selected.id }
                                 if (index >= 0) {
@@ -290,7 +294,7 @@ fun ARHabitVisualization(
                                     contentDescription = "Scale Down"
                                 )
                             }
-                            
+
                             IconButton(onClick = {
                                 val index = mutableARObjects.indexOfFirst { it.id == selected.id }
                                 if (index >= 0) {
@@ -304,7 +308,7 @@ fun ARHabitVisualization(
                                     contentDescription = "Rotate"
                                 )
                             }
-                            
+
                             IconButton(onClick = {
                                 mutableARObjects.removeAll { it.id == selected.id }
                                 selectedObject = null
@@ -319,7 +323,7 @@ fun ARHabitVisualization(
                     }
                 }
             }
-            
+
             // AR control buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -330,11 +334,11 @@ fun ARHabitVisualization(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Icon(
-                        imageVector = if (cameraActive) Icons.Default.CameraAlt else Icons.Default.CameraOff,
+                        imageVector = if (cameraActive) Icons.Default.CameraAlt else Icons.Outlined.CameraOff,
                         contentDescription = if (cameraActive) "Camera On" else "Camera Off"
                     )
                 }
-                
+
                 FloatingActionButton(
                     onClick = {
                         // Add a random object in the center
@@ -344,7 +348,7 @@ fun ARHabitVisualization(
                         )
                         val randomType = ARObjectType.values().random()
                         onAddObject(randomType, center)
-                        
+
                         // Add the object to our local list
                         mutableARObjects.add(
                             ARObject(
@@ -365,7 +369,7 @@ fun ARHabitVisualization(
                         contentDescription = "Add Object"
                     )
                 }
-                
+
                 FloatingActionButton(
                     onClick = {
                         // Clear all objects
@@ -395,7 +399,7 @@ fun ARObjectRenderer(
     onClick: () -> Unit = {}
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "arObjectAnimation")
-    
+
     // Hover animation
     val hoverOffset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -406,7 +410,7 @@ fun ARObjectRenderer(
         ),
         label = "hoverOffset"
     )
-    
+
     // Rotation animation
     val rotationAngle by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -417,7 +421,7 @@ fun ARObjectRenderer(
         ),
         label = "rotationAngle"
     )
-    
+
     // Selection animation
     val selectionScale by animateFloatAsState(
         targetValue = if (isSelected) 1.2f else 1f,
@@ -427,17 +431,17 @@ fun ARObjectRenderer(
         ),
         label = "selectionScale"
     )
-    
+
     // Drag animation
     val dragScale by animateFloatAsState(
         targetValue = if (isDragged) 1.1f else 1f,
         animationSpec = tween(200),
         label = "dragScale"
     )
-    
+
     Box(
         modifier = Modifier
-            .offset { IntOffset(arObject.position.x.toInt(), arObject.position.y.toInt()) }
+            .offset { IntOffset(x = arObject.position.x.toInt(), y = arObject.position.y.toInt()) }
             .size(100.dp * arObject.scale * selectionScale * dragScale)
             .offset(y = (hoverOffset * arObject.scale).dp)
             .clickable(onClick = onClick),
@@ -451,11 +455,11 @@ fun ARObjectRenderer(
                     rotate(arObject.rotation + rotationAngle * 0.05f) {
                         // Draw tree trunk
                         drawRect(
-                            color = Color.Brown,
+                            color = Brown,
                             topLeft = Offset(size.width * 0.45f, size.height * 0.5f),
                             size = Size(size.width * 0.1f, size.height * 0.4f)
                         )
-                        
+
                         // Draw tree leaves
                         drawCircle(
                             color = arObject.color,
@@ -489,7 +493,7 @@ fun ARObjectRenderer(
                             topLeft = Offset(size.width * 0.2f, size.height * 0.2f),
                             size = Size(size.width * 0.6f, size.width * 0.6f)
                         )
-                        
+
                         // Draw trophy base
                         drawRect(
                             color = arObject.color,
@@ -528,7 +532,7 @@ fun ARObjectRenderer(
                 }
             }
         }
-        
+
         // Label if provided
         arObject.label?.let { label ->
             Text(
@@ -547,7 +551,7 @@ fun ARObjectRenderer(
                     .padding(horizontal = 4.dp, vertical = 2.dp)
             )
         }
-        
+
         // Selection indicator
         if (isSelected) {
             Box(

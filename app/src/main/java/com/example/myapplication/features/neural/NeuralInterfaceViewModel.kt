@@ -494,7 +494,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Get latest prediction of a specific type
      */
-    fun getLatestPrediction(predictionType: PredictionType): NeuralPrediction? {
+    fun getLatestPrediction(predictionType: com.example.myapplication.data.model.PredictionType): NeuralPrediction? {
         return _predictions.value
             .filter { it.predictionType == predictionType }
             .maxByOrNull { it.timestamp }
@@ -579,7 +579,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Get action description for reinforcement learning
      */
-    fun getActionDescription(action: ReinforcementAction): String {
+    fun getActionDescription(action: com.example.myapplication.data.model.ReinforcementAction): String {
         return reinforcementLearningAgent.getActionDescription(action)
     }
 
@@ -726,7 +726,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                 _bestHyperparameters.value = null
 
                 // Define evaluation function
-                val evaluateConfig: suspend (Hyperparameters) -> Float = { config ->
+                val evaluateConfig = { config: Hyperparameters ->
                     // Simulate training with these hyperparameters
                     // In a real app, this would actually train a model
 
@@ -752,7 +752,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                     // Simulate delay
                     kotlinx.coroutines.delay(500)
 
-                    return@evaluateConfig score + randomness
+                    score + randomness
                 }
 
                 // Run optimization

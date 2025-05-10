@@ -14,7 +14,8 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.Share
-import androidx.lifecycle.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.LifecycleOwner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -97,7 +98,7 @@ fun NeuralInterfaceScreen(
                 )
 
                 Text(
-                    text = habit.description,
+                    text = habit.description ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -592,9 +593,11 @@ fun NeuralInterfaceScreen(
                                                 }
                                             }
 
+                                            // Store the color outside of the drawPath call
+                                            val primaryColor = MaterialTheme.colorScheme.primary
                                             drawPath(
                                                 path = path,
-                                                color = MaterialTheme.colorScheme.primary,
+                                                color = primaryColor,
                                                 style = Stroke(width = 2f)
                                             )
                                         }
@@ -617,9 +620,11 @@ fun NeuralInterfaceScreen(
                                                 }
                                             }
 
+                                            // Store the color outside of the drawPath call
+                                            val errorColor = MaterialTheme.colorScheme.error
                                             drawPath(
                                                 path = path,
-                                                color = MaterialTheme.colorScheme.error,
+                                                color = errorColor,
                                                 style = Stroke(width = 2f)
                                             )
                                         }
@@ -757,10 +762,33 @@ fun NeuralInterfaceScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // Personalized recommendations
+                            // Convert from data.ml.HabitRecommendation to data.model.HabitRecommendation
+                            val modelRecommendations = recommendations.map { mlRec ->
+                                // Extract title and description from the message
+                                val messageParts = mlRec.message.split(": ", limit = 2)
+                                val title = if (messageParts.size > 1) messageParts[0] else mlRec.recommendationType.name
+                                val description = if (messageParts.size > 1) messageParts[1] else mlRec.message
+
+                                com.example.myapplication.data.model.HabitRecommendation(
+                                    id = mlRec.id,
+                                    habitId = mlRec.habitId,
+                                    type = mlRec.recommendationType.ordinal,
+                                    title = title,
+                                    description = description,
+                                    confidence = mlRec.confidence,
+                                    timestamp = mlRec.timestamp,
+                                    isFollowed = mlRec.isFollowed
+                                )
+                            }
+
                             RecommendationsCard(
-                                recommendations = recommendations,
+                                recommendations = modelRecommendations,
                                 onRecommendationAction = { recommendation, followed ->
-                                    viewModel.processRecommendationAction(recommendation, followed)
+                                    // Convert back to data.ml.HabitRecommendation
+                                    val mlRecommendation = recommendations.find { it.id == recommendation.id }
+                                    if (mlRecommendation != null) {
+                                        viewModel.processRecommendationAction(mlRecommendation, followed)
+                                    }
                                 }
                             )
 
@@ -771,8 +799,15 @@ fun NeuralInterfaceScreen(
                             )
 
                             // Reinforcement learning action
+                            // Convert from data.ml.ReinforcementAction to data.model.SimpleReinforcementAction if needed
+                            val modelAction = reinforcementAction?.let { mlAction ->
+                                com.example.myapplication.data.model.SimpleReinforcementAction(
+                                    actionId = mlAction.actionType.ordinal
+                                )
+                            }
+
                             ReinforcementActionCard(
-                                action = reinforcementAction,
+                                action = modelAction,
                                 actionDescription = reinforcementAction?.let {
                                     viewModel.getActionDescription(it)
                                 } ?: "No recommendation available yet",
@@ -944,7 +979,10 @@ fun NeuralInterfaceScreen(
                         stepCount = viewModel.biometricData.stepCount,
                         caloriesBurned = viewModel.biometricData.caloriesBurned,
                         stressLevel = viewModel.biometricData.stressLevel,
-                        sleepQuality = viewModel.biometricData.sleepQuality
+                        sleepQuality = viewModel.biometricData.sleepQuality,
+                        energyLevel = 0.5f,  // Default value for the missing parameter
+                        focusLevel = 0.5f,   // Default value for the missing parameter
+                        mood = 0.5f          // Default value for the missing parameter
                     )
                     val isMonitoring by viewModel.isMonitoring.collectAsState()
                     val spatialObjects by viewModel.spatialObjects.collectAsState()
@@ -972,7 +1010,11 @@ fun NeuralInterfaceScreen(
                                 onStartMonitoring = {
                                     // In a real app, this would use the actual lifecycle owner
                                     // For this demo, we'll just show a message
-                                    viewModel.startBiometricMonitoring(LocalLifecycleOwner.current)
+                                    // Get the LifecycleOwner from the ViewModelStoreOwner
+                                    val lifecycleOwner = LocalViewModelStoreOwner.current as? LifecycleOwner
+                                    if (lifecycleOwner != null) {
+                                        viewModel.startBiometricMonitoring(lifecycleOwner)
+                                    }
                                 },
                                 onStopMonitoring = { viewModel.stopBiometricMonitoring() }
                             )

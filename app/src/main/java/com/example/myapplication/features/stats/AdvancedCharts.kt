@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -45,23 +46,23 @@ fun CalendarHeatmap(
 ) {
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    
+
     // Calculate the number of days to display
     calendar.time = startDate
     val startMillis = calendar.timeInMillis
     calendar.time = endDate
     val endMillis = calendar.timeInMillis
     val dayCount = ((endMillis - startMillis) / (24 * 60 * 60 * 1000)).toInt() + 1
-    
+
     // Create a map of dates to completion counts
     val dateCountMap = completionDates
         .map { dateFormat.format(it) }
         .groupingBy { it }
         .eachCount()
-    
+
     // Animation for cell appearance
     val animatedProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(completionDates) {
         animatedProgress.animateTo(
             targetValue = 1f,
@@ -71,10 +72,10 @@ fun CalendarHeatmap(
             )
         )
     }
-    
+
     // Calculate the number of weeks to display
     val weeksCount = ceil(dayCount / 7f).toInt()
-    
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -101,7 +102,7 @@ fun CalendarHeatmap(
                 )
             }
         }
-        
+
         // Heatmap grid
         Canvas(
             modifier = Modifier
@@ -112,14 +113,14 @@ fun CalendarHeatmap(
                         // Calculate which cell was tapped
                         val cellWidth = size.width / 7
                         val cellHeight = size.height / weeksCount
-                        
+
                         val col = (offset.x / cellWidth).toInt()
                         val row = (offset.y / cellHeight).toInt()
-                        
+
                         // Calculate the date for the tapped cell
                         calendar.time = startDate
                         calendar.add(Calendar.DAY_OF_YEAR, row * 7 + col)
-                        
+
                         if (calendar.time.before(endDate) || calendar.time == endDate) {
                             onDateSelected(calendar.time)
                         }
@@ -128,20 +129,20 @@ fun CalendarHeatmap(
         ) {
             val cellWidth = size.width / 7
             val cellHeight = size.height / weeksCount
-            
+
             // Draw the heatmap cells
             for (week in 0 until weeksCount) {
                 for (day in 0 until 7) {
                     // Calculate the date for this cell
                     calendar.time = startDate
                     calendar.add(Calendar.DAY_OF_YEAR, week * 7 + day)
-                    
+
                     // Skip if the date is after the end date
                     if (calendar.time.after(endDate)) continue
-                    
+
                     val dateStr = dateFormat.format(calendar.time)
                     val completionCount = dateCountMap[dateStr] ?: 0
-                    
+
                     // Calculate color intensity based on completion count
                     val colorIntensity = when {
                         completionCount == 0 -> 0.1f
@@ -149,11 +150,11 @@ fun CalendarHeatmap(
                         completionCount == 2 -> 0.7f
                         else -> 1.0f
                     }
-                    
+
                     val cellColor = primaryColor.copy(
                         alpha = colorIntensity * animatedProgress.value
                     )
-                    
+
                     // Draw the cell
                     drawRect(
                         color = cellColor,
@@ -181,7 +182,7 @@ fun RadialProgressChart(
     showPercentage: Boolean = true
 ) {
     val animatedProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(progress) {
         animatedProgress.animateTo(
             targetValue = progress,
@@ -191,7 +192,7 @@ fun RadialProgressChart(
             )
         )
     }
-    
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -203,7 +204,7 @@ fun RadialProgressChart(
             val canvasHeight = size.height
             val radius = (canvasWidth.coerceAtMost(canvasHeight) - strokeWidth) / 2
             val center = Offset(canvasWidth / 2, canvasHeight / 2)
-            
+
             // Draw background circle
             drawCircle(
                 color = secondaryColor,
@@ -211,10 +212,10 @@ fun RadialProgressChart(
                 center = center,
                 style = Stroke(width = strokeWidth)
             )
-            
+
             // Draw progress arc
             val sweepAngle = animatedProgress.value * 360f
-            
+
             drawArc(
                 color = primaryColor,
                 startAngle = -90f, // Start from top
@@ -225,7 +226,7 @@ fun RadialProgressChart(
                 style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
             )
         }
-        
+
         if (showPercentage) {
             Text(
                 text = "${(animatedProgress.value * 100).toInt()}%",
@@ -249,10 +250,13 @@ fun StreakTimeline(
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
 ) {
     val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
-    
+
+    // Text measurer for drawing text
+    val textMeasurer = rememberTextMeasurer()
+
     // Animation for timeline appearance
     val animatedProgress = remember { Animatable(0f) }
-    
+
     LaunchedEffect(streakData) {
         animatedProgress.animateTo(
             targetValue = 1f,
@@ -262,7 +266,7 @@ fun StreakTimeline(
             )
         )
     }
-    
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -275,11 +279,11 @@ fun StreakTimeline(
             modifier = Modifier.fillMaxSize()
         ) {
             if (streakData.isEmpty()) return@Canvas
-            
+
             val canvasWidth = size.width
             val canvasHeight = size.height
             val lineY = canvasHeight / 2
-            
+
             // Draw the timeline line
             drawLine(
                 color = Color.Gray.copy(alpha = 0.5f),
@@ -287,17 +291,17 @@ fun StreakTimeline(
                 end = Offset(canvasWidth, lineY),
                 strokeWidth = 2f
             )
-            
+
             // Calculate spacing between points
             val pointSpacing = canvasWidth / (streakData.size - 1).coerceAtLeast(1)
-            
+
             // Draw the streak points and connections
             var currentStreak = 0
             var longestStreak = 0
-            
+
             streakData.forEachIndexed { index, (date, completed) ->
                 val x = index * pointSpacing
-                
+
                 // Update streak count
                 if (completed) {
                     currentStreak++
@@ -305,7 +309,7 @@ fun StreakTimeline(
                 } else {
                     currentStreak = 0
                 }
-                
+
                 // Draw connection line to previous point if both are completed
                 if (index > 0 && completed && streakData[index - 1].second) {
                     drawLine(
@@ -315,22 +319,21 @@ fun StreakTimeline(
                         strokeWidth = 4f
                     )
                 }
-                
+
                 // Draw the point
                 val pointColor = if (completed) completedColor else missedColor
                 val pointRadius = if (completed) 8f else 6f
-                
+
                 drawCircle(
                     color = pointColor.copy(alpha = animatedProgress.value),
                     radius = pointRadius,
                     center = Offset(x, lineY)
                 )
-                
+
                 // Draw date label for some points (e.g., every 5th point)
                 if (index % 5 == 0 || index == streakData.size - 1) {
-                    val textMeasurer = rememberTextMeasurer()
                     val dateText = dateFormat.format(date)
-                    
+
                     // Draw date below the line
                     drawText(
                         textMeasurer = textMeasurer,
@@ -344,10 +347,10 @@ fun StreakTimeline(
                     )
                 }
             }
-            
+
             // Draw the longest streak label
             drawText(
-                textMeasurer = rememberTextMeasurer(),
+                textMeasurer = textMeasurer,
                 text = "Longest Streak: $longestStreak",
                 topLeft = Offset(10f, 10f),
                 style = TextStyle(

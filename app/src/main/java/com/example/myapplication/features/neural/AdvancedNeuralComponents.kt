@@ -23,7 +23,7 @@ import com.example.myapplication.data.ml.TestResult
 import com.example.myapplication.data.model.HabitRecommendation
 import com.example.myapplication.data.model.NeuralPrediction
 import com.example.myapplication.data.model.PredictionType
-import com.example.myapplication.data.model.ReinforcementAction
+import com.example.myapplication.data.model.SimpleReinforcementAction
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,9 +53,9 @@ fun RecommendationsCard(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             if (recommendations.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -79,7 +79,7 @@ fun RecommendationsCard(
                             recommendation = recommendation,
                             onAction = onRecommendationAction
                         )
-                        
+
                         Divider(
                             modifier = Modifier.padding(vertical = 8.dp),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
@@ -124,27 +124,27 @@ fun RecommendationItem(
                     tint = Color.White
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Text(
                 text = recommendation.title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // Recommendation description
         Text(
             text = recommendation.description,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 56.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // Action buttons
         Row(
             modifier = Modifier
@@ -160,7 +160,7 @@ fun RecommendationItem(
                 ) {
                     Text("Dismiss")
                 }
-                
+
                 Button(
                     onClick = { onAction(recommendation, true) }
                 ) {
@@ -230,25 +230,25 @@ fun FeatureImportanceCard(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Explanation text
             Text(
                 text = explanation,
                 style = MaterialTheme.typography.bodyMedium
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = "Feature Importance",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Feature importance bars
             featureImportance.forEach { (feature, importance) ->
                 Row(
@@ -262,7 +262,7 @@ fun FeatureImportanceCard(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.width(120.dp)
                     )
-                    
+
                     LinearProgressIndicator(
                         progress = importance,
                         modifier = Modifier
@@ -274,7 +274,7 @@ fun FeatureImportanceCard(
                             else -> MaterialTheme.colorScheme.secondary
                         }
                     )
-                    
+
                     Text(
                         text = "${(importance * 100).toInt()}%",
                         style = MaterialTheme.typography.bodySmall,
@@ -292,7 +292,7 @@ fun FeatureImportanceCard(
  */
 @Composable
 fun ReinforcementActionCard(
-    action: ReinforcementAction?,
+    action: SimpleReinforcementAction?,
     actionDescription: String,
     onFeedback: (Float) -> Unit,
     modifier: Modifier = Modifier
@@ -314,9 +314,9 @@ fun ReinforcementActionCard(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             if (action == null) {
                 Text(
                     text = "No recommendation available yet. Complete this habit a few times to get personalized timing suggestions.",
@@ -342,26 +342,26 @@ fun ReinforcementActionCard(
                             tint = Color.White
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = actionDescription,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Feedback section
                 Text(
                     text = "Was this recommendation helpful?",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Feedback buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -372,13 +372,13 @@ fun ReinforcementActionCard(
                         label = "Not Helpful",
                         onClick = { onFeedback(-10f) }
                     )
-                    
+
                     FeedbackButton(
                         icon = Icons.Default.ThumbsUpDown,
                         label = "Somewhat",
                         onClick = { onFeedback(5f) }
                     )
-                    
+
                     FeedbackButton(
                         icon = Icons.Default.ThumbUp,
                         label = "Very Helpful",
@@ -413,7 +413,7 @@ fun FeedbackButton(
                 .size(32.dp)
                 .padding(4.dp)
         )
-        
+
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
@@ -449,17 +449,17 @@ fun ABTestingResultsCard(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = "Current model: $currentVariant",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             if (testResults.isEmpty()) {
                 Text(
                     text = "No test results available yet. Train the neural network to see performance metrics.",
@@ -489,21 +489,21 @@ fun ABTestingResultsCard(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(1f)
                         )
-                        
+
                         Text(
                             text = "Accuracy",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(1f)
                         )
-                        
+
                         Text(
                             text = "Loss",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(1f)
                         )
-                        
+
                         Text(
                             text = "Actions",
                             style = MaterialTheme.typography.bodyMedium,
@@ -511,7 +511,7 @@ fun ABTestingResultsCard(
                             modifier = Modifier.weight(0.5f)
                         )
                     }
-                    
+
                     // Table rows
                     testResults.forEach { (variant, result) ->
                         Row(
@@ -525,33 +525,33 @@ fun ABTestingResultsCard(
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.weight(1f)
                             )
-                            
+
                             Text(
                                 text = "${(result.accuracy * 100).toInt()}%",
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.weight(1f)
                             )
-                            
+
                             Text(
                                 text = String.format("%.4f", result.loss),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.weight(1f)
                             )
-                            
+
                             IconButton(
                                 onClick = { onSwitchVariant(variant) },
                                 modifier = Modifier.weight(0.5f)
                             ) {
                                 Icon(
-                                    imageVector = if (variant == currentVariant) 
+                                    imageVector = if (variant == currentVariant)
                                         Icons.Default.CheckCircle else Icons.Default.SwapHoriz,
                                     contentDescription = "Switch to this variant",
-                                    tint = if (variant == currentVariant) 
+                                    tint = if (variant == currentVariant)
                                         MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
-                        
+
                         Divider(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                         )

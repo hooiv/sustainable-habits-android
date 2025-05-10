@@ -1,7 +1,13 @@
 package com.example.myapplication.data.ml
 
 import android.util.Log
-import com.example.myapplication.data.model.*
+import com.example.myapplication.data.model.Habit
+import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.data.model.NeuralPrediction
+import com.example.myapplication.data.model.PredictionType as ModelPredictionType // Aliased for clarity
+import com.example.myapplication.data.ml.HabitRecommendation // From RecommendationModels.kt
+import com.example.myapplication.data.ml.RecommendationType // From RecommendationModels.kt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +27,7 @@ class PersonalizedRecommendationEngine @Inject constructor(
 ) {
     companion object {
         private const val TAG = "RecommendationEngine"
-        
+
         // Recommendation types
         const val RECOMMENDATION_TIMING = 0
         const val RECOMMENDATION_STREAK = 1
@@ -29,11 +35,11 @@ class PersonalizedRecommendationEngine @Inject constructor(
         const val RECOMMENDATION_MOTIVATION = 3
         const val RECOMMENDATION_CONTEXT = 4
     }
-    
+
     // Current recommendations
     private val _recommendations = MutableStateFlow<List<HabitRecommendation>>(emptyList())
     val recommendations: StateFlow<List<HabitRecommendation>> = _recommendations.asStateFlow()
-    
+
     /**
      * Generate personalized recommendations for a habit
      */
@@ -44,50 +50,50 @@ class PersonalizedRecommendationEngine @Inject constructor(
     ) {
         try {
             val newRecommendations = mutableListOf<HabitRecommendation>()
-            
+
             // Get context features
             val contextFeatures = contextFeatureCollector.contextFeatures.value
-            
+
             // Generate timing recommendation
             val timingRecommendation = generateTimingRecommendation(habit, completions, predictions, contextFeatures)
             if (timingRecommendation != null) {
                 newRecommendations.add(timingRecommendation)
             }
-            
+
             // Generate streak recommendation
             val streakRecommendation = generateStreakRecommendation(habit, completions, predictions)
             if (streakRecommendation != null) {
                 newRecommendations.add(streakRecommendation)
             }
-            
+
             // Generate habit modification recommendation
             val modificationRecommendation = generateModificationRecommendation(habit, completions, predictions)
             if (modificationRecommendation != null) {
                 newRecommendations.add(modificationRecommendation)
             }
-            
+
             // Generate motivation recommendation
             val motivationRecommendation = generateMotivationRecommendation(habit, completions, predictions)
             if (motivationRecommendation != null) {
                 newRecommendations.add(motivationRecommendation)
             }
-            
+
             // Generate context recommendation
             val contextRecommendation = generateContextRecommendation(habit, completions, contextFeatures)
             if (contextRecommendation != null) {
                 newRecommendations.add(contextRecommendation)
             }
-            
+
             // Update recommendations
             _recommendations.value = newRecommendations
-            
+
             Log.d(TAG, "Generated ${newRecommendations.size} recommendations for habit: ${habit.name}")
         } catch (e: Exception) {
             Log.e(TAG, "Error generating recommendations: ${e.message}")
             e.printStackTrace()
         }
     }
-    
+
     /**
      * Generate timing recommendation
      */
@@ -99,20 +105,21 @@ class PersonalizedRecommendationEngine @Inject constructor(
     ): HabitRecommendation? {
         // Initialize reinforcement learning agent
         reinforcementLearningAgent.initialize(habit, completions)
-        
+
         // Update state and get recommended action
         reinforcementLearningAgent.updateState(habit, contextFeatures)
         val action = reinforcementLearningAgent.recommendedAction.value ?: return null
-        
+
         // Get action description
         val actionDescription = reinforcementLearningAgent.getActionDescription(action)
-        
+
         // Find optimal time prediction
         val optimalTimePrediction = predictions
-            .filter { it.predictionType == PredictionType.OPTIMAL_TIME }
+            .filter { it.predictionType == ModelPredictionType.OPTIMAL_TIME }
             .maxByOrNull { it.timestamp }
-        
+
         // Create recommendation
+        val title = "Timing Recommendation"
         val recommendationText = if (optimalTimePrediction != null) {
             val optimalHour = (optimalTimePrediction.probability * 24).toInt()
             val optimalTimeString = String.format("%02d:00", optimalHour)
@@ -120,18 +127,18 @@ class PersonalizedRecommendationEngine @Inject constructor(
         } else {
             actionDescription
         }
-        
+
         return HabitRecommendation(
             id = UUID.randomUUID().toString(),
             habitId = habit.id,
-            type = RECOMMENDATION_TIMING,
-            title = "Timing Recommendation",
-            description = recommendationText,
+            recommendationType = RecommendationType.OPTIMAL_TIME,
+            message = "$title: $recommendationText",
             confidence = 0.8f,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            isFollowed = false
         )
     }
-    
+
     /**
      * Generate streak recommendation
      */
@@ -142,10 +149,10 @@ class PersonalizedRecommendationEngine @Inject constructor(
     ): HabitRecommendation? {
         // Find streak continuation prediction
         val streakPrediction = predictions
-            .filter { it.predictionType == PredictionType.STREAK_CONTINUATION }
+            .filter { it.predictionType == ModelPredictionType.STREAK_CONTINUATION }
             .maxByOrNull { it.timestamp }
             ?: return null
-        
+
         // Create recommendation based on streak prediction
         val (title, description) = when {
             streakPrediction.probability > 0.8f -> {
@@ -167,18 +174,18 @@ class PersonalizedRecommendationEngine @Inject constructor(
                 )
             }
         }
-        
+
         return HabitRecommendation(
             id = UUID.randomUUID().toString(),
             habitId = habit.id,
-            type = RECOMMENDATION_STREAK,
-            title = title,
-            description = description,
+            recommendationType = RecommendationType.STREAK_REMINDER,
+            message = "$title: $description",
             confidence = streakPrediction.confidence,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            isFollowed = false
         )
     }
-    
+
     /**
      * Generate habit modification recommendation
      */
@@ -191,20 +198,20 @@ class PersonalizedRecommendationEngine @Inject constructor(
         if (completions.size < 5) {
             return null
         }
-        
+
         // Find completion likelihood prediction
         val completionPrediction = predictions
-            .filter { it.predictionType == PredictionType.COMPLETION_LIKELIHOOD }
+            .filter { it.predictionType == ModelPredictionType.COMPLETION_LIKELIHOOD }
             .maxByOrNull { it.timestamp }
             ?: return null
-        
+
         // Generate recommendation based on completion likelihood
         if (completionPrediction.probability < 0.4f) {
             // Habit seems difficult to maintain, suggest modifications
-            
+
             // Check if frequency might be too high
             val daysBetweenCompletions = calculateAverageDaysBetweenCompletions(completions)
-            
+
             val (title, description) = when (habit.frequency) {
                 HabitFrequency.DAILY -> {
                     if (daysBetweenCompletions > 2) {
@@ -239,21 +246,21 @@ class PersonalizedRecommendationEngine @Inject constructor(
                     )
                 }
             }
-            
+
             return HabitRecommendation(
                 id = UUID.randomUUID().toString(),
                 habitId = habit.id,
-                type = RECOMMENDATION_MODIFICATION,
-                title = title,
-                description = description,
+                recommendationType = RecommendationType.DIFFICULTY_ADJUSTMENT,
+                message = "$title: $description",
                 confidence = 0.7f,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                isFollowed = false
             )
         }
-        
+
         return null
     }
-    
+
     /**
      * Generate motivation recommendation
      */
@@ -263,7 +270,7 @@ class PersonalizedRecommendationEngine @Inject constructor(
         predictions: List<NeuralPrediction>
     ): HabitRecommendation? {
         // Generate different types of motivation based on habit progress
-        
+
         val (title, description) = when {
             habit.streak > 20 -> {
                 Pair(
@@ -296,18 +303,18 @@ class PersonalizedRecommendationEngine @Inject constructor(
                 )
             }
         }
-        
+
         return HabitRecommendation(
             id = UUID.randomUUID().toString(),
             habitId = habit.id,
-            type = RECOMMENDATION_MOTIVATION,
-            title = title,
-            description = description,
+            recommendationType = RecommendationType.MOTIVATION_BOOST,
+            message = "$title: $description",
             confidence = 0.9f,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            isFollowed = false
         )
     }
-    
+
     /**
      * Generate context-based recommendation
      */
@@ -317,18 +324,18 @@ class PersonalizedRecommendationEngine @Inject constructor(
         contextFeatures: FloatArray
     ): HabitRecommendation? {
         // Generate recommendations based on current context
-        
+
         // Check time of day
         val timeOfDay = contextFeatures[ContextFeatureCollector.FEATURE_TIME_OF_DAY]
         val hourOfDay = (timeOfDay * 24).toInt()
-        
+
         // Check activity level
         val activityLevel = contextFeatures[ContextFeatureCollector.FEATURE_ACTIVITY_LEVEL]
-        
+
         // Check location
         val atHome = contextFeatures[ContextFeatureCollector.FEATURE_LOCATION_HOME] > 0.7f
         val atWork = contextFeatures[ContextFeatureCollector.FEATURE_LOCATION_WORK] > 0.7f
-        
+
         // Generate context-specific recommendation
         val (title, description) = when {
             hourOfDay in 5..9 && habit.name.contains("morning", ignoreCase = true) -> {
@@ -369,18 +376,18 @@ class PersonalizedRecommendationEngine @Inject constructor(
             }
             else -> return null // No relevant context recommendation
         }
-        
+
         return HabitRecommendation(
             id = UUID.randomUUID().toString(),
             habitId = habit.id,
-            type = RECOMMENDATION_CONTEXT,
-            title = title,
-            description = description,
+            recommendationType = RecommendationType.ENVIRONMENT_CHANGE,
+            message = "$title: $description",
             confidence = 0.75f,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            isFollowed = false
         )
     }
-    
+
     /**
      * Calculate average days between completions
      */
@@ -388,15 +395,15 @@ class PersonalizedRecommendationEngine @Inject constructor(
         if (completions.size < 2) {
             return 0f
         }
-        
+
         val sortedCompletions = completions.sortedBy { it.completionDate }
         var totalDays = 0L
-        
+
         for (i in 1 until sortedCompletions.size) {
             val daysDiff = (sortedCompletions[i].completionDate - sortedCompletions[i-1].completionDate) / (1000 * 60 * 60 * 24)
             totalDays += daysDiff
         }
-        
+
         return totalDays.toFloat() / (sortedCompletions.size - 1)
     }
 }

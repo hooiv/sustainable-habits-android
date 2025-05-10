@@ -68,7 +68,10 @@ fun QuantumCircuitVisualizer(
     var selectedStateId by remember { mutableStateOf<String?>(null) }
     var circuitProgress by remember { mutableStateOf(0f) }
     val coroutineScope = rememberCoroutineScope()
-    
+
+    // Text measurer for drawing text
+    val textMeasurer = rememberTextMeasurer()
+
     // Animation states
     val infiniteTransition = rememberInfiniteTransition(label = "quantum")
     val phaseAnimation by infiniteTransition.animateFloat(
@@ -80,7 +83,7 @@ fun QuantumCircuitVisualizer(
         ),
         label = "phase"
     )
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -92,7 +95,7 @@ fun QuantumCircuitVisualizer(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
+
         // Quantum circuit visualization
         Box(
             modifier = Modifier
@@ -114,23 +117,23 @@ fun QuantumCircuitVisualizer(
                             // Check if we tapped on a quantum state
                             val stateRadius = 30f
                             val wireSpacing = size.height / (quantumStates.size + 1)
-                            
+
                             for ((index, state) in quantumStates.withIndex()) {
                                 val stateY = wireSpacing * (index + 1)
-                                
+
                                 // Check gates
                                 val gatePositions = listOf(
                                     size.width * 0.25f,
                                     size.width * 0.5f,
                                     size.width * 0.75f
                                 )
-                                
+
                                 for (gateX in gatePositions) {
                                     val distance = sqrt(
                                         (offset.x - gateX).pow(2) +
                                         (offset.y - stateY).pow(2)
                                     )
-                                    
+
                                     if (distance < stateRadius) {
                                         selectedStateId = state.id
                                         onStateClick(state)
@@ -143,14 +146,14 @@ fun QuantumCircuitVisualizer(
             ) {
                 val width = size.width
                 val height = size.height
-                
+
                 // Draw quantum wires
                 val wireSpacing = height / (quantumStates.size + 1)
                 val wireColor = Color.Cyan.copy(alpha = 0.5f)
-                
+
                 for ((index, state) in quantumStates.withIndex()) {
                     val wireY = wireSpacing * (index + 1)
-                    
+
                     // Draw wire
                     drawLine(
                         color = wireColor,
@@ -158,10 +161,10 @@ fun QuantumCircuitVisualizer(
                         end = Offset(width, wireY),
                         strokeWidth = 1f
                     )
-                    
+
                     // Draw state label
                     drawText(
-                        textMeasurer = rememberTextMeasurer(),
+                        textMeasurer = textMeasurer,
                         text = state.name,
                         topLeft = Offset(10f, wireY - 15f),
                         style = TextStyle(
@@ -170,10 +173,10 @@ fun QuantumCircuitVisualizer(
                             fontWeight = FontWeight.Bold
                         )
                     )
-                    
+
                     // Draw probability
                     drawText(
-                        textMeasurer = rememberTextMeasurer(),
+                        textMeasurer = textMeasurer,
                         text = "${(state.probability * 100).toInt()}%",
                         topLeft = Offset(width - 50f, wireY - 15f),
                         style = TextStyle(
@@ -181,20 +184,20 @@ fun QuantumCircuitVisualizer(
                             fontSize = 12.sp
                         )
                     )
-                    
+
                     // Draw quantum gates
                     val gatePositions = listOf(
                         width * 0.25f,
                         width * 0.5f,
                         width * 0.75f
                     )
-                    
+
                     val gateTypes = listOf(
                         "H", // Hadamard gate
                         "X", // Pauli-X gate
                         "Z"  // Pauli-Z gate
                     )
-                    
+
                     for ((gateIndex, gateX) in gatePositions.withIndex()) {
                         val isSelected = state.id == selectedStateId
                         val gateColor = when (gateIndex) {
@@ -202,17 +205,17 @@ fun QuantumCircuitVisualizer(
                             1 -> Color(0xFFFF5722)
                             else -> Color(0xFF4CAF50)
                         }
-                        
+
                         // Draw gate
                         drawRect(
                             color = gateColor.copy(alpha = if (isSelected) 0.8f else 0.5f),
                             topLeft = Offset(gateX - 15f, wireY - 15f),
                             size = Size(30f, 30f)
                         )
-                        
+
                         // Draw gate label
                         drawText(
-                            textMeasurer = rememberTextMeasurer(),
+                            textMeasurer = textMeasurer,
                             text = gateTypes[gateIndex],
                             topLeft = Offset(gateX - 5f, wireY - 8f),
                             style = TextStyle(
@@ -221,7 +224,7 @@ fun QuantumCircuitVisualizer(
                                 fontWeight = FontWeight.Bold
                             )
                         )
-                        
+
                         // Draw animation when circuit is running
                         if (isRunning && circuitProgress > gateIndex / 3f) {
                             drawCircle(
@@ -232,18 +235,18 @@ fun QuantumCircuitVisualizer(
                         }
                     }
                 }
-                
+
                 // Draw entanglement lines
                 for (state in quantumStates) {
                     val stateIndex = quantumStates.indexOfFirst { it.id == state.id }
                     val stateY = wireSpacing * (stateIndex + 1)
-                    
+
                     for (entangledStateId in state.entangledStates) {
                         val entangledIndex = quantumStates.indexOfFirst { it.id == entangledStateId }
                         if (entangledIndex >= 0) {
                             val entangledY = wireSpacing * (entangledIndex + 1)
                             val entanglementX = width * 0.5f
-                            
+
                             // Draw entanglement line
                             drawLine(
                                 color = Color.Magenta.copy(alpha = 0.7f),
@@ -252,14 +255,14 @@ fun QuantumCircuitVisualizer(
                                 strokeWidth = 2f,
                                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f), 0f)
                             )
-                            
+
                             // Draw entanglement symbol
                             drawCircle(
                                 color = Color.Magenta.copy(alpha = 0.7f),
                                 radius = 5f,
                                 center = Offset(entanglementX, stateY)
                             )
-                            
+
                             drawCircle(
                                 color = Color.Magenta.copy(alpha = 0.7f),
                                 radius = 5f,
@@ -268,27 +271,27 @@ fun QuantumCircuitVisualizer(
                         }
                     }
                 }
-                
+
                 // Draw measurement at the end
                 if (isRunning && circuitProgress > 0.9f) {
                     for ((index, state) in quantumStates.withIndex()) {
                         val wireY = wireSpacing * (index + 1)
                         val measureX = width - 30f
-                        
+
                         // Draw measurement symbol
                         drawRect(
                             color = Color.Yellow.copy(alpha = 0.7f),
                             topLeft = Offset(measureX - 15f, wireY - 15f),
                             size = Size(30f, 30f)
                         )
-                        
+
                         drawLine(
                             color = Color.Yellow,
                             start = Offset(measureX - 10f, wireY - 10f),
                             end = Offset(measureX + 10f, wireY + 10f),
                             strokeWidth = 2f
                         )
-                        
+
                         drawLine(
                             color = Color.Yellow,
                             start = Offset(measureX - 10f, wireY + 10f),
@@ -298,7 +301,7 @@ fun QuantumCircuitVisualizer(
                     }
                 }
             }
-            
+
             // Progress indicator when running
             if (isRunning) {
                 LinearProgressIndicator(
@@ -312,9 +315,9 @@ fun QuantumCircuitVisualizer(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Bloch sphere visualization
         Box(
             modifier = Modifier
@@ -334,14 +337,14 @@ fun QuantumCircuitVisualizer(
                 val centerX = width / 2
                 val centerY = height / 2
                 val radius = min(centerX, centerY) * 0.8f
-                
+
                 // Draw Bloch sphere
                 drawCircle(
                     color = Color.Cyan.copy(alpha = 0.2f),
                     radius = radius,
                     center = Offset(centerX, centerY)
                 )
-                
+
                 // Draw X, Y, Z axes
                 drawLine(
                     color = Color.Red.copy(alpha = 0.7f),
@@ -349,14 +352,14 @@ fun QuantumCircuitVisualizer(
                     end = Offset(centerX + radius, centerY),
                     strokeWidth = 1f
                 )
-                
+
                 drawLine(
                     color = Color.Green.copy(alpha = 0.7f),
                     start = Offset(centerX, centerY - radius),
                     end = Offset(centerX, centerY + radius),
                     strokeWidth = 1f
                 )
-                
+
                 // Z-axis with perspective
                 drawLine(
                     color = Color.Blue.copy(alpha = 0.7f),
@@ -364,10 +367,10 @@ fun QuantumCircuitVisualizer(
                     end = Offset(centerX + radius * 0.3f, centerY + radius * 0.3f),
                     strokeWidth = 1f
                 )
-                
+
                 // Draw axis labels
                 drawText(
-                    textMeasurer = rememberTextMeasurer(),
+                    textMeasurer = textMeasurer,
                     text = "X",
                     topLeft = Offset(centerX + radius + 5f, centerY),
                     style = TextStyle(
@@ -376,9 +379,9 @@ fun QuantumCircuitVisualizer(
                         fontWeight = FontWeight.Bold
                     )
                 )
-                
+
                 drawText(
-                    textMeasurer = rememberTextMeasurer(),
+                    textMeasurer = textMeasurer,
                     text = "Y",
                     topLeft = Offset(centerX, centerY - radius - 20f),
                     style = TextStyle(
@@ -387,9 +390,9 @@ fun QuantumCircuitVisualizer(
                         fontWeight = FontWeight.Bold
                     )
                 )
-                
+
                 drawText(
-                    textMeasurer = rememberTextMeasurer(),
+                    textMeasurer = textMeasurer,
                     text = "Z",
                     topLeft = Offset(centerX + radius * 0.3f + 5f, centerY + radius * 0.3f + 5f),
                     style = TextStyle(
@@ -398,23 +401,23 @@ fun QuantumCircuitVisualizer(
                         fontWeight = FontWeight.Bold
                     )
                 )
-                
+
                 // Draw quantum states on the Bloch sphere
                 for (state in quantumStates) {
                     val isSelected = state.id == selectedStateId
-                    
+
                     // Calculate position on Bloch sphere
                     val theta = state.probability * PI.toFloat() // 0 to π
                     val phi = state.phase + phaseAnimation // 0 to 2π
-                    
+
                     val x = radius * sin(theta) * cos(phi)
                     val y = radius * sin(theta) * sin(phi)
                     val z = radius * cos(theta)
-                    
+
                     // Apply perspective projection
                     val projectedX = centerX + x
                     val projectedY = centerY - y - z * 0.3f
-                    
+
                     // Draw state
                     drawCircle(
                         color = when {
@@ -425,7 +428,7 @@ fun QuantumCircuitVisualizer(
                         radius = if (isSelected) 8f else 6f,
                         center = Offset(projectedX, projectedY)
                     )
-                    
+
                     // Draw state vector
                     drawLine(
                         color = when {
@@ -437,11 +440,11 @@ fun QuantumCircuitVisualizer(
                         end = Offset(projectedX, projectedY),
                         strokeWidth = if (isSelected) 2f else 1f
                     )
-                    
+
                     // Draw state label
                     if (isSelected) {
                         drawText(
-                            textMeasurer = rememberTextMeasurer(),
+                            textMeasurer = textMeasurer,
                             text = state.name,
                             topLeft = Offset(projectedX + 10f, projectedY - 10f),
                             style = TextStyle(
@@ -453,7 +456,7 @@ fun QuantumCircuitVisualizer(
                     }
                 }
             }
-            
+
             Text(
                 text = "Bloch Sphere Representation",
                 style = MaterialTheme.typography.bodySmall,
@@ -463,9 +466,9 @@ fun QuantumCircuitVisualizer(
                     .padding(8.dp)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         // Controls
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -481,24 +484,24 @@ fun QuantumCircuitVisualizer(
             ) {
                 Text("Reset Selection")
             }
-            
+
             Button(
                 onClick = {
                     if (!isRunning) {
                         isRunning = true
                         circuitProgress = 0f
-                        
+
                         coroutineScope.launch {
                             // Simulate circuit execution
                             while (circuitProgress < 1f) {
                                 delay(50)
                                 circuitProgress += 0.02f
                             }
-                            
+
                             // Complete execution
                             delay(500)
                             isRunning = false
-                            
+
                             // Generate results
                             val results = quantumStates.map { state ->
                                 // Apply quantum transformations
@@ -517,14 +520,14 @@ fun QuantumCircuitVisualizer(
                                         val hadamardEffect = sin(state.probability * PI.toFloat()).pow(2)
                                         val pauliXEffect = 1f - state.probability
                                         val pauliZEffect = cos(state.phase).pow(2)
-                                        
+
                                         (hadamardEffect + pauliXEffect + pauliZEffect) / 3f
                                     }
                                 }
-                                
+
                                 state.copy(probability = newProbability)
                             }
-                            
+
                             onCircuitRun(results)
                         }
                     }
@@ -549,6 +552,9 @@ fun QuantumSuperpositionVisualizer(
     modifier: Modifier = Modifier,
     onHabitClick: (Habit) -> Unit = {}
 ) {
+    // Text measurer for drawing text
+    val textMeasurer = rememberTextMeasurer()
+
     // Convert habits to quantum states
     val quantumStates = remember(habits) {
         habits.map { habit ->
@@ -558,10 +564,10 @@ fun QuantumSuperpositionVisualizer(
             } else {
                 0.5f
             }
-            
+
             // Calculate phase based on streak
             val phase = (habit.streak % 100) / 100f * 2 * PI.toFloat()
-            
+
             // Determine entangled states
             val entangledStates = habits
                 .filter { other ->
@@ -571,7 +577,7 @@ fun QuantumSuperpositionVisualizer(
                 }
                 .take(1)
                 .map { it.id }
-            
+
             QuantumState(
                 id = habit.id,
                 name = habit.name,
@@ -581,7 +587,7 @@ fun QuantumSuperpositionVisualizer(
             )
         }
     }
-    
+
     QuantumCircuitVisualizer(
         quantumStates = quantumStates,
         modifier = modifier,
@@ -609,6 +615,9 @@ fun QuantumInterferencePattern(
     frequency: Float = 10f,
     phase: Float = 0f
 ) {
+    // Text measurer for drawing text
+    val textMeasurer = rememberTextMeasurer()
+
     val infiniteTransition = rememberInfiniteTransition(label = "wave")
     val animatedPhase by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -619,7 +628,7 @@ fun QuantumInterferencePattern(
         ),
         label = "wavePhase"
     )
-    
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -636,7 +645,7 @@ fun QuantumInterferencePattern(
             val width = size.width
             val height = size.height
             val centerY = height / 2
-            
+
             // Draw baseline
             drawLine(
                 color = Color.Gray.copy(alpha = 0.5f),
@@ -644,7 +653,7 @@ fun QuantumInterferencePattern(
                 end = Offset(width, centerY),
                 strokeWidth = 1f
             )
-            
+
             // Draw individual waves
             val waveColors = listOf(
                 Color(0xFF4CAF50),
@@ -652,20 +661,20 @@ fun QuantumInterferencePattern(
                 Color(0xFFFF9800),
                 Color(0xFFE91E63)
             )
-            
+
             for (i in 0 until waveCount) {
                 val wavePhase = phase + animatedPhase + (i * PI.toFloat() / waveCount)
                 val waveAmplitude = amplitude * 50f
                 val waveFrequency = frequency * (1f + i * 0.5f)
                 val waveColor = waveColors[i % waveColors.size]
-                
+
                 val path = Path()
                 var firstPoint = true
-                
+
                 for (x in 0 until width.toInt() step 2) {
                     val xFloat = x.toFloat()
                     val y = centerY - waveAmplitude * sin(xFloat * waveFrequency / width + wavePhase)
-                    
+
                     if (firstPoint) {
                         path.moveTo(xFloat, y)
                         firstPoint = false
@@ -673,32 +682,32 @@ fun QuantumInterferencePattern(
                         path.lineTo(xFloat, y)
                     }
                 }
-                
+
                 drawPath(
                     path = path,
                     color = waveColor.copy(alpha = 0.7f),
                     style = Stroke(width = 2f)
                 )
             }
-            
+
             // Draw interference pattern
             val interferencePath = Path()
             var firstPoint = true
-            
+
             for (x in 0 until width.toInt() step 2) {
                 val xFloat = x.toFloat()
                 var ySum = 0f
-                
+
                 for (i in 0 until waveCount) {
                     val wavePhase = phase + animatedPhase + (i * PI.toFloat() / waveCount)
                     val waveAmplitude = amplitude * 50f
                     val waveFrequency = frequency * (1f + i * 0.5f)
-                    
+
                     ySum += waveAmplitude * sin(xFloat * waveFrequency / width + wavePhase)
                 }
-                
+
                 val y = centerY - ySum / waveCount
-                
+
                 if (firstPoint) {
                     interferencePath.moveTo(xFloat, y)
                     firstPoint = false
@@ -706,14 +715,14 @@ fun QuantumInterferencePattern(
                     interferencePath.lineTo(xFloat, y)
                 }
             }
-            
+
             drawPath(
                 path = interferencePath,
                 color = Color.White,
                 style = Stroke(width = 3f)
             )
         }
-        
+
         Text(
             text = "Quantum Interference Pattern",
             style = MaterialTheme.typography.bodySmall,

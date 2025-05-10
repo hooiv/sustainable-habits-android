@@ -222,9 +222,7 @@ fun AppNavigationGraph(navController: NavHostController) {
             habitId?.let { id ->
                 // Get the habit from the repository
                 val habitRepository = com.example.myapplication.data.repository.HabitRepository(
-                    com.example.myapplication.data.database.HabitDao(
-                        com.example.myapplication.data.database.AppDatabase.getDatabase(LocalContext.current)
-                    )
+                    com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current).habitDao()
                 )
 
                 // For simplicity, we're creating a sample habit

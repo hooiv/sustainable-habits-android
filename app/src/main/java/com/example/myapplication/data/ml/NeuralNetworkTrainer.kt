@@ -3,7 +3,15 @@ package com.example.myapplication.data.ml
 import android.content.Context
 import android.util.Log
 import com.example.myapplication.data.database.NeuralNetworkDao
-import com.example.myapplication.data.model.*
+import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.data.model.NeuralConnection
+import com.example.myapplication.data.model.NeuralNode
+import com.example.myapplication.data.model.NeuralNodeType
+import com.example.myapplication.data.model.NeuralPrediction
+import com.example.myapplication.data.model.NeuralTrainingEpoch
+import com.example.myapplication.data.model.NeuralTrainingSession
+import com.example.myapplication.data.model.PredictionType
+import com.example.myapplication.data.model.TrainingStatus
 import com.example.myapplication.data.repository.HabitRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -481,7 +489,7 @@ class NeuralNetworkTrainer @Inject constructor(
                 HabitFrequency.MONTHLY -> 0.25f
                 else -> 0f
             },
-            habit.difficulty.toFloat() / 5f,
+            habit.difficulty.ordinal.toFloat() / 5f,
             0.5f, // Time of day
             0.5f, // Day of week
             0f, 0f, 0f, 0f // Additional features

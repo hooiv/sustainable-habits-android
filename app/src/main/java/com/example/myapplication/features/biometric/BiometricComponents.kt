@@ -25,10 +25,16 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.data.model.BiometricReading
+import com.example.myapplication.data.model.BiometricTrend
+import com.example.myapplication.data.model.BiometricType
 import com.example.myapplication.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,42 +43,62 @@ import java.util.*
 import kotlin.math.*
 
 /**
- * Data class representing a biometric reading
+ * Object containing biometric components for easier access
  */
-data class BiometricReading(
-    val id: String = UUID.randomUUID().toString(),
-    val type: BiometricType,
-    val value: Float,
-    val unit: String,
-    val timestamp: Date = Date(),
-    val normalRange: Pair<Float, Float>,
-    val trend: BiometricTrend,
-    val relatedHabitIds: List<String> = emptyList()
-)
+object BiometricComponents {
 
-/**
- * Enum for different types of biometric data
- */
-enum class BiometricType {
-    HEART_RATE,
-    SLEEP_QUALITY,
-    STRESS_LEVEL,
-    ENERGY_LEVEL,
-    FOCUS_LEVEL,
-    MOOD,
-    STEPS,
-    CALORIES_BURNED
+    /**
+     * A component that displays a list of biometric readings
+     */
+    @Composable
+    fun BiometricReadingsList(
+        readings: List<BiometricReading>,
+        modifier: Modifier = Modifier,
+        onReadingClick: (BiometricReading) -> Unit = {}
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Biometric Readings",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            if (readings.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No biometric readings available",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(readings) { reading ->
+                        BiometricReadingCard(
+                            reading = reading,
+                            onClick = { onReadingClick(reading) }
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
-/**
- * Enum for biometric trends
- */
-enum class BiometricTrend {
-    INCREASING,
-    DECREASING,
-    STABLE,
-    FLUCTUATING
-}
+
 
 /**
  * A component that displays a heart rate monitor with animation
@@ -87,12 +113,12 @@ fun HeartRateMonitor(
     var isAnimating by remember { mutableStateOf(false) }
     var pulseScale by remember { mutableStateOf(1f) }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Heart beat animation
     LaunchedEffect(isAnimating) {
         if (isAnimating) {
             val heartRateMs = 60000 / currentHeartRate.coerceAtLeast(1)
-            
+
             while (isAnimating) {
                 // Pulse animation
                 pulseScale = 1f
@@ -100,13 +126,13 @@ fun HeartRateMonitor(
                 pulseScale = 1.3f
                 delay(100)
                 pulseScale = 1f
-                
+
                 // Wait for next heartbeat
                 delay(heartRateMs.toLong() - 150)
             }
         }
     }
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -119,7 +145,7 @@ fun HeartRateMonitor(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
+
         // Heart rate display
         Box(
             modifier = Modifier
@@ -142,7 +168,7 @@ fun HeartRateMonitor(
                     .size(80.dp)
                     .scale(pulseScale)
             )
-            
+
             // Glow effect
             if (isAnimating) {
                 Canvas(
@@ -157,7 +183,7 @@ fun HeartRateMonitor(
                     )
                 }
             }
-            
+
             // Heart rate value
             Text(
                 text = currentHeartRate.toString(),
@@ -168,7 +194,7 @@ fun HeartRateMonitor(
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
             )
-            
+
             Text(
                 text = "BPM",
                 style = MaterialTheme.typography.bodyLarge,
@@ -178,9 +204,9 @@ fun HeartRateMonitor(
                     .padding(bottom = 8.dp)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Heart rate graph
         if (historyData.isNotEmpty()) {
             Box(
@@ -199,26 +225,26 @@ fun HeartRateMonitor(
                     val width = size.width
                     val height = size.height
                     val padding = 16f
-                    
+
                     // Find min and max values
                     val minValue = historyData.minOf { it.second }.coerceAtMost(60)
                     val maxValue = historyData.maxOf { it.second }.coerceAtLeast(100)
                     val valueRange = (maxValue - minValue).coerceAtLeast(1)
-                    
+
                     // Draw grid lines
                     val gridColor = Color.Gray.copy(alpha = 0.2f)
                     val gridLines = 4
-                    
+
                     for (i in 0..gridLines) {
                         val y = padding + (height - 2 * padding) * i / gridLines
-                        
+
                         drawLine(
                             color = gridColor,
                             start = Offset(padding, y),
                             end = Offset(width - padding, y),
                             strokeWidth = 1f
                         )
-                        
+
                         // Draw value labels
                         val value = maxValue - (valueRange * i / gridLines)
                         drawText(
@@ -231,23 +257,23 @@ fun HeartRateMonitor(
                             )
                         )
                     }
-                    
+
                     // Draw heart rate line
                     if (historyData.size > 1) {
                         val path = Path()
                         val pointCount = historyData.size
-                        
+
                         historyData.forEachIndexed { index, (_, heartRate) ->
                             val x = padding + (width - 2 * padding) * index / (pointCount - 1)
                             val normalizedValue = (heartRate - minValue).toFloat() / valueRange
                             val y = height - padding - (height - 2 * padding) * normalizedValue
-                            
+
                             if (index == 0) {
                                 path.moveTo(x, y)
                             } else {
                                 path.lineTo(x, y)
                             }
-                            
+
                             // Draw points
                             drawCircle(
                                 color = MaterialTheme.colorScheme.primary,
@@ -255,14 +281,14 @@ fun HeartRateMonitor(
                                 center = Offset(x, y)
                             )
                         }
-                        
+
                         // Draw line
                         drawPath(
                             path = path,
                             color = MaterialTheme.colorScheme.primary,
                             style = Stroke(width = 2f)
                         )
-                        
+
                         // Draw area under the line
                         val filledPath = Path().apply {
                             addPath(path)
@@ -270,7 +296,7 @@ fun HeartRateMonitor(
                             lineTo(padding, height - padding)
                             close()
                         }
-                        
+
                         drawPath(
                             path = filledPath,
                             brush = Brush.verticalGradient(
@@ -284,9 +310,9 @@ fun HeartRateMonitor(
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Controls
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -302,7 +328,7 @@ fun HeartRateMonitor(
             ) {
                 Text(if (isAnimating) "Stop" else "Start")
             }
-            
+
             Button(
                 onClick = onMeasure
             ) {
@@ -332,7 +358,7 @@ fun SleepQualityVisualizer(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
+
         // Sleep score display
         Row(
             modifier = Modifier
@@ -361,9 +387,9 @@ fun SleepQualityVisualizer(
                     color = Color.White
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column {
                 Text(
                     text = when {
@@ -376,7 +402,7 @@ fun SleepQualityVisualizer(
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = "Sleep Quality Score",
                     style = MaterialTheme.typography.bodyMedium,
@@ -384,7 +410,7 @@ fun SleepQualityVisualizer(
                 )
             }
         }
-        
+
         // Sleep stages visualization
         if (sleepData.isNotEmpty()) {
             Text(
@@ -393,10 +419,10 @@ fun SleepQualityVisualizer(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             // Calculate total sleep time
             val totalSleepHours = sleepData.values.sum()
-            
+
             // Sleep stages bar chart
             Canvas(
                 modifier = Modifier
@@ -406,7 +432,7 @@ fun SleepQualityVisualizer(
             ) {
                 val width = size.width
                 var currentX = 0f
-                
+
                 // Define colors for sleep stages
                 val stageColors = mapOf(
                     "Deep" to Color(0xFF3949AB),
@@ -414,22 +440,22 @@ fun SleepQualityVisualizer(
                     "REM" to Color(0xFF9575CD),
                     "Awake" to Color(0xFFE57373)
                 )
-                
+
                 // Draw bars for each sleep stage
                 sleepData.forEach { (stage, hours) ->
                     val proportion = hours / totalSleepHours
                     val barWidth = width * proportion
-                    
+
                     drawRect(
                         color = stageColors[stage] ?: Color.Gray,
                         topLeft = Offset(currentX, 0f),
                         size = Size(barWidth, size.height)
                     )
-                    
+
                     currentX += barWidth
                 }
             }
-            
+
             // Legend
             Row(
                 modifier = Modifier
@@ -455,13 +481,13 @@ fun SleepQualityVisualizer(
                                     shape = RoundedCornerShape(2.dp)
                                 )
                         )
-                        
+
                         Text(
                             text = stage,
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(top = 4.dp)
                         )
-                        
+
                         Text(
                             text = String.format("%.1f hrs", hours),
                             style = MaterialTheme.typography.bodySmall,
@@ -470,17 +496,17 @@ fun SleepQualityVisualizer(
                     }
                 }
             }
-            
+
             // Sleep cycle visualization
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Text(
                 text = "Sleep Cycles",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -496,18 +522,18 @@ fun SleepQualityVisualizer(
                 val width = size.width
                 val height = size.height
                 val padding = 16f
-                
+
                 // Draw time labels
                 for (hour in 0..8) {
                     val x = padding + (width - 2 * padding) * hour / 8
-                    
+
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.3f),
                         start = Offset(x, padding),
                         end = Offset(x, height - padding),
                         strokeWidth = 1f
                     )
-                    
+
                     drawText(
                         textMeasurer = rememberTextMeasurer(),
                         text = "${hour + 10}:00",
@@ -518,19 +544,19 @@ fun SleepQualityVisualizer(
                         )
                     )
                 }
-                
+
                 // Draw sleep stage labels
                 val stages = listOf("Awake", "REM", "Light", "Deep")
                 stages.forEachIndexed { index, stage ->
                     val y = padding + (height - 2 * padding) * index / (stages.size - 1)
-                    
+
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.3f),
                         start = Offset(padding, y),
                         end = Offset(width - padding, y),
                         strokeWidth = 1f
                     )
-                    
+
                     drawText(
                         textMeasurer = rememberTextMeasurer(),
                         text = stage,
@@ -541,38 +567,38 @@ fun SleepQualityVisualizer(
                         )
                     )
                 }
-                
+
                 // Draw sleep cycle curve
                 val path = Path()
                 val cycleCount = 5
                 val cycleWidth = (width - 2 * padding) / cycleCount
-                
+
                 path.moveTo(padding, height - padding) // Start awake
-                
+
                 for (cycle in 0 until cycleCount) {
                     val cycleStart = padding + cycle * cycleWidth
-                    
+
                     // Falling asleep
                     path.cubicTo(
                         cycleStart + cycleWidth * 0.1f, height - padding - 20,
                         cycleStart + cycleWidth * 0.2f, padding + (height - 2 * padding) * 2 / 3,
                         cycleStart + cycleWidth * 0.3f, padding + (height - 2 * padding) * 2 / 3
                     )
-                    
+
                     // Deep sleep
                     path.cubicTo(
                         cycleStart + cycleWidth * 0.4f, padding + (height - 2 * padding) * 3 / 3,
                         cycleStart + cycleWidth * 0.5f, padding + (height - 2 * padding) * 3 / 3,
                         cycleStart + cycleWidth * 0.6f, padding + (height - 2 * padding) * 2 / 3
                     )
-                    
+
                     // REM sleep
                     path.cubicTo(
                         cycleStart + cycleWidth * 0.7f, padding + (height - 2 * padding) * 1 / 3,
                         cycleStart + cycleWidth * 0.8f, padding + (height - 2 * padding) * 1 / 3,
                         cycleStart + cycleWidth * 0.9f, padding + (height - 2 * padding) * 1 / 3
                     )
-                    
+
                     // Brief awakening
                     if (cycle < cycleCount - 1) {
                         path.cubicTo(
@@ -589,7 +615,7 @@ fun SleepQualityVisualizer(
                         )
                     }
                 }
-                
+
                 // Draw the path
                 drawPath(
                     path = path,
@@ -621,7 +647,7 @@ fun BiometricReadingsList(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        
+
         if (readings.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -715,9 +741,9 @@ fun BiometricReadingCard(
                     }
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             // Reading details
             Column(
                 modifier = Modifier.weight(1f)
@@ -736,7 +762,7 @@ fun BiometricReadingCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -744,9 +770,9 @@ fun BiometricReadingCard(
                         text = "${reading.value.toInt()} ${reading.unit}",
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    
+
                     // Trend indicator
                     Icon(
                         imageVector = when (reading.trend) {
@@ -765,14 +791,14 @@ fun BiometricReadingCard(
                         modifier = Modifier.size(16.dp)
                     )
                 }
-                
+
                 Text(
                     text = "Normal range: ${reading.normalRange.first.toInt()} - ${reading.normalRange.second.toInt()} ${reading.unit}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
-            
+
             // Status indicator
             Box(
                 modifier = Modifier
