@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
+import com.google.ar.core.HitResult
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -533,7 +535,7 @@ fun AdvancedFeaturesDemo(onClose: () -> Unit) {
             val y = 500f + (radius * sin(angle)).toFloat()
 
             ARObject(
-                type = ARObjectType.values()[index % ARObjectType.values().size],
+                type = ARObjectType.entries[index % ARObjectType.entries.size],
                 position = Offset(x, y),
                 color = Color.hsl(
                     hue = index * 70f,
@@ -667,7 +669,9 @@ fun AdvancedFeaturesDemo(onClose: () -> Unit) {
                                     .background(Color.Black.copy(alpha = 0.1f)),
                                 arObjects = arObjects,
                                 onObjectClick = {},
-                                onAddObject = { _, _ -> }
+                                onAddARObject = { hitResult, arObjectType -> 
+                                    Log.d("AR_DEMO", "Add object triggered: Type: $arObjectType, Hit: $hitResult")
+                                }
                             )
                         }
                     }
