@@ -550,7 +550,6 @@ fun HabitPredictionList(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .fillMaxHeight()
     ) {
         Text(
             text = "ML-Powered Habit Predictions",
@@ -575,7 +574,6 @@ fun HabitPredictionList(
             }
         } else {
             LazyColumn(
-                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(predictions) { prediction ->

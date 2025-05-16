@@ -58,6 +58,8 @@ object BiometricComponents {
     ) {
         Column(
             modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
             Text(
                 text = "Biometric Readings",
@@ -70,7 +72,7 @@ object BiometricComponents {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -82,9 +84,6 @@ object BiometricComponents {
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(readings) { reading ->
@@ -544,9 +543,6 @@ fun SleepQualityVisualizer(
                 val height = size.height
                 val padding = 16f
 
-                // Ensure drawableHeight is not negative
-                val drawableHeight = (height - 2 * padding).coerceAtLeast(0f)
-
                 // Draw time labels
                 for (hour in 0..8) {
                     val x = padding + (width - 2 * padding) * hour / 8
@@ -573,8 +569,7 @@ fun SleepQualityVisualizer(
                 // Draw sleep stage labels
                 val stages = listOf("Awake", "REM", "Light", "Deep")
                 stages.forEachIndexed { index, stage ->
-                    // Use drawableHeight for y calculation
-                    val y = padding + drawableHeight * index / (stages.size - 1)
+                    val y = padding + (height - 2 * padding) * index / (stages.size - 1)
 
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.3f),
@@ -600,45 +595,45 @@ fun SleepQualityVisualizer(
                 val cycleCount = 5
                 val cycleWidth = (width - 2 * padding) / cycleCount
 
-                path.moveTo(padding, padding + drawableHeight) // Start awake, ensure y is within bounds
+                path.moveTo(padding, height - padding) // Start awake
 
                 for (cycle in 0 until cycleCount) {
                     val cycleStart = padding + cycle * cycleWidth
 
-                    // Falling asleep - ensure y values use drawableHeight and padding
+                    // Falling asleep
                     path.cubicTo(
-                        cycleStart + cycleWidth * 0.1f, padding + drawableHeight - 20f.coerceAtMost(drawableHeight * 0.1f),
-                        cycleStart + cycleWidth * 0.2f, padding + drawableHeight * 2 / 3,
-                        cycleStart + cycleWidth * 0.3f, padding + drawableHeight * 2 / 3
+                        cycleStart + cycleWidth * 0.1f, height - padding - 20,
+                        cycleStart + cycleWidth * 0.2f, padding + (height - 2 * padding) * 2 / 3,
+                        cycleStart + cycleWidth * 0.3f, padding + (height - 2 * padding) * 2 / 3
                     )
 
                     // Deep sleep
                     path.cubicTo(
-                        cycleStart + cycleWidth * 0.4f, padding + drawableHeight, // Deepest point
-                        cycleStart + cycleWidth * 0.5f, padding + drawableHeight,
-                        cycleStart + cycleWidth * 0.6f, padding + drawableHeight * 2 / 3
+                        cycleStart + cycleWidth * 0.4f, padding + (height - 2 * padding) * 3 / 3,
+                        cycleStart + cycleWidth * 0.5f, padding + (height - 2 * padding) * 3 / 3,
+                        cycleStart + cycleWidth * 0.6f, padding + (height - 2 * padding) * 2 / 3
                     )
 
                     // REM sleep
                     path.cubicTo(
-                        cycleStart + cycleWidth * 0.7f, padding + drawableHeight * 1 / 3,
-                        cycleStart + cycleWidth * 0.8f, padding + drawableHeight * 1 / 3,
-                        cycleStart + cycleWidth * 0.9f, padding + drawableHeight * 1 / 3
+                        cycleStart + cycleWidth * 0.7f, padding + (height - 2 * padding) * 1 / 3,
+                        cycleStart + cycleWidth * 0.8f, padding + (height - 2 * padding) * 1 / 3,
+                        cycleStart + cycleWidth * 0.9f, padding + (height - 2 * padding) * 1 / 3
                     )
 
                     // Brief awakening
                     if (cycle < cycleCount - 1) {
                         path.cubicTo(
-                            cycleStart + cycleWidth * 0.95f, padding, // Awake at the top
+                            cycleStart + cycleWidth * 0.95f, padding,
                             cycleStart + cycleWidth, padding,
-                            cycleStart + cycleWidth, padding + drawableHeight * 0.5f
+                            cycleStart + cycleWidth, padding + (height - 2 * padding) * 0.5f
                         )
                     } else {
                         // Final awakening
                         path.cubicTo(
                             cycleStart + cycleWidth * 0.95f, padding,
                             cycleStart + cycleWidth, padding,
-                            cycleStart + cycleWidth, padding // End at the top
+                            cycleStart + cycleWidth, padding
                         )
                     }
                 }
@@ -649,6 +644,56 @@ fun SleepQualityVisualizer(
                     color = primaryColor,
                     style = Stroke(width = 2f)
                 )
+            }
+        }
+    }
+}
+
+/**
+ * A component that displays a list of biometric readings
+ */
+@Composable
+fun BiometricReadingsList(
+    readings: List<BiometricReading>,
+    modifier: Modifier = Modifier,
+    onReadingClick: (BiometricReading) -> Unit = {}
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Biometric Readings",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        if (readings.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No biometric readings available",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(readings) { reading ->
+                    BiometricReadingCard(
+                        reading = reading,
+                        onClick = { onReadingClick(reading) }
+                    )
+                }
             }
         }
     }

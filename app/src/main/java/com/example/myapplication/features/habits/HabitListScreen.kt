@@ -202,7 +202,7 @@ fun HabitListScreen(
                 if (isLoading) {
                     // Loading state with pulsing animation
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         // Create pulsing effect for the loader
@@ -233,7 +233,7 @@ fun HabitListScreen(
                 } else if (filteredHabits.isEmpty()) {
                     // Empty state with animations
                     Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         // Add floating particles in the background
@@ -313,7 +313,7 @@ fun HabitListScreen(
                     // Habits list
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
