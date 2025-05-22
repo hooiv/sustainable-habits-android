@@ -449,7 +449,6 @@ fun UltraAdvancedFeaturesDemo(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
                         ) {
                             Text(
                                 text = "Predictive Habit Modeling",
@@ -468,11 +467,12 @@ fun UltraAdvancedFeaturesDemo(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 24.dp)
+                                    .height(300.dp)
                             )
 
                             HabitPredictionList(
                                 predictions = samplePredictions,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().weight(1f)
                             )
                         }
                     }
@@ -481,7 +481,6 @@ fun UltraAdvancedFeaturesDemo(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
                         ) {
                             Text(
                                 text = "Biometric Integration",
@@ -514,7 +513,7 @@ fun UltraAdvancedFeaturesDemo(
 
                             com.example.myapplication.features.biometric.BiometricComponents.BiometricReadingsList(
                                 readings = sampleBiometricReadings,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().weight(1f)
                             )
                         }
                     }
