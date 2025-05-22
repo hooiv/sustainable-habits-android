@@ -2,6 +2,7 @@ package com.example.myapplication.ui.animation
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Easing
+import kotlin.math.*
 
 /**
  * A collection of easing functions inspired by anime.js for more natural and expressive animations.
@@ -101,4 +102,33 @@ object AnimeEasing {
             (Math.pow(2.0, -20.0 * x + 10.0) * Math.sin((20.0 * x - 11.125) * c5) / 2.0 + 1.0).toFloat()
         }
     }
+
+    // Bounce easing functions
+    val EaseInBounce: Easing = Easing { x ->
+        1 - EaseOutBounce.transform(1 - x)
+    }
+
+    val EaseOutBounce: Easing = Easing { x ->
+        val n1 = 7.5625f
+        val d1 = 2.75f
+
+        when {
+            x < 1f / d1 -> n1 * x * x
+            x < 2f / d1 -> n1 * (x - 1.5f / d1) * (x - 1.5f / d1) + 0.75f
+            x < 2.5f / d1 -> n1 * (x - 2.25f / d1) * (x - 2.25f / d1) + 0.9375f
+            else -> n1 * (x - 2.625f / d1) * (x - 2.625f / d1) + 0.984375f
+        }
+    }
+
+    val EaseInOutBounce: Easing = Easing { x ->
+        if (x < 0.5f)
+            (1 - EaseOutBounce.transform(1 - 2 * x)) / 2
+        else
+            (1 + EaseOutBounce.transform(2 * x - 1)) / 2
+    }
+
+    // Material Design standard easing
+    val StandardEasing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
+    val AccelerateEasing = CubicBezierEasing(0.4f, 0.0f, 1.0f, 1.0f)
+    val DecelerateEasing = CubicBezierEasing(0.0f, 0.0f, 0.2f, 1.0f)
 }

@@ -221,8 +221,10 @@ fun AppNavigationGraph(navController: NavHostController) {
 
             habitId?.let { id ->
                 // Get the habit from the repository
+                val database = com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current)
                 val habitRepository = com.example.myapplication.data.repository.HabitRepository(
-                    com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current).habitDao()
+                    database.habitDao(),
+                    database.habitCompletionDao()
                 )
 
                 // For simplicity, we're creating a sample habit
@@ -243,6 +245,144 @@ fun AppNavigationGraph(navController: NavHostController) {
                     viewModel = viewModel
                 )
             }
+        }
+
+        composable(
+            route = NavRoutes.HABIT_COMPLETION,
+            arguments = listOf(
+                navArgument(NavRoutes.HABIT_COMPLETION_ARG_ID) {
+                    type = NavType.StringType
+                },
+                navArgument(NavRoutes.HABIT_COMPLETION_ARG_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_ID) ?: ""
+            val habitName = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_NAME) ?: ""
+
+            com.example.myapplication.features.habits.HabitCompletionScreen(
+                navController = navController,
+                habitId = habitId,
+                habitName = habitName
+            )
+        }
+
+        // AR screen with specific habit
+        composable(
+            route = NavRoutes.AR,
+            arguments = listOf(
+                navArgument(NavRoutes.AR_ARG_ID) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.AR_ARG_ID) ?: ""
+
+            // Get the habit from the repository
+            val database = com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current)
+            val habitRepository = com.example.myapplication.data.repository.HabitRepository(
+                database.habitDao(),
+                database.habitCompletionDao()
+            )
+
+            // For simplicity, we're creating a sample habit
+            // In a real app, you would get this from the repository
+            val habit = com.example.myapplication.data.model.Habit(
+                id = habitId,
+                name = "Sample Habit",
+                description = "This is a sample habit for AR visualization",
+                frequency = com.example.myapplication.data.model.HabitFrequency.DAILY,
+                streak = 5,
+                goal = 10,
+                goalProgress = 7
+            )
+
+            com.example.myapplication.features.ar.ARScreen(
+                navController = navController,
+                habit = habit,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Global AR screen without a specific habit
+        composable(route = NavRoutes.AR_GLOBAL) {
+            com.example.myapplication.features.ar.ARScreen(
+                navController = navController,
+                habit = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Quantum visualization with specific habit
+        composable(
+            route = NavRoutes.QUANTUM_VISUALIZATION,
+            arguments = listOf(navArgument(NavRoutes.QUANTUM_VISUALIZATION_ARG_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.QUANTUM_VISUALIZATION_ARG_ID)
+
+            com.example.myapplication.features.quantum.QuantumVisualizationScreen(
+                navController = navController,
+                habitId = habitId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Global quantum visualization without a specific habit
+        composable(route = NavRoutes.QUANTUM_VISUALIZATION_GLOBAL) {
+            com.example.myapplication.features.quantum.QuantumVisualizationScreen(
+                navController = navController,
+                habitId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Biometric integration with specific habit
+        composable(
+            route = NavRoutes.BIOMETRIC_INTEGRATION,
+            arguments = listOf(navArgument(NavRoutes.BIOMETRIC_INTEGRATION_ARG_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getString(NavRoutes.BIOMETRIC_INTEGRATION_ARG_ID)
+
+            com.example.myapplication.features.biometric.BiometricIntegrationScreen(
+                navController = navController,
+                habitId = habitId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Global biometric integration without a specific habit
+        composable(route = NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL) {
+            com.example.myapplication.features.biometric.BiometricIntegrationScreen(
+                navController = navController,
+                habitId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Voice integration screen
+        composable(route = NavRoutes.VOICE_INTEGRATION) {
+            com.example.myapplication.features.voice.VoiceIntegrationScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Spatial computing screen
+        composable(route = NavRoutes.SPATIAL_COMPUTING) {
+            com.example.myapplication.features.spatial.SpatialComputingScreen(
+                navController = navController,
+                habitId = null,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

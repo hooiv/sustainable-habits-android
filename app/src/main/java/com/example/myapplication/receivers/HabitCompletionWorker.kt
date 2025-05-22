@@ -23,7 +23,7 @@ class HabitCompletionWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val habitId = inputData.getString("habit_id") ?: return Result.failure()
-        
+
         try {
             Log.d("HabitCompletionWorker", "Processing habit completion for ID: $habitId")
             repository.markHabitCompleted(habitId)
@@ -46,14 +46,16 @@ class HabitCompletionFallbackWorker(
 
     override suspend fun doWork(): Result {
         val habitId = inputData.getString("habit_id") ?: return Result.failure()
-        
+
         try {
             Log.d("HabitCompletionWorker", "Processing habit completion for ID: $habitId")
-            
+
             // Create repository manually since we don't have injection
-            val dao = AppDatabase.getInstance(applicationContext).habitDao()
-            val repository = HabitRepository(dao)
-            
+            val database = AppDatabase.getInstance(applicationContext)
+            val habitDao = database.habitDao()
+            val habitCompletionDao = database.habitCompletionDao()
+            val repository = HabitRepository(habitDao, habitCompletionDao)
+
             repository.markHabitCompleted(habitId)
             return Result.success()
         } catch (e: Exception) {

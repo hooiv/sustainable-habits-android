@@ -69,6 +69,7 @@ import com.example.myapplication.features.personalization.FontSizeCustomizer
 import com.example.myapplication.features.personalization.ThemeSelector
 import com.example.myapplication.features.UltraAdvancedFeaturesDemo
 import com.example.myapplication.navigation.AppNavigation
+import com.example.myapplication.navigation.NavRoutes
 import com.example.myapplication.ui.animation.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -139,7 +140,18 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (showUltraAdvancedFeaturesDemo) {
-                        UltraAdvancedFeaturesDemo(onClose = { showUltraAdvancedFeaturesDemo = false })
+                        UltraAdvancedFeaturesDemo(
+                            onClose = { showUltraAdvancedFeaturesDemo = false },
+                            onNavigateToFeature = { featureRoute ->
+                                showUltraAdvancedFeaturesDemo = false
+
+                                // Navigate to the feature
+                                startDestination = StartDestination.Main
+
+                                // The navigation will be handled by the AppNavigation component
+                                // when the startDestination is set to Main
+                            }
+                        )
                     } else if (showAdvancedFeaturesDemo) {
                         AdvancedFeaturesDemo(onClose = { showAdvancedFeaturesDemo = false })
                     } else {
@@ -537,11 +549,6 @@ fun AdvancedFeaturesDemo(onClose: () -> Unit) {
             ARObject(
                 type = ARObjectType.entries[index % ARObjectType.entries.size],
                 position = Offset(x, y),
-                color = Color.hsl(
-                    hue = index * 70f,
-                    saturation = 0.7f,
-                    lightness = 0.6f
-                ),
                 label = "AR Object ${index + 1}"
             )
         }
@@ -669,7 +676,7 @@ fun AdvancedFeaturesDemo(onClose: () -> Unit) {
                                     .background(Color.Black.copy(alpha = 0.1f)),
                                 arObjects = arObjects,
                                 onObjectClick = {},
-                                onAddARObject = { hitResult, arObjectType -> 
+                                onAddARObject = { hitResult, arObjectType ->
                                     Log.d("AR_DEMO", "Add object triggered: Type: $arObjectType, Hit: $hitResult")
                                 }
                             )

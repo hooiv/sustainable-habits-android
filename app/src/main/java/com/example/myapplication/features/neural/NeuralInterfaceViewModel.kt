@@ -161,12 +161,28 @@ class NeuralInterfaceViewModel @Inject constructor(
     val adaptationProgress: StateFlow<Float> = _adaptationProgress.asStateFlow()
 
     // State for biometric integration
-    val biometricData = biometricIntegration.getBiometricData()
+    val heartRate = biometricIntegration.heartRate
+    val stepCount = biometricIntegration.stepCount
+    val caloriesBurned = biometricIntegration.caloriesBurned
+    val stressLevel = biometricIntegration.stressLevel
+    val sleepQuality = biometricIntegration.sleepQuality
+    val energyLevel = biometricIntegration.energyLevel
+    val focusLevel = biometricIntegration.focusLevel
+    val mood = biometricIntegration.mood
+    val activityLevel = biometricIntegration.activityLevel
     val isMonitoring = biometricIntegration.isMonitoring
+
+    // State for user weight
+    private val _userWeight = MutableStateFlow(70.0)
+    val userWeight: StateFlow<Double> = _userWeight.asStateFlow()
 
     // State for spatial computing
     val spatialObjects = spatialComputing.spatialObjects
     val isSpatialTrackingActive = spatialComputing.isSpatialTrackingActive
+
+    // State for AR interaction
+    private val _selectedSpatialObject = MutableStateFlow<com.example.myapplication.data.spatial.SpatialObject?>(null)
+    val selectedSpatialObject: StateFlow<com.example.myapplication.data.spatial.SpatialObject?> = _selectedSpatialObject.asStateFlow()
 
     // State for voice and NLP
     val recognizedText = voiceAndNlpProcessor.recognizedText
@@ -174,10 +190,19 @@ class NeuralInterfaceViewModel @Inject constructor(
     val isSpeaking = voiceAndNlpProcessor.isSpeaking
     val nlpIntent = voiceAndNlpProcessor.nlpIntent
     val nlpConfidence = voiceAndNlpProcessor.confidence
+    val commandHistory = voiceAndNlpProcessor.commandHistory
 
     // State for quantum visualization
     private val _quantumVisualization = MutableStateFlow<com.example.myapplication.data.quantum.QuantumVisualization?>(null)
     val quantumVisualization: StateFlow<com.example.myapplication.data.quantum.QuantumVisualization?> = _quantumVisualization.asStateFlow()
+
+    // State for quantum-enhanced habit success probabilities
+    private val _habitSuccessProbabilities = MutableStateFlow<Map<String, Double>>(emptyMap())
+    val habitSuccessProbabilities: StateFlow<Map<String, Double>> = _habitSuccessProbabilities.asStateFlow()
+
+    // State for optimal habit schedule
+    private val _optimalHabitSchedule = MutableStateFlow<List<Pair<Habit, Double>>>(emptyList())
+    val optimalHabitSchedule: StateFlow<List<Pair<Habit, Double>>> = _optimalHabitSchedule.asStateFlow()
 
     /**
      * Load neural network for a habit
@@ -498,6 +523,295 @@ class NeuralInterfaceViewModel @Inject constructor(
         return _predictions.value
             .filter { it.predictionType == predictionType }
             .maxByOrNull { it.timestamp }
+    }
+
+    /**
+     * Start biometric monitoring
+     *
+     * Note: This method requires a valid lifecycleOwner to be passed from the UI component
+     */
+    fun startBiometricMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start biometric monitoring: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Stop biometric monitoring
+     */
+    fun stopBiometricMonitoring() {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.stopHeartRateMonitoring()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to stop biometric monitoring: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Set user weight
+     */
+    fun setUserWeight(weightKg: Double) {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.setUserWeight(weightKg)
+                _userWeight.value = weightKg
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to set user weight: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Set user mood
+     */
+    fun setUserMood(moodLevel: Float) {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.setMood(moodLevel)
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to set user mood: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Start spatial tracking
+     */
+    fun startSpatialTracking() {
+        viewModelScope.launch {
+            try {
+                spatialComputing.startSpatialTracking()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start spatial tracking: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Stop spatial tracking
+     */
+    fun stopSpatialTracking() {
+        viewModelScope.launch {
+            try {
+                spatialComputing.stopSpatialTracking()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to stop spatial tracking: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Add spatial object for a habit
+     */
+    fun addSpatialObjectForHabit(habit: Habit, position: com.example.myapplication.data.spatial.SpatialPosition) {
+        viewModelScope.launch {
+            try {
+                val objectId = spatialComputing.placeHabitInSpace(habit, position)
+
+                // Select the new object
+                val objects = spatialComputing.spatialObjects.value
+                _selectedSpatialObject.value = objects.find { it.id == objectId }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to add spatial object: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Place current habit in space with current device position
+     */
+    fun placeHabitInSpaceWithCurrentPosition() {
+        viewModelScope.launch {
+            try {
+                val habitId = _currentHabitId.value ?: return@launch
+                val habit = habitRepository.getHabitById(habitId).firstOrNull() ?: return@launch
+
+                // Use current device position
+                val objectId = spatialComputing.placeHabitInSpace(habit)
+
+                // Select the new object
+                val objects = spatialComputing.spatialObjects.value
+                _selectedSpatialObject.value = objects.find { it.id == objectId }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to place habit in space: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Get object at screen position
+     */
+    fun getObjectAtScreenPosition(screenPosition: androidx.compose.ui.geometry.Offset): com.example.myapplication.data.spatial.SpatialObject? {
+        return spatialComputing.getObjectAtScreenPosition(screenPosition)
+    }
+
+    /**
+     * Select spatial object
+     */
+    fun selectSpatialObject(objectId: String?) {
+        viewModelScope.launch {
+            if (objectId == null) {
+                _selectedSpatialObject.value = null
+                return@launch
+            }
+
+            val objects = spatialComputing.spatialObjects.value
+            _selectedSpatialObject.value = objects.find { it.id == objectId }
+        }
+    }
+
+    /**
+     * Start voice recognition
+     */
+    fun startVoiceRecognition() {
+        viewModelScope.launch {
+            try {
+                voiceAndNlpProcessor.startListening()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start voice recognition: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Stop voice recognition
+     */
+    fun stopVoiceRecognition() {
+        viewModelScope.launch {
+            try {
+                voiceAndNlpProcessor.stopListening()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to stop voice recognition: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Process text with NLP
+     */
+    fun processTextWithNlp(text: String) {
+        viewModelScope.launch {
+            try {
+                voiceAndNlpProcessor.processText(text)
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to process text: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Speak text
+     */
+    fun speakText(text: String) {
+        viewModelScope.launch {
+            try {
+                voiceAndNlpProcessor.speak(text)
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to speak text: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Initialize quantum visualization
+     */
+    fun initializeQuantumVisualization() {
+        viewModelScope.launch {
+            try {
+                // Get all habits and completions
+                val habits = habitRepository.getAllHabits().first()
+                val completionsMap = mutableMapOf<String, List<HabitCompletion>>()
+
+                // Get completions for each habit
+                for (habit in habits) {
+                    val completions = habitRepository.getHabitCompletions(habit.id).first()
+                    completionsMap[habit.id] = completions
+                }
+
+                // Initialize quantum state
+                quantumVisualizer.initializeQuantumState(habits, completionsMap)
+
+                // Calculate success probabilities
+                val probabilities = quantumVisualizer.applyQuantumEffect(habits, completionsMap)
+                _habitSuccessProbabilities.value = probabilities
+
+                // Calculate optimal schedule
+                val schedule = quantumVisualizer.getOptimalHabitSchedule(habits)
+                _optimalHabitSchedule.value = schedule
+
+                // Start simulation update loop
+                startQuantumSimulationLoop()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to initialize quantum visualization: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Start quantum simulation loop
+     */
+    private fun startQuantumSimulationLoop() {
+        viewModelScope.launch {
+            while (true) {
+                try {
+                    // Update simulation
+                    quantumVisualizer.updateSimulation()
+
+                    // Get visualization for current habit
+                    val habitId = _currentHabitId.value
+                    if (habitId != null) {
+                        val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
+                        _quantumVisualization.value = visualization
+                    }
+
+                    // Delay before next update
+                    kotlinx.coroutines.delay(50) // 20 FPS
+                } catch (e: Exception) {
+                    _errorMessage.value = "Quantum simulation error: ${e.message}"
+                    break
+                }
+            }
+        }
+    }
+
+    /**
+     * Predict habit success probability
+     */
+    fun predictHabitSuccess(habit: Habit): Double {
+        return try {
+            val completions = _habitCompletions.value.filter { it.habitId == habit.id }
+            quantumVisualizer.predictHabitSuccess(habit, completions)
+        } catch (e: Exception) {
+            _errorMessage.value = "Failed to predict habit success: ${e.message}"
+            0.0
+        }
+    }
+
+    /**
+     * Update quantum visualization
+     */
+    fun updateQuantumVisualization() {
+        viewModelScope.launch {
+            try {
+                // Update simulation
+                quantumVisualizer.updateSimulation()
+
+                // Get visualization for current habit
+                val habitId = _currentHabitId.value
+                if (habitId != null) {
+                    val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
+                    _quantumVisualization.value = visualization
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to update quantum visualization: ${e.message}"
+            }
+        }
     }
 
     /**
@@ -940,38 +1254,9 @@ class NeuralInterfaceViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Start biometric monitoring
-     */
-    fun startBiometricMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner?) {
-        if (lifecycleOwner != null) {
-            biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
-        } else {
-            // For demo purposes, we'll just log a message
-            _errorMessage.value = "Biometric monitoring requires a valid LifecycleOwner"
-        }
-    }
 
-    /**
-     * Stop biometric monitoring
-     */
-    fun stopBiometricMonitoring() {
-        biometricIntegration.stopHeartRateMonitoring()
-    }
 
-    /**
-     * Start spatial tracking
-     */
-    fun startSpatialTracking() {
-        spatialComputing.startSpatialTracking()
-    }
-
-    /**
-     * Stop spatial tracking
-     */
-    fun stopSpatialTracking() {
-        spatialComputing.stopSpatialTracking()
-    }
+    // Removed duplicate methods for biometric monitoring and spatial tracking
 
     /**
      * Place habit in AR space
@@ -997,80 +1282,10 @@ class NeuralInterfaceViewModel @Inject constructor(
     }
 
     /**
-     * Start voice recognition
-     */
-    fun startVoiceRecognition() {
-        voiceAndNlpProcessor.startListening()
-    }
-
-    /**
-     * Stop voice recognition
-     */
-    fun stopVoiceRecognition() {
-        voiceAndNlpProcessor.stopListening()
-    }
-
-    /**
-     * Speak text using text-to-speech
-     */
-    fun speakText(text: String) {
-        voiceAndNlpProcessor.speak(text)
-    }
-
-    /**
      * Process voice command
      */
     fun processVoiceCommand(text: String) {
         voiceAndNlpProcessor.processText(text)
-    }
-
-    /**
-     * Initialize quantum visualization
-     */
-    fun initializeQuantumVisualization() {
-        viewModelScope.launch {
-            try {
-                val habits = habitRepository.getAllHabits().first()
-
-                // Get completions for each habit
-                val completionsMap = mutableMapOf<String, List<HabitCompletion>>()
-                for (habit in habits) {
-                    val completions = habitRepository.getHabitCompletions(habit.id).first()
-                    completionsMap[habit.id] = completions
-                }
-
-                // Initialize quantum state
-                quantumVisualizer.initializeQuantumState(habits, completionsMap)
-
-                // Get visualization for current habit
-                updateQuantumVisualization()
-
-                _errorMessage.value = "Quantum visualization initialized"
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to initialize quantum visualization: ${e.message}"
-            }
-        }
-    }
-
-    /**
-     * Update quantum visualization
-     */
-    fun updateQuantumVisualization() {
-        viewModelScope.launch {
-            try {
-                // Update quantum simulation
-                quantumVisualizer.updateSimulation()
-
-                // Get visualization for current habit
-                val habitId = _currentHabitId.value
-                if (habitId != null) {
-                    val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
-                    _quantumVisualization.value = visualization
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to update quantum visualization: ${e.message}"
-            }
-        }
     }
 
     /**

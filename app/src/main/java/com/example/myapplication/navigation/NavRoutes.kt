@@ -14,8 +14,40 @@ object NavRoutes {
     const val NEURAL_INTERFACE_ROUTE = "neural_interface" // Base route name
     const val NEURAL_INTERFACE_ARG_ID = "habitId" // Argument name
     const val NEURAL_INTERFACE = "$NEURAL_INTERFACE_ROUTE/{$NEURAL_INTERFACE_ARG_ID}" // Full route with argument placeholder
+    const val QUANTUM_VISUALIZATION_ROUTE = "quantum_visualization" // Base route name
+    const val QUANTUM_VISUALIZATION_ARG_ID = "habitId" // Argument name (optional)
+    const val QUANTUM_VISUALIZATION = "$QUANTUM_VISUALIZATION_ROUTE/{$QUANTUM_VISUALIZATION_ARG_ID}?{$QUANTUM_VISUALIZATION_ARG_ID}" // Full route with optional argument
+    const val QUANTUM_VISUALIZATION_GLOBAL = "$QUANTUM_VISUALIZATION_ROUTE" // Global quantum view without a specific habit
+
+    // Biometric integration routes
+    const val BIOMETRIC_INTEGRATION_ROUTE = "biometric_integration" // Base route name
+    const val BIOMETRIC_INTEGRATION_ARG_ID = "habitId" // Argument name (optional)
+    const val BIOMETRIC_INTEGRATION = "$BIOMETRIC_INTEGRATION_ROUTE/{$BIOMETRIC_INTEGRATION_ARG_ID}?{$BIOMETRIC_INTEGRATION_ARG_ID}" // Full route with optional argument
+    const val BIOMETRIC_INTEGRATION_GLOBAL = "$BIOMETRIC_INTEGRATION_ROUTE" // Global biometric view without a specific habit
+
+    // Voice integration route
+    const val VOICE_INTEGRATION = "voice_integration" // Voice integration route
+
+    // Spatial computing route
+    const val SPATIAL_COMPUTING = "spatial_computing" // Spatial computing route
+
+    // Habit completion routes
+    const val HABIT_COMPLETION_ROUTE = "habit_completion" // Base route name
+    const val HABIT_COMPLETION_ARG_ID = "habitId" // Argument name
+    const val HABIT_COMPLETION_ARG_NAME = "habitName" // Argument name
+    const val HABIT_COMPLETION = "$HABIT_COMPLETION_ROUTE/{$HABIT_COMPLETION_ARG_ID}/{$HABIT_COMPLETION_ARG_NAME}" // Full route with argument placeholder
+
+    // AR routes
+    const val AR_ROUTE = "ar" // Base route name
+    const val AR_ARG_ID = "habitId" // Argument name
+    const val AR = "$AR_ROUTE/{$AR_ARG_ID}" // Full route with argument placeholder
+    const val AR_GLOBAL = "ar_global" // Global AR view without a specific habit
 
     // Helper function for parameterized routes
     fun editHabit(habitId: String) = "$EDIT_HABIT_ROUTE/$habitId"
     fun neuralInterface(habitId: String) = "$NEURAL_INTERFACE_ROUTE/$habitId"
+    fun habitCompletion(habitId: String, habitName: String) = "$HABIT_COMPLETION_ROUTE/$habitId/$habitName"
+    fun ar(habitId: String) = "$AR_ROUTE/$habitId"
+    fun quantumVisualization(habitId: String? = null) = if (habitId != null) "$QUANTUM_VISUALIZATION_ROUTE/$habitId" else QUANTUM_VISUALIZATION_GLOBAL
+    fun biometricIntegration(habitId: String? = null) = if (habitId != null) "$BIOMETRIC_INTEGRATION_ROUTE/$habitId" else BIOMETRIC_INTEGRATION_GLOBAL
 }

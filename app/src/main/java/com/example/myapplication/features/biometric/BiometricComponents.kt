@@ -97,6 +97,131 @@ object BiometricComponents {
             }
         }
     }
+
+    /**
+     * A component that displays a single biometric reading
+     */
+    @Composable
+    fun BiometricReadingCard(
+        reading: BiometricReading,
+        onClick: () -> Unit = {}
+    ) {
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+        val formattedDate = dateFormat.format(Date(reading.timestamp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Icon based on biometric type
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(getBiometricTypeColor(reading.type).copy(alpha = 0.2f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = getBiometricTypeIcon(reading.type),
+                        contentDescription = null,
+                        tint = getBiometricTypeColor(reading.type)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = getBiometricTypeName(reading.type),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = formattedDate,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+
+                Text(
+                    text = formatBiometricValue(reading.type, reading.value),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+
+    /**
+     * Get the icon for a biometric type
+     */
+    private fun getBiometricTypeIcon(type: BiometricType) = when (type) {
+        BiometricType.HEART_RATE -> Icons.Default.Favorite
+        BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> Icons.Default.HealthAndSafety
+        BiometricType.STRESS_LEVEL -> Icons.Default.Psychology
+        BiometricType.SLEEP_QUALITY -> Icons.Default.Bedtime
+        BiometricType.ENERGY_LEVEL -> Icons.Default.BatteryChargingFull
+        BiometricType.FOCUS_LEVEL -> Icons.Default.Visibility
+        BiometricType.MOOD -> Icons.Default.Mood
+        BiometricType.STEP_COUNT -> Icons.Default.DirectionsWalk
+        BiometricType.CALORIES_BURNED -> Icons.Default.LocalFireDepartment
+    }
+
+    /**
+     * Get the color for a biometric type
+     */
+    private fun getBiometricTypeColor(type: BiometricType) = when (type) {
+        BiometricType.HEART_RATE -> Color.Red
+        BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> Color(0xFF4CAF50)
+        BiometricType.STRESS_LEVEL -> Color(0xFFFF9800)
+        BiometricType.SLEEP_QUALITY -> Color(0xFF3F51B5)
+        BiometricType.ENERGY_LEVEL -> Color(0xFFFFEB3B)
+        BiometricType.FOCUS_LEVEL -> Color(0xFF9C27B0)
+        BiometricType.MOOD -> Color(0xFF2196F3)
+        BiometricType.STEP_COUNT -> Color(0xFF795548)
+        BiometricType.CALORIES_BURNED -> Color(0xFFE91E63)
+    }
+
+    /**
+     * Get the name for a biometric type
+     */
+    private fun getBiometricTypeName(type: BiometricType) = when (type) {
+        BiometricType.HEART_RATE -> "Heart Rate"
+        BiometricType.BLOOD_PRESSURE_SYSTOLIC -> "Blood Pressure (Systolic)"
+        BiometricType.BLOOD_PRESSURE_DIASTOLIC -> "Blood Pressure (Diastolic)"
+        BiometricType.STRESS_LEVEL -> "Stress Level"
+        BiometricType.SLEEP_QUALITY -> "Sleep Quality"
+        BiometricType.ENERGY_LEVEL -> "Energy Level"
+        BiometricType.FOCUS_LEVEL -> "Focus Level"
+        BiometricType.MOOD -> "Mood"
+        BiometricType.STEP_COUNT -> "Step Count"
+        BiometricType.CALORIES_BURNED -> "Calories Burned"
+    }
+
+    /**
+     * Format a biometric value based on its type
+     */
+    private fun formatBiometricValue(type: BiometricType, value: Double) = when (type) {
+        BiometricType.HEART_RATE -> "${value.toInt()} BPM"
+        BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> "${value.toInt()} mmHg"
+        BiometricType.STRESS_LEVEL -> "${value.toInt()}/10"
+        BiometricType.SLEEP_QUALITY, BiometricType.ENERGY_LEVEL, BiometricType.FOCUS_LEVEL, BiometricType.MOOD ->
+            "${(value * 100).toInt()}%"
+        BiometricType.STEP_COUNT -> value.toInt().toString()
+        BiometricType.CALORIES_BURNED -> "${value.toInt()} cal"
+    }
 }
 
 

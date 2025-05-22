@@ -1,6 +1,7 @@
 package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.database.HabitDao
+import com.example.myapplication.data.database.HabitCompletionDao
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitCompletion
 import com.example.myapplication.data.model.HabitFrequency
@@ -13,7 +14,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton // Mark as a singleton so Hilt provides the same instance
-class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
+class HabitRepository @Inject constructor(
+    private val habitDao: HabitDao,
+    private val habitCompletionDao: HabitCompletionDao
+) {
 
     fun getAllHabits(): Flow<List<Habit>> {
         return habitDao.getAllHabits()
@@ -44,13 +48,26 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
         return habitDao.getHabitsByFrequency(frequency)
     }
 
-    suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date()) {
+    suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date(), note: String? = null, mood: Int? = null, location: String? = null, photoUri: String? = null) {
         val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
 
         // Check if habit is enabled
         if (!habit.isEnabled) {
             return
         }
+
+        // Create a habit completion record
+        val completion = HabitCompletion(
+            habitId = habitId,
+            completionDate = completionDate.time,
+            note = note,
+            mood = mood,
+            location = location,
+            photoUri = photoUri
+        )
+
+        // Insert the completion record
+        habitCompletionDao.insertCompletion(completion)
 
         // First, check if we've already completed this habit in the current period
         if (isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency) &&
@@ -308,10 +325,48 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
      * Get completions for a specific habit
      */
     fun getHabitCompletions(habitId: String): Flow<List<HabitCompletion>> {
-        // This is a placeholder implementation
-        // In a real app, this would fetch completions from the database
-        return flow {
-            emit(emptyList())
-        }
+        return habitCompletionDao.getCompletionsForHabit(habitId)
+    }
+
+    /**
+     * Get all completions
+     */
+    fun getAllCompletions(): Flow<List<HabitCompletion>> {
+        return habitCompletionDao.getAllCompletions()
+    }
+
+    /**
+     * Get completions in a date range
+     */
+    fun getCompletionsInDateRange(startDate: Long, endDate: Long): Flow<List<HabitCompletion>> {
+        return habitCompletionDao.getCompletionsInDateRange(startDate, endDate)
+    }
+
+    /**
+     * Get completions for a habit in a date range
+     */
+    fun getCompletionsForHabitInDateRange(habitId: String, startDate: Long, endDate: Long): Flow<List<HabitCompletion>> {
+        return habitCompletionDao.getCompletionsForHabitInDateRange(habitId, startDate, endDate)
+    }
+
+    /**
+     * Insert a habit completion
+     */
+    suspend fun insertHabitCompletion(completion: HabitCompletion) {
+        habitCompletionDao.insertCompletion(completion)
+    }
+
+    /**
+     * Delete a habit completion
+     */
+    suspend fun deleteHabitCompletion(completion: HabitCompletion) {
+        habitCompletionDao.deleteCompletion(completion)
+    }
+
+    /**
+     * Update a habit completion
+     */
+    suspend fun updateHabitCompletion(completion: HabitCompletion) {
+        habitCompletionDao.updateCompletion(completion)
     }
 }

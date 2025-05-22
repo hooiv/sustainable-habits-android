@@ -390,8 +390,10 @@ class QuantumVisualizer @Inject constructor() {
 
         // Calculate days since habit creation
         val now = System.currentTimeMillis()
-        val creationDate = habit.createdDate?.time ?: now
-        val daysSinceCreation = (now - creationDate) / (1000 * 60 * 60 * 24)
+        val creationDate = habit.createdDate.time
+        val daysSinceCreation = (now - creationDate) / (1000.0 * 60 * 60 * 24)
+
+        if (daysSinceCreation < 1.0) return 0.0
 
         // Calculate expected completions based on frequency
         val expectedCompletions = when (habit.frequency) {
@@ -410,6 +412,75 @@ class QuantumVisualizer @Inject constructor() {
     }
 
     /**
+     * Apply quantum effect to habit data
+     * This simulates how quantum computing could optimize habit scheduling
+     */
+    fun applyQuantumEffect(habits: List<Habit>, completions: Map<String, List<HabitCompletion>>): Map<String, Double> {
+        val state = _quantumState.value ?: return emptyMap()
+        val results = mutableMapOf<String, Double>()
+
+        // Apply quantum algorithm (simulated)
+        for (i in 0 until min(habits.size, NUM_QUBITS)) {
+            val habitId = state.habitIds.getOrNull(i) ?: continue
+            val habit = habits.find { it.id == habitId } ?: continue
+
+            // Get qubit state
+            val qubit = state.qubits[i]
+            val amplitude = qubit.magnitude()
+            val phase = qubit.phase()
+
+            // Calculate completion rate
+            val completionRate = calculateCompletionRate(habit, completions[habitId] ?: emptyList())
+
+            // Calculate quantum-enhanced success probability
+            // This simulates how a quantum algorithm might optimize habit scheduling
+            val enhancedProbability = (completionRate + amplitude * 0.3 + sin(phase) * 0.1)
+                .coerceIn(0.0, 1.0)
+
+            results[habitId] = enhancedProbability
+        }
+
+        return results
+    }
+
+    /**
+     * Get optimal habit schedule based on quantum state
+     * This simulates how quantum computing could find optimal habit combinations
+     */
+    fun getOptimalHabitSchedule(habits: List<Habit>): List<Pair<Habit, Double>> {
+        val state = _quantumState.value ?: return emptyList()
+        val entanglements = _entanglements.value
+        val results = mutableListOf<Pair<Habit, Double>>()
+
+        // Apply quantum scheduling algorithm (simulated)
+        for (habit in habits) {
+            val habitIndex = state.habitIds.indexOf(habit.id)
+            if (habitIndex < 0) continue
+
+            // Get qubit state
+            val qubit = state.qubits[habitIndex]
+            val amplitude = qubit.magnitude()
+
+            // Calculate base priority
+            var priority = amplitude
+
+            // Adjust priority based on entanglements
+            for (entanglement in entanglements) {
+                if (entanglement.habit1Id == habit.id || entanglement.habit2Id == habit.id) {
+                    // Increase priority for strongly entangled habits
+                    priority += entanglement.strength * 0.2
+                }
+            }
+
+            // Add to results
+            results.add(Pair(habit, priority))
+        }
+
+        // Sort by priority (descending)
+        return results.sortedByDescending { it.second }
+    }
+
+    /**
      * Calculate correlation between two habits
      */
     private fun calculateHabitCorrelation(
@@ -422,8 +493,8 @@ class QuantumVisualizer @Inject constructor() {
         if (completions1.isEmpty() || completions2.isEmpty()) return 0f
 
         // Get completion dates
-        val dates1 = completions1.map { it.completionDate }.sorted()
-        val dates2 = completions2.map { it.completionDate }.sorted()
+        val dates1 = completions1.map { it.completionDate }.toList()
+        val dates2 = completions2.map { it.completionDate }.toList()
 
         // Count completions on the same day
         var sameDay = 0
@@ -452,6 +523,28 @@ class QuantumVisualizer @Inject constructor() {
         } else {
             0f
         }
+    }
+
+    /**
+     * Predict habit success probability
+     */
+    fun predictHabitSuccess(habit: Habit, completions: List<HabitCompletion>): Double {
+        val state = _quantumState.value ?: return 0.0
+        val habitIndex = state.habitIds.indexOf(habit.id)
+        if (habitIndex < 0) return 0.0
+
+        // Get qubit state
+        val qubit = state.qubits[habitIndex]
+        val amplitude = qubit.magnitude()
+
+        // Calculate completion rate
+        val completionRate = calculateCompletionRate(habit, completions)
+
+        // Calculate streak factor (higher streak = higher probability)
+        val streakFactor = min(habit.streak / 10.0, 1.0)
+
+        // Calculate quantum-enhanced success probability
+        return (0.3 * completionRate + 0.4 * amplitude + 0.3 * streakFactor).coerceIn(0.0, 1.0)
     }
 
     /**

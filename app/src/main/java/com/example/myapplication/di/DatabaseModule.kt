@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.myapplication.data.database.AppDatabase
 import com.example.myapplication.data.database.HabitDao
+import com.example.myapplication.data.database.HabitCompletionDao
 import com.example.myapplication.data.database.NeuralNetworkDao
 import dagger.Module
 import dagger.Provides
@@ -25,10 +26,11 @@ object DatabaseModule {
             "habit_database" // Changed to match the name used in AppDatabase.getInstance()
         )
         .addMigrations(
-            AppDatabase.MIGRATION_1_2, 
-            AppDatabase.MIGRATION_2_3, 
-            AppDatabase.MIGRATION_3_4, 
-            AppDatabase.MIGRATION_4_5
+            AppDatabase.MIGRATION_1_2,
+            AppDatabase.MIGRATION_2_3,
+            AppDatabase.MIGRATION_3_4,
+            AppDatabase.MIGRATION_4_5,
+            AppDatabase.MIGRATION_5_6
         ) // Add all migrations
         .fallbackToDestructiveMigration() // Allow destructive migrations as a last resort
         .build()
@@ -42,5 +44,10 @@ object DatabaseModule {
     @Provides
     fun provideNeuralNetworkDao(appDatabase: AppDatabase): NeuralNetworkDao {
         return appDatabase.neuralNetworkDao()
+    }
+
+    @Provides
+    fun provideHabitCompletionDao(appDatabase: AppDatabase): HabitCompletionDao {
+        return appDatabase.habitCompletionDao()
     }
 }

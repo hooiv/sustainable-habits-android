@@ -10,6 +10,7 @@ import com.example.myapplication.data.model.*
 @Database(
     entities = [
         Habit::class,
+        HabitCompletion::class,
         HabitNeuralNetwork::class,
         NeuralNode::class,
         NeuralConnection::class,
@@ -18,13 +19,14 @@ import com.example.myapplication.data.model.*
         NeuralTrainingEpoch::class,
         NeuralPrediction::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
+    abstract fun habitCompletionDao(): HabitCompletionDao
     abstract fun neuralNetworkDao(): NeuralNetworkDao
 
     companion object {
@@ -184,6 +186,32 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Migration from version 5 to 6: Adding habit_completions table
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // First, check if the table already exists and drop it if it does
+                database.execSQL("DROP TABLE IF EXISTS habit_completions")
+
+                // Create habit_completions table with proper foreign keys and indices
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS habit_completions (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        habitId TEXT NOT NULL,
+                        completionDate INTEGER NOT NULL,
+                        note TEXT,
+                        mood INTEGER,
+                        location TEXT,
+                        photoUri TEXT,
+                        FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
+                    )
+                """)
+
+                // Create indices for habit_completions
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_habit_completions_habitId ON habit_completions(habitId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_habit_completions_completionDate ON habit_completions(completionDate)")
+            }
+        }
+
         fun getInstance(context: android.content.Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = androidx.room.Room.databaseBuilder(
@@ -191,8 +219,9 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_database"
                 )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // Add all migrations
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6) // Add all migrations
                 .fallbackToDestructiveMigration() // As a last resort, recreate the database
+                .allowMainThreadQueries() // For simplicity in this demo app
                 .build()
                 INSTANCE = instance
                 instance

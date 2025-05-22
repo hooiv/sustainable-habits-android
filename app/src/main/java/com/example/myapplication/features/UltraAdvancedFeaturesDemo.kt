@@ -54,7 +54,8 @@ import kotlin.math.*
  */
 @Composable
 fun UltraAdvancedFeaturesDemo(
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onNavigateToFeature: (String) -> Unit = {}
 ) {
     // State for current demo section
     var currentSection by remember { mutableStateOf(0) }
@@ -482,12 +483,25 @@ fun UltraAdvancedFeaturesDemo(
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
-                            Text(
-                                text = "Biometric Integration",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Biometric Integration",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Button(
+                                    onClick = { onNavigateToFeature("biometric_integration") }
+                                ) {
+                                    Text("Open Full Feature")
+                                }
+                            }
 
                             Text(
                                 text = "Connect your biometric data to understand how your habits affect your physical and mental wellbeing.",
@@ -524,12 +538,25 @@ fun UltraAdvancedFeaturesDemo(
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            Text(
-                                text = "Spatial Computing",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Spatial Computing",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Button(
+                                    onClick = { onNavigateToFeature("spatial_computing") }
+                                ) {
+                                    Text("Open Full Feature")
+                                }
+                            }
 
                             Text(
                                 text = "Visualize your habits in 3D space. Drag to rotate, pinch to zoom, and explore your habit ecosystem.",
@@ -553,12 +580,25 @@ fun UltraAdvancedFeaturesDemo(
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            Text(
-                                text = "Voice & Natural Language Processing",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Voice & Natural Language Processing",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Button(
+                                    onClick = { onNavigateToFeature("voice_integration") }
+                                ) {
+                                    Text("Open Full Feature")
+                                }
+                            }
 
                             Text(
                                 text = "Control your habit tracking with natural voice commands. Our advanced NLP understands your intent and extracts relevant information.",
@@ -588,12 +628,25 @@ fun UltraAdvancedFeaturesDemo(
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            Text(
-                                text = "Quantum-Inspired Visualization",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Quantum-Inspired Visualization",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Button(
+                                    onClick = { onNavigateToFeature("quantum_visualization") }
+                                ) {
+                                    Text("Open Full Feature")
+                                }
+                            }
 
                             Text(
                                 text = "Experience your habits as quantum states in superposition. This visualization represents the probabilistic nature of habit formation and the interconnectedness of your habit system.",

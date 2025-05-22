@@ -45,8 +45,10 @@ class BiometricIntegration @Inject constructor(
         private const val RED_THRESHOLD = 200 // Minimum red value to consider for heart rate
 
         // Constants for calorie calculation
-        private const val USER_WEIGHT_KG = 70.0 // TODO: Make this dynamic from user profile
+        private const val DEFAULT_USER_WEIGHT_KG = 70.0
         private const val LIGHT_ACTIVITY_METS = 1.5 // Assuming light activity for this measurement context
+        private const val MODERATE_ACTIVITY_METS = 3.0 // For moderate activity
+        private const val VIGOROUS_ACTIVITY_METS = 6.0 // For vigorous activity
     }
 
     // Camera components
@@ -95,6 +97,20 @@ class BiometricIntegration @Inject constructor(
 
     private val _isMonitoring = MutableStateFlow(false)
     val isMonitoring: StateFlow<Boolean> = _isMonitoring.asStateFlow()
+
+    // In-memory storage for biometric readings
+    private val biometricReadings = mutableListOf<com.example.myapplication.data.model.BiometricReading>()
+
+    // Map to track associations between biometric readings and habits
+    private val biometricHabitAssociations = mutableMapOf<String, String>() // readingId -> habitId
+
+    // User profile data
+    private val _userWeight = MutableStateFlow(DEFAULT_USER_WEIGHT_KG)
+    val userWeight: StateFlow<Double> = _userWeight.asStateFlow()
+
+    // Activity level based on accelerometer data
+    private val _activityLevel = MutableStateFlow(ActivityLevel.LIGHT)
+    val activityLevel: StateFlow<ActivityLevel> = _activityLevel.asStateFlow()
 
     // Heart rate measurement
     private val redIntensities = mutableListOf<Int>()
@@ -329,15 +345,33 @@ class BiometricIntegration @Inject constructor(
     }
 
     /**
-     * Update calories burned based on heart rate
+     * Update calories burned based on heart rate and activity level
      */
     private fun updateCaloriesBurned() {
-        // Simple formula: Calories/min = (METs * bodyWeightKg * 3.5) / 200
-        // This function is called when heart rate is updated (roughly per second if HR calc is per second)
-        val caloriesPerMinute = (LIGHT_ACTIVITY_METS * USER_WEIGHT_KG * 3.5) / 200
+        // Get the appropriate MET value based on activity level
+        val metValue = when (_activityLevel.value) {
+            ActivityLevel.LIGHT -> LIGHT_ACTIVITY_METS
+            ActivityLevel.MODERATE -> MODERATE_ACTIVITY_METS
+            ActivityLevel.VIGOROUS -> VIGOROUS_ACTIVITY_METS
+        }
+
+        // Adjust MET value based on heart rate
+        val heartRateAdjustment = when (_heartRate.value) {
+            in 0..80 -> 0.0
+            in 81..100 -> 0.5
+            in 101..120 -> 1.0
+            in 121..140 -> 1.5
+            in 141..160 -> 2.0
+            else -> 2.5
+        }
+
+        val adjustedMet = metValue + heartRateAdjustment
+
+        // Formula: Calories/min = (METs * bodyWeightKg * 3.5) / 200
+        val caloriesPerMinute = (adjustedMet * _userWeight.value * 3.5) / 200
         val caloriesThisUpdate = caloriesPerMinute / 60.0 // Calories for one second interval
 
-        _caloriesBurned.value += caloriesThisUpdate.toInt() // Fix: use toInt() instead of roundToInt() for Double
+        _caloriesBurned.value += caloriesThisUpdate.toInt()
     }
 
     /**
@@ -393,7 +427,7 @@ class BiometricIntegration @Inject constructor(
     }
 
     /**
-     * Calculate stress level from accelerometer data
+     * Calculate stress level and activity level from accelerometer data
      */
     private fun calculateStressLevel() {
         if (accelerometerHistory.size < 10) return
@@ -418,6 +452,29 @@ class BiometricIntegration @Inject constructor(
         // Map variability to stress level (0-1 scale)
         val stressLevel = (avgVariability / 5f).coerceIn(0f, 1f)
         _stressLevel.value = stressLevel
+
+        // Update activity level based on movement variability
+        _activityLevel.value = when {
+            avgVariability < 1.0f -> ActivityLevel.LIGHT
+            avgVariability < 3.0f -> ActivityLevel.MODERATE
+            else -> ActivityLevel.VIGOROUS
+        }
+
+        // Update energy level based on activity and heart rate
+        val energyBase = when (_activityLevel.value) {
+            ActivityLevel.LIGHT -> 0.3f
+            ActivityLevel.MODERATE -> 0.5f
+            ActivityLevel.VIGOROUS -> 0.7f
+        }
+
+        // Heart rate contribution (higher heart rate = higher energy)
+        val heartRateContribution = (_heartRate.value - 60).coerceAtLeast(0) / 100f
+
+        // Calculate energy level (0-1 scale)
+        _energyLevel.value = (energyBase + heartRateContribution).coerceIn(0f, 1f)
+
+        // Update focus level based on stress and activity
+        _focusLevel.value = (1f - _stressLevel.value * 0.5f).coerceIn(0f, 1f)
     }
 
     /**
@@ -489,8 +546,120 @@ class BiometricIntegration @Inject constructor(
             sleepQuality = _sleepQuality.value,
             energyLevel = _energyLevel.value,
             focusLevel = _focusLevel.value,
-            mood = _mood.value
+            mood = _mood.value,
+            activityLevel = _activityLevel.value
         )
+    }
+
+    /**
+     * Set user weight
+     */
+    fun setUserWeight(weightKg: Double) {
+        _userWeight.value = weightKg
+    }
+
+    /**
+     * Set mood level
+     */
+    fun setMood(moodLevel: Float) {
+        _mood.value = moodLevel.coerceIn(0f, 1f)
+    }
+
+    /**
+     * Get all biometric readings
+     */
+    fun getBiometricReadings(): List<com.example.myapplication.data.model.BiometricReading> {
+        // Initialize with some sample data if empty
+        if (biometricReadings.isEmpty()) {
+            initializeSampleBiometricData()
+        }
+        return biometricReadings.toList()
+    }
+
+    /**
+     * Get biometric readings for a specific habit
+     */
+    fun getBiometricReadingsForHabit(habitId: String): List<com.example.myapplication.data.model.BiometricReading> {
+        val readingIds = biometricHabitAssociations.filter { it.value == habitId }.keys
+        return biometricReadings.filter { it.id in readingIds }
+    }
+
+    /**
+     * Add a biometric reading
+     */
+    fun addBiometricReading(reading: com.example.myapplication.data.model.BiometricReading) {
+        biometricReadings.add(reading)
+    }
+
+    /**
+     * Associate a biometric reading with a habit
+     */
+    fun associateBiometricWithHabit(readingId: String, habitId: String) {
+        biometricHabitAssociations[readingId] = habitId
+    }
+
+    /**
+     * Initialize sample biometric data
+     */
+    private fun initializeSampleBiometricData() {
+        // Add some sample heart rate readings
+        val calendar = Calendar.getInstance()
+        for (i in 0 until 10) {
+            calendar.add(Calendar.HOUR, -i)
+            biometricReadings.add(
+                com.example.myapplication.data.model.BiometricReading(
+                    id = UUID.randomUUID().toString(),
+                    type = com.example.myapplication.data.model.BiometricType.HEART_RATE,
+                    value = 65.0 + kotlin.random.Random.nextDouble(-5.0, 15.0),
+                    timestamp = calendar.timeInMillis,
+                    userId = "current_user"
+                )
+            )
+        }
+
+        // Add some sample blood pressure readings
+        calendar.timeInMillis = System.currentTimeMillis()
+        for (i in 0 until 5) {
+            calendar.add(Calendar.DAY_OF_MONTH, -i)
+
+            // Systolic (top number)
+            val systolicId = UUID.randomUUID().toString()
+            biometricReadings.add(
+                com.example.myapplication.data.model.BiometricReading(
+                    id = systolicId,
+                    type = com.example.myapplication.data.model.BiometricType.BLOOD_PRESSURE_SYSTOLIC,
+                    value = 120.0 + kotlin.random.Random.nextDouble(-10.0, 10.0),
+                    timestamp = calendar.timeInMillis,
+                    userId = "current_user"
+                )
+            )
+
+            // Diastolic (bottom number)
+            biometricReadings.add(
+                com.example.myapplication.data.model.BiometricReading(
+                    id = UUID.randomUUID().toString(),
+                    type = com.example.myapplication.data.model.BiometricType.BLOOD_PRESSURE_DIASTOLIC,
+                    value = 80.0 + kotlin.random.Random.nextDouble(-5.0, 5.0),
+                    timestamp = calendar.timeInMillis,
+                    userId = "current_user"
+                )
+            )
+        }
+
+        // Add some stress level readings
+        calendar.timeInMillis = System.currentTimeMillis()
+        for (i in 0 until 7) {
+            calendar.add(Calendar.DAY_OF_MONTH, -i)
+            biometricReadings.add(
+                com.example.myapplication.data.model.BiometricReading(
+                    id = UUID.randomUUID().toString(),
+                    type = com.example.myapplication.data.model.BiometricType.STRESS_LEVEL,
+                    value = kotlin.random.Random.nextDouble(1.0, 10.0),
+                    timestamp = calendar.timeInMillis,
+                    userId = "current_user"
+                )
+            )
+        }
     }
 }
 
@@ -506,5 +675,15 @@ data class BiometricData(
     val sleepQuality: Float?, // Updated to nullable
     val energyLevel: Float?,   // Added
     val focusLevel: Float?,    // Added
-    val mood: Float?           // Added
+    val mood: Float?,          // Added
+    val activityLevel: ActivityLevel = ActivityLevel.LIGHT // Added
 )
+
+/**
+ * Activity level for calorie calculation
+ */
+enum class ActivityLevel {
+    LIGHT,
+    MODERATE,
+    VIGOROUS
+}

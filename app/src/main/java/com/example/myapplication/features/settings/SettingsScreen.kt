@@ -412,6 +412,22 @@ fun SettingsScreen(
                 Text("Animation Demo")
             }
 
+            // Quantum Visualization Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.QUANTUM_VISUALIZATION) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Quantum Visualization")
+            }
+
+            // AR Visualization Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.AR_GLOBAL) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("AR Visualization")
+            }
+
             HorizontalDivider()
             // About Section
             Text(

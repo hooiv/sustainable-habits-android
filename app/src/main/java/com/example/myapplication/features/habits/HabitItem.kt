@@ -118,6 +118,8 @@ fun HabitItem(
     onDeleteClick: () -> Unit,
     onToggleEnabled: () -> Unit,
     onNeuralInterfaceClick: () -> Unit = {},
+    onCompletionHistoryClick: () -> Unit = {},
+    onARVisualizationClick: () -> Unit = {},
     index: Int = 0 // Added index parameter for staggered animations
 ) {
     // Get current date for comparison and formatting
@@ -591,6 +593,38 @@ fun HabitItem(
                                         imageVector = Icons.Default.Psychology,
                                         contentDescription = "Neural Interface",
                                         tint = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
+                            )
+
+                            // Completion History option
+                            DropdownMenuItem(
+                                text = { Text("Completion History") },
+                                onClick = {
+                                    expanded = false
+                                    onCompletionHistoryClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.History,
+                                        contentDescription = "Completion History",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
+
+                            // AR Visualization option
+                            DropdownMenuItem(
+                                text = { Text("AR Visualization") },
+                                onClick = {
+                                    expanded = false
+                                    onARVisualizationClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.ViewInAr,
+                                        contentDescription = "AR Visualization",
+                                        tint = MaterialTheme.colorScheme.secondary
                                     )
                                 }
                             )

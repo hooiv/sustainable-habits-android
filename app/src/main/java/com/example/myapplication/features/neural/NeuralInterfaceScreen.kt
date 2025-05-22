@@ -857,16 +857,27 @@ fun NeuralInterfaceScreen(
                 }
                 6 -> {
                     // Bionic tab - Biometric, Spatial, Voice, Quantum
+                    // Collect biometric data from individual flows
+                    val heartRate by viewModel.heartRate.collectAsState()
+                    val stepCount by viewModel.stepCount.collectAsState()
+                    val caloriesBurned by viewModel.caloriesBurned.collectAsState()
+                    val stressLevel by viewModel.stressLevel.collectAsState()
+                    val sleepQuality by viewModel.sleepQuality.collectAsState()
+                    val energyLevel by viewModel.energyLevel.collectAsState()
+                    val focusLevel by viewModel.focusLevel.collectAsState()
+                    val mood by viewModel.mood.collectAsState()
+
+                    // Create BiometricData object
                     val biometricData = com.example.myapplication.data.biometric.BiometricData(
-                        heartRate = viewModel.biometricData.heartRate,
-                        heartRateConfidence = viewModel.biometricData.heartRateConfidence,
-                        stepCount = viewModel.biometricData.stepCount,
-                        caloriesBurned = viewModel.biometricData.caloriesBurned,
-                        stressLevel = viewModel.biometricData.stressLevel,
-                        sleepQuality = viewModel.biometricData.sleepQuality,
-                        energyLevel = 0.5f,  // Default value for the missing parameter
-                        focusLevel = 0.5f,   // Default value for the missing parameter
-                        mood = 0.5f          // Default value for the missing parameter
+                        heartRate = heartRate,
+                        heartRateConfidence = 0.8f, // Default confidence
+                        stepCount = stepCount,
+                        caloriesBurned = caloriesBurned,
+                        stressLevel = stressLevel,
+                        sleepQuality = sleepQuality,
+                        energyLevel = energyLevel ?: 0.5f,
+                        focusLevel = focusLevel ?: 0.5f,
+                        mood = mood ?: 0.5f
                     )
                     val isMonitoring by viewModel.isMonitoring.collectAsState()
                     val spatialObjects by viewModel.spatialObjects.collectAsState()
@@ -888,17 +899,16 @@ fun NeuralInterfaceScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // Biometric integration
+                            val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
                             com.example.myapplication.features.advanced.BiometricMonitoringCard(
                                 biometricData = biometricData,
                                 isMonitoring = isMonitoring,
                                 onStartMonitoring = {
-                                    // In a real app, this would use the actual lifecycle owner
-                                    // For this demo, we'll just show a message
-                                    // In a real app, this would use the actual lifecycle owner
-                                    // For this demo, we'll just call the method directly
-                                    viewModel.startBiometricMonitoring(null)
+                                    viewModel.startBiometricMonitoring(lifecycleOwner)
                                 },
-                                onStopMonitoring = { viewModel.stopBiometricMonitoring() }
+                                onStopMonitoring = {
+                                    viewModel.stopBiometricMonitoring()
+                                }
                             )
 
                             // Spatial computing
@@ -907,7 +917,7 @@ fun NeuralInterfaceScreen(
                                 isSpatialTrackingActive = isSpatialTrackingActive,
                                 onStartTracking = { viewModel.startSpatialTracking() },
                                 onStopTracking = { viewModel.stopSpatialTracking() },
-                                onPlaceObject = { viewModel.placeHabitInSpace() }
+                                onPlaceObject = { viewModel.placeHabitInSpaceWithCurrentPosition() }
                             )
 
                             // Voice and NLP
