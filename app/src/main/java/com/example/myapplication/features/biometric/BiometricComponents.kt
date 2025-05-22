@@ -170,13 +170,17 @@ object BiometricComponents {
     private fun getBiometricTypeIcon(type: BiometricType) = when (type) {
         BiometricType.HEART_RATE -> Icons.Default.Favorite
         BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> Icons.Default.HealthAndSafety
+        BiometricType.BLOOD_PRESSURE -> Icons.Default.HealthAndSafety
         BiometricType.STRESS_LEVEL -> Icons.Default.Psychology
         BiometricType.SLEEP_QUALITY -> Icons.Default.Bedtime
         BiometricType.ENERGY_LEVEL -> Icons.Default.BatteryChargingFull
         BiometricType.FOCUS_LEVEL -> Icons.Default.Visibility
         BiometricType.MOOD -> Icons.Default.Mood
-        BiometricType.STEP_COUNT -> Icons.Default.DirectionsWalk
+        BiometricType.STEP_COUNT, BiometricType.STEPS -> Icons.Default.DirectionsWalk
         BiometricType.CALORIES_BURNED -> Icons.Default.LocalFireDepartment
+        BiometricType.BLOOD_OXYGEN -> Icons.Default.Air
+        BiometricType.BODY_TEMPERATURE -> Icons.Default.Thermostat
+        BiometricType.RESPIRATORY_RATE -> Icons.Default.Air
     }
 
     /**
@@ -185,13 +189,17 @@ object BiometricComponents {
     private fun getBiometricTypeColor(type: BiometricType) = when (type) {
         BiometricType.HEART_RATE -> Color.Red
         BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> Color(0xFF4CAF50)
+        BiometricType.BLOOD_PRESSURE -> Color(0xFF4CAF50)
         BiometricType.STRESS_LEVEL -> Color(0xFFFF9800)
         BiometricType.SLEEP_QUALITY -> Color(0xFF3F51B5)
         BiometricType.ENERGY_LEVEL -> Color(0xFFFFEB3B)
         BiometricType.FOCUS_LEVEL -> Color(0xFF9C27B0)
         BiometricType.MOOD -> Color(0xFF2196F3)
-        BiometricType.STEP_COUNT -> Color(0xFF795548)
+        BiometricType.STEP_COUNT, BiometricType.STEPS -> Color(0xFF795548)
         BiometricType.CALORIES_BURNED -> Color(0xFFE91E63)
+        BiometricType.BLOOD_OXYGEN -> Color(0xFF03A9F4)
+        BiometricType.BODY_TEMPERATURE -> Color(0xFFFF5722)
+        BiometricType.RESPIRATORY_RATE -> Color(0xFF009688)
     }
 
     /**
@@ -201,26 +209,34 @@ object BiometricComponents {
         BiometricType.HEART_RATE -> "Heart Rate"
         BiometricType.BLOOD_PRESSURE_SYSTOLIC -> "Blood Pressure (Systolic)"
         BiometricType.BLOOD_PRESSURE_DIASTOLIC -> "Blood Pressure (Diastolic)"
+        BiometricType.BLOOD_PRESSURE -> "Blood Pressure"
         BiometricType.STRESS_LEVEL -> "Stress Level"
         BiometricType.SLEEP_QUALITY -> "Sleep Quality"
         BiometricType.ENERGY_LEVEL -> "Energy Level"
         BiometricType.FOCUS_LEVEL -> "Focus Level"
         BiometricType.MOOD -> "Mood"
-        BiometricType.STEP_COUNT -> "Step Count"
+        BiometricType.STEP_COUNT, BiometricType.STEPS -> "Step Count"
         BiometricType.CALORIES_BURNED -> "Calories Burned"
+        BiometricType.BLOOD_OXYGEN -> "Blood Oxygen"
+        BiometricType.BODY_TEMPERATURE -> "Body Temperature"
+        BiometricType.RESPIRATORY_RATE -> "Respiratory Rate"
     }
 
     /**
      * Format a biometric value based on its type
      */
-    private fun formatBiometricValue(type: BiometricType, value: Double) = when (type) {
+    private fun formatBiometricValue(type: BiometricType, value: Float) = when (type) {
         BiometricType.HEART_RATE -> "${value.toInt()} BPM"
         BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC -> "${value.toInt()} mmHg"
         BiometricType.STRESS_LEVEL -> "${value.toInt()}/10"
         BiometricType.SLEEP_QUALITY, BiometricType.ENERGY_LEVEL, BiometricType.FOCUS_LEVEL, BiometricType.MOOD ->
             "${(value * 100).toInt()}%"
-        BiometricType.STEP_COUNT -> value.toInt().toString()
+        BiometricType.STEP_COUNT, BiometricType.STEPS -> value.toInt().toString()
         BiometricType.CALORIES_BURNED -> "${value.toInt()} cal"
+        BiometricType.BLOOD_PRESSURE -> "${value.toInt()} mmHg"
+        BiometricType.BLOOD_OXYGEN -> "${value.toInt()}%"
+        BiometricType.BODY_TEMPERATURE -> "${value.toInt()}°C"
+        BiometricType.RESPIRATORY_RATE -> "${value.toInt()} bpm"
     }
 }
 

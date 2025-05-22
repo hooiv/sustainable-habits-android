@@ -41,9 +41,9 @@ fun BiometricIntegrationScreen(
     val biometricReadings by viewModel.biometricReadings.collectAsState()
     val isMeasuring by viewModel.isMeasuring.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    
+
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Initialize with specific habit if provided
     LaunchedEffect(habitId) {
         if (habitId != null) {
@@ -51,10 +51,9 @@ fun BiometricIntegrationScreen(
         }
         viewModel.loadBiometricData()
     }
-    
+
     AppScaffold(
         title = "Biometric Integration",
-        navController = navController,
         onNavigateBack = onNavigateBack
     ) { paddingValues ->
         Column(
@@ -100,7 +99,7 @@ fun BiometricIntegrationScreen(
                     }
                 }
             }
-            
+
             // Heart rate monitor
             Card(
                 modifier = Modifier
@@ -121,7 +120,7 @@ fun BiometricIntegrationScreen(
                     }
                 )
             }
-            
+
             // Sleep quality visualization
             Card(
                 modifier = Modifier
@@ -136,7 +135,7 @@ fun BiometricIntegrationScreen(
                     modifier = Modifier.padding(16.dp)
                 )
             }
-            
+
             // Biometric readings list
             Card(
                 modifier = Modifier
@@ -153,7 +152,7 @@ fun BiometricIntegrationScreen(
                     }
                 )
             }
-            
+
             // Measurement controls
             Card(
                 modifier = Modifier
@@ -173,7 +172,7 @@ fun BiometricIntegrationScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -194,7 +193,7 @@ fun BiometricIntegrationScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Heart Rate")
                         }
-                        
+
                         Button(
                             onClick = {
                                 coroutineScope.launch {
@@ -212,9 +211,9 @@ fun BiometricIntegrationScreen(
                             Text("Stress")
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -235,7 +234,7 @@ fun BiometricIntegrationScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Blood Pressure")
                         }
-                        
+
                         Button(
                             onClick = {
                                 coroutineScope.launch {

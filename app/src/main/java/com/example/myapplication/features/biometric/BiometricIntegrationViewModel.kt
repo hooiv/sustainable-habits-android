@@ -122,23 +122,24 @@ class BiometricIntegrationViewModel @Inject constructor(
         try {
             // Simulate measurement
             delay(2000)
-            
+
             // Get heart rate from biometric integration
             val heartRate = biometricIntegration.measureHeartRate()
             _heartRate.value = heartRate
-            
+
             // Add reading
             val reading = BiometricReading(
                 id = UUID.randomUUID().toString(),
                 type = BiometricType.HEART_RATE,
-                value = heartRate.toDouble(),
-                timestamp = System.currentTimeMillis(),
-                userId = "current_user"
+                value = heartRate.toFloat(),
+                unit = "BPM",
+                normalRange = Pair(60f, 100f),
+                timestamp = System.currentTimeMillis()
             )
-            
+
             biometricIntegration.addBiometricReading(reading)
             _biometricReadings.value = listOf(reading) + _biometricReadings.value
-            
+
             // Associate with current habit if available
             _currentHabitId.value?.let { habitId ->
                 biometricIntegration.associateBiometricWithHabit(reading.id, habitId)
@@ -158,33 +159,35 @@ class BiometricIntegrationViewModel @Inject constructor(
         try {
             // Simulate measurement
             delay(3000)
-            
+
             // Get blood pressure from biometric integration
             val bloodPressure = biometricIntegration.measureBloodPressure()
             _bloodPressure.value = bloodPressure
-            
+
             // Add readings
             val systolicReading = BiometricReading(
                 id = UUID.randomUUID().toString(),
                 type = BiometricType.BLOOD_PRESSURE_SYSTOLIC,
-                value = bloodPressure.first.toDouble(),
-                timestamp = System.currentTimeMillis(),
-                userId = "current_user"
+                value = bloodPressure.first.toFloat(),
+                unit = "mmHg",
+                normalRange = Pair(90f, 140f),
+                timestamp = System.currentTimeMillis()
             )
-            
+
             val diastolicReading = BiometricReading(
                 id = UUID.randomUUID().toString(),
                 type = BiometricType.BLOOD_PRESSURE_DIASTOLIC,
-                value = bloodPressure.second.toDouble(),
-                timestamp = System.currentTimeMillis(),
-                userId = "current_user"
+                value = bloodPressure.second.toFloat(),
+                unit = "mmHg",
+                normalRange = Pair(60f, 90f),
+                timestamp = System.currentTimeMillis()
             )
-            
+
             biometricIntegration.addBiometricReading(systolicReading)
             biometricIntegration.addBiometricReading(diastolicReading)
-            
+
             _biometricReadings.value = listOf(systolicReading, diastolicReading) + _biometricReadings.value
-            
+
             // Associate with current habit if available
             _currentHabitId.value?.let { habitId ->
                 biometricIntegration.associateBiometricWithHabit(systolicReading.id, habitId)
@@ -205,23 +208,24 @@ class BiometricIntegrationViewModel @Inject constructor(
         try {
             // Simulate measurement
             delay(2500)
-            
+
             // Get stress level from biometric integration
             val stressLevel = biometricIntegration.measureStressLevel()
             _stressLevel.value = stressLevel
-            
+
             // Add reading
             val reading = BiometricReading(
                 id = UUID.randomUUID().toString(),
                 type = BiometricType.STRESS_LEVEL,
-                value = stressLevel.toDouble(),
-                timestamp = System.currentTimeMillis(),
-                userId = "current_user"
+                value = stressLevel.toFloat(),
+                unit = "level",
+                normalRange = Pair(1f, 6f),
+                timestamp = System.currentTimeMillis()
             )
-            
+
             biometricIntegration.addBiometricReading(reading)
             _biometricReadings.value = listOf(reading) + _biometricReadings.value
-            
+
             // Associate with current habit if available
             _currentHabitId.value?.let { habitId ->
                 biometricIntegration.associateBiometricWithHabit(reading.id, habitId)
@@ -241,7 +245,7 @@ class BiometricIntegrationViewModel @Inject constructor(
         try {
             // Simulate analysis
             delay(2000)
-            
+
             // Get sleep data from biometric integration
             val sleepData = biometricIntegration.analyzeSleepData()
             _sleepData.value = sleepData
@@ -258,17 +262,17 @@ class BiometricIntegrationViewModel @Inject constructor(
     fun calculateSleepScore(sleepData: Map<String, Float>): Int {
         // Calculate total sleep time
         val totalSleep = sleepData.values.sum()
-        
+
         // Calculate score based on sleep composition
         val deepSleepRatio = (sleepData["Deep"] ?: 0f) / totalSleep
         val remSleepRatio = (sleepData["REM"] ?: 0f) / totalSleep
         val awakeSleepRatio = (sleepData["Awake"] ?: 0f) / totalSleep
-        
+
         // Ideal ratios: Deep 20-25%, REM 20-25%, Awake < 5%
         val deepSleepScore = (deepSleepRatio * 100).coerceIn(0f, 25f) * 4 // Max 100
         val remSleepScore = (remSleepRatio * 100).coerceIn(0f, 25f) * 4 // Max 100
         val awakeSleepScore = ((0.05f - awakeSleepRatio.coerceAtMost(0.05f)) / 0.05f) * 100 // Max 100
-        
+
         // Total sleep time score (7-9 hours is ideal)
         val totalSleepScore = when {
             totalSleep >= 7f && totalSleep <= 9f -> 100
@@ -279,7 +283,7 @@ class BiometricIntegrationViewModel @Inject constructor(
             totalSleep >= 4f && totalSleep < 5f -> 40
             else -> 20
         }
-        
+
         // Calculate final score
         return ((deepSleepScore + remSleepScore + awakeSleepScore + totalSleepScore) / 4).toInt()
     }

@@ -75,7 +75,6 @@ fun QuantumVisualizationScreen(
 
     AppScaffold(
         title = "Quantum Visualization",
-        navController = navController,
         onNavigateBack = onNavigateBack
     ) { paddingValues ->
         Column(

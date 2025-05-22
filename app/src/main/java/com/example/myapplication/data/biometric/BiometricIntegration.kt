@@ -599,6 +599,47 @@ class BiometricIntegration @Inject constructor(
     }
 
     /**
+     * Measure heart rate using camera and flash
+     */
+    fun measureHeartRate(): Int {
+        // Simulate heart rate measurement
+        val baseHeartRate = 70
+        val variation = kotlin.random.Random.nextInt(-10, 15)
+        return baseHeartRate + variation
+    }
+
+    /**
+     * Measure blood pressure
+     */
+    fun measureBloodPressure(): Pair<Int, Int> {
+        // Simulate blood pressure measurement
+        val systolic = 120 + kotlin.random.Random.nextInt(-10, 10)
+        val diastolic = 80 + kotlin.random.Random.nextInt(-5, 5)
+        return Pair(systolic, diastolic)
+    }
+
+    /**
+     * Measure stress level
+     */
+    fun measureStressLevel(): Int {
+        // Simulate stress level measurement (1-10 scale)
+        return kotlin.random.Random.nextInt(1, 10)
+    }
+
+    /**
+     * Analyze sleep data
+     */
+    fun analyzeSleepData(): Map<String, Float> {
+        // Simulate sleep data analysis
+        return mapOf(
+            "Deep" to 1.5f + kotlin.random.Random.nextFloat() * 1.0f,
+            "Light" to 3.0f + kotlin.random.Random.nextFloat() * 1.5f,
+            "REM" to 1.2f + kotlin.random.Random.nextFloat() * 1.0f,
+            "Awake" to 0.3f + kotlin.random.Random.nextFloat() * 0.5f
+        )
+    }
+
+    /**
      * Initialize sample biometric data
      */
     private fun initializeSampleBiometricData() {
@@ -610,9 +651,10 @@ class BiometricIntegration @Inject constructor(
                 com.example.myapplication.data.model.BiometricReading(
                     id = UUID.randomUUID().toString(),
                     type = com.example.myapplication.data.model.BiometricType.HEART_RATE,
-                    value = 65.0 + kotlin.random.Random.nextDouble(-5.0, 15.0),
-                    timestamp = calendar.timeInMillis,
-                    userId = "current_user"
+                    value = (65.0 + kotlin.random.Random.nextDouble(-5.0, 15.0)).toFloat(),
+                    unit = "BPM",
+                    normalRange = Pair(60f, 100f),
+                    timestamp = calendar.timeInMillis
                 )
             )
         }
@@ -628,9 +670,10 @@ class BiometricIntegration @Inject constructor(
                 com.example.myapplication.data.model.BiometricReading(
                     id = systolicId,
                     type = com.example.myapplication.data.model.BiometricType.BLOOD_PRESSURE_SYSTOLIC,
-                    value = 120.0 + kotlin.random.Random.nextDouble(-10.0, 10.0),
-                    timestamp = calendar.timeInMillis,
-                    userId = "current_user"
+                    value = (120.0 + kotlin.random.Random.nextDouble(-10.0, 10.0)).toFloat(),
+                    unit = "mmHg",
+                    normalRange = Pair(90f, 140f),
+                    timestamp = calendar.timeInMillis
                 )
             )
 
@@ -639,9 +682,10 @@ class BiometricIntegration @Inject constructor(
                 com.example.myapplication.data.model.BiometricReading(
                     id = UUID.randomUUID().toString(),
                     type = com.example.myapplication.data.model.BiometricType.BLOOD_PRESSURE_DIASTOLIC,
-                    value = 80.0 + kotlin.random.Random.nextDouble(-5.0, 5.0),
-                    timestamp = calendar.timeInMillis,
-                    userId = "current_user"
+                    value = (80.0 + kotlin.random.Random.nextDouble(-5.0, 5.0)).toFloat(),
+                    unit = "mmHg",
+                    normalRange = Pair(60f, 90f),
+                    timestamp = calendar.timeInMillis
                 )
             )
         }
@@ -654,9 +698,10 @@ class BiometricIntegration @Inject constructor(
                 com.example.myapplication.data.model.BiometricReading(
                     id = UUID.randomUUID().toString(),
                     type = com.example.myapplication.data.model.BiometricType.STRESS_LEVEL,
-                    value = kotlin.random.Random.nextDouble(1.0, 10.0),
-                    timestamp = calendar.timeInMillis,
-                    userId = "current_user"
+                    value = kotlin.random.Random.nextDouble(1.0, 10.0).toFloat(),
+                    unit = "level",
+                    normalRange = Pair(1f, 6f),
+                    timestamp = calendar.timeInMillis
                 )
             )
         }

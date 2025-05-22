@@ -648,7 +648,8 @@ data class QuantumParticle(
     val phase: Float,
     val qubitIndex: Int,
     val habitId: String?,
-    val color: Int
+    val color: Int,
+    val size: Float = 5f
 )
 
 /**
