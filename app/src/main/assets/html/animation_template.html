@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Template</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: transparent;
+        }
+
+        #container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .animation-target {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #6200EE;
+            border-radius: 50%;
+        }
+
+        #three-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="three-container"></div>
+    </div>
+
+    <script type="module">
+        // Import bridges
+        import { AnimeBridge } from '../js/anime-bridge.js';
+        import { ThreeBridge } from '../js/three-bridge.js';
+
+        // Initialize Three.js scene
+        const sceneId = ThreeBridge.initScene('three-container', {
+            backgroundColor: '#121212',
+            ambientLight: true,
+            directionalLight: true,
+            shadows: true,
+            controls: true,
+            enableZoom: true,
+            autoRotate: false
+        });
+
+        // Create habit visualization
+        function createHabitVisualization(sceneId, habitData) {
+            // Clear previous objects
+            ThreeBridge.clearScene(sceneId);
+
+            // Create a group to hold all objects
+            const groupId = ThreeBridge.addGroup(sceneId);
+
+            // Add a platform
+            const platformId = ThreeBridge.addCylinder(sceneId, {
+                radius: 5,
+                height: 0.2,
+                color: 0x333333,
+                position: { x: 0, y: -2, z: 0 },
+                receiveShadow: true
+            });
+
+            // Add habit objects based on data
+            const habits = habitData.habits || [];
+            const maxStreak = Math.max(...habits.map(h => h.streak), 1);
+
+            // Position habits in a circle
+            const radius = 3;
+            const angleStep = (2 * Math.PI) / habits.length;
+
+            habits.forEach((habit, index) => {
+                // Calculate position on the circle
+                const angle = index * angleStep;
+                const x = radius * Math.cos(angle);
+                const z = radius * Math.sin(angle);
+
+                // Scale height based on streak
+                const height = 0.5 + (habit.streak / maxStreak) * 2;
+
+                // Choose color based on category
+                let color;
+                switch(habit.category) {
+                    case 'health': color = 0x4CAF50; break;
+                    case 'productivity': color = 0x2196F3; break;
+                    case 'mindfulness': color = 0x9C27B0; break;
+                    case 'social': color = 0xFF9800; break;
+                    default: color = 0x6200EE;
+                }
+
+                // Create object based on completion percentage
+                const completionPercentage = habit.goalProgress / habit.goal;
+
+                if (completionPercentage >= 1) {
+                    // Completed habits get a star
+                    const starId = ThreeBridge.addStar(sceneId, {
+                        radius: 0.5,
+                        color: color,
+                        position: { x, y: height, z },
+                        castShadow: true,
+                        receiveShadow: false
+                    });
+
+                    // Add animation
+                    ThreeBridge.animateObject(starId, {
+                        rotation: { y: Math.PI * 2 },
+                        duration: 5000,
+                        easing: 'linear',
+                        loop: true
+                    });
+                } else {
+                    // In-progress habits get a cube
+                    const cubeId = ThreeBridge.addCube(sceneId, {
+                        width: 0.8,
+                        height: height,
+                        depth: 0.8,
+                        color: color,
+                        position: { x, y: height/2, z },
+                        castShadow: true,
+                        receiveShadow: true
+                    });
+
+                    // Add progress indicator
+                    const progressHeight = height * completionPercentage;
+                    const progressId = ThreeBridge.addCube(sceneId, {
+                        width: 0.9,
+                        height: progressHeight,
+                        depth: 0.9,
+                        color: 0xFFFFFF,
+                        opacity: 0.3,
+                        position: { x, y: progressHeight/2, z },
+                        castShadow: false,
+                        receiveShadow: false
+                    });
+                }
+
+                // Add text label
+                ThreeBridge.addText(sceneId, {
+                    text: habit.name,
+                    size: 0.2,
+                    color: 0xFFFFFF,
+                    position: { x, y: -1.5, z },
+                    rotation: { x: -Math.PI/2, y: 0, z: 0 }
+                });
+            });
+
+            // Add ambient particles
+            for (let i = 0; i < 50; i++) {
+                const particleId = ThreeBridge.addSphere(sceneId, {
+                    radius: 0.05,
+                    color: 0x00FFFF,
+                    opacity: 0.5,
+                    position: {
+                        x: (Math.random() - 0.5) * 10,
+                        y: Math.random() * 5,
+                        z: (Math.random() - 0.5) * 10
+                    }
+                });
+
+                // Animate particles
+                ThreeBridge.animateObject(particleId, {
+                    position: {
+                        y: '+=' + (Math.random() * 2 + 1)
+                    },
+                    opacity: 0,
+                    duration: 2000 + Math.random() * 3000,
+                    easing: 'easeOutQuad',
+                    loop: true
+                });
+            }
+
+            return groupId;
+        }
+
+        // Sample habit data (would be passed from Android)
+        const habitData = {
+            habits: [
+                { name: 'Meditation', streak: 7, goalProgress: 7, goal: 7, category: 'mindfulness' },
+                { name: 'Exercise', streak: 3, goalProgress: 3, goal: 5, category: 'health' },
+                { name: 'Reading', streak: 12, goalProgress: 12, goal: 12, category: 'productivity' },
+                { name: 'Call Friends', streak: 1, goalProgress: 1, goal: 2, category: 'social' },
+                { name: 'Coding', streak: 5, goalProgress: 5, goal: 5, category: 'productivity' }
+            ]
+        };
+
+        // Create visualization
+        const visualizationId = createHabitVisualization(sceneId, habitData);
+
+        // Create animation targets
+        for (let i = 0; i < 10; i++) {
+            const target = document.createElement('div');
+            target.className = 'animation-target';
+            target.style.left = `${Math.random() * 80 + 10}%`;
+            target.style.top = `${Math.random() * 80 + 10}%`;
+            document.getElementById('container').appendChild(target);
+        }
+
+        // Create staggered animation
+        const staggerAnimId = AnimeBridge.createStaggerAnimation('.animation-target', {
+            translateX: function() { return anime.random(-100, 100) + 'px'; },
+            translateY: function() { return anime.random(-100, 100) + 'px'; },
+            scale: function() { return anime.random(0.2, 2); },
+            duration: 4000,
+            delay: anime.stagger(100),
+            direction: 'alternate',
+            loop: true,
+            easing: 'easeInOutQuad'
+        });
+
+        // Play animation
+        AnimeBridge.playAnimation(staggerAnimId);
+
+        // Expose functions to Android
+        window.executeAnimation = function(animationType) {
+            switch(animationType) {
+                case 'pulse':
+                    const pulseAnimId = AnimeBridge.createStaggerAnimation('.animation-target', {
+                        scale: [1, 1.5, 1],
+                        duration: 1000,
+                        delay: anime.stagger(100),
+                        easing: 'easeInOutQuad'
+                    });
+                    AnimeBridge.playAnimation(pulseAnimId);
+                    break;
+
+                case 'rotate':
+                    const rotateAnimId = AnimeBridge.createStaggerAnimation('.animation-target', {
+                        rotate: '1turn',
+                        duration: 2000,
+                        delay: anime.stagger(100),
+                        easing: 'easeInOutSine'
+                    });
+                    AnimeBridge.playAnimation(rotateAnimId);
+                    break;
+
+                case 'fade':
+                    const fadeAnimId = AnimeBridge.createStaggerAnimation('.animation-target', {
+                        opacity: [1, 0, 1],
+                        duration: 2000,
+                        delay: anime.stagger(100),
+                        easing: 'easeInOutQuad'
+                    });
+                    AnimeBridge.playAnimation(fadeAnimId);
+                    break;
+
+                default:
+                    console.log('Unknown animation type:', animationType);
+            }
+        };
+    </script>
+</body>
+</html>

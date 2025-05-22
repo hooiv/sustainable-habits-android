@@ -31,6 +31,24 @@ object NavRoutes {
     // Spatial computing route
     const val SPATIAL_COMPUTING = "spatial_computing" // Spatial computing route
 
+    // Three.js visualization route
+    const val THREEJS_VISUALIZATION = "threejs_visualization" // Three.js visualization route
+
+    // Anime.js animation route
+    const val ANIMEJS_ANIMATION = "animejs_animation" // Anime.js animation route
+
+    // Advanced features route
+    const val ADVANCED_FEATURES = "advanced_features" // Advanced features route
+
+    // Multi-modal learning route
+    const val MULTI_MODAL_LEARNING = "multi_modal_learning" // Multi-modal learning route
+
+    // Meta-learning route
+    const val META_LEARNING = "meta_learning" // Meta-learning route
+
+    // Neural network route
+    const val NEURAL_NETWORK = "neural_network" // Neural network route
+
     // Habit completion routes
     const val HABIT_COMPLETION_ROUTE = "habit_completion" // Base route name
     const val HABIT_COMPLETION_ARG_ID = "habitId" // Argument name

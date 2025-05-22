@@ -12,6 +12,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.*
+import kotlin.random.Random
 
 /**
  * Implements quantum-inspired visualizations for habit data
@@ -54,7 +55,7 @@ class QuantumVisualizer @Inject constructor() {
     private var simulationTime = 0f
 
     // Random number generator
-    private val random = Random()
+    private val random = java.util.Random()
 
     /**
      * Initialize quantum state from habits
@@ -548,6 +549,154 @@ class QuantumVisualizer @Inject constructor() {
     }
 
     /**
+     * Update quantum visualization
+     */
+    fun updateQuantumVisualization() {
+        val state = _quantumState.value ?: return
+
+        // Update particles
+        val updatedParticles = _particles.value.map { particle ->
+            // Apply quantum effects to particle position
+            val position = particle.position
+            val phase = particle.phase
+
+            // Calculate new position with quantum effects
+            val newX = position.x + sin(phase + TIME_STEP) * 0.05f
+            val newY = position.y + cos(phase + TIME_STEP * 2) * 0.05f
+
+            // Create updated particle
+            particle.copy(
+                position = Offset(newX, newY),
+                phase = (phase + TIME_STEP) % (2 * PI.toFloat())
+            )
+        }
+
+        _particles.value = updatedParticles
+
+        // Update entanglements
+        val updatedEntanglements = _entanglements.value.map { entanglement ->
+            // Fluctuate entanglement strength
+            val newStrength = (entanglement.strength + sin(TIME_STEP * 3) * 0.1f).coerceIn(0.1f, 1.0f)
+
+            entanglement.copy(strength = newStrength)
+        }
+
+        _entanglements.value = updatedEntanglements
+
+        // Update energy levels
+        val updatedEnergyLevels = _energyLevels.value.toMutableMap()
+        state.habitIds.forEachIndexed { index, habitId ->
+            val qubit = state.qubits[index]
+            val amplitude = qubit.magnitude()
+            val phase = qubit.phase()
+
+            // Calculate energy level based on amplitude and phase
+            val energyLevel = (amplitude * 100 + sin(phase) * 20).toInt().coerceIn(0, 100)
+            updatedEnergyLevels[habitId] = energyLevel
+        }
+        _energyLevels.value = updatedEnergyLevels
+
+        // Trigger quantum fluctuations periodically
+        if (random.nextFloat() < 0.05f) { // 5% chance each update
+            triggerQuantumFluctuation()
+        }
+    }
+
+    /**
+     * Normalize a list of qubits
+     */
+    private fun normalizeQubits(qubits: MutableList<ComplexNumber>) {
+        // Calculate total probability
+        var totalProbability = 0.0
+        for (qubit in qubits) {
+            totalProbability += qubit.magnitudeSquared()
+        }
+
+        // Normalize if total probability is not 1
+        if (abs(totalProbability - 1.0) > 0.000001) {
+            val normalizationFactor = 1.0 / sqrt(totalProbability)
+            for (i in qubits.indices) {
+                qubits[i] = ComplexNumber(
+                    qubits[i].real * normalizationFactor,
+                    qubits[i].imaginary * normalizationFactor
+                )
+            }
+        }
+    }
+
+    /**
+     * Trigger a quantum fluctuation
+     */
+    private fun triggerQuantumFluctuation() {
+        val state = _quantumState.value ?: return
+
+        // Choose a random qubit to fluctuate
+        val qubitIndex = random.nextInt(state.qubits.size)
+        val qubit = state.qubits[qubitIndex]
+
+        // Apply a small random rotation to the qubit
+        val angle = random.nextFloat() * PI.toFloat() * 0.1f
+        val rotatedQubit = ComplexNumber(
+            qubit.real * cos(angle) - qubit.imaginary * sin(angle),
+            qubit.real * sin(angle) + qubit.imaginary * cos(angle)
+        )
+
+        // Update the quantum state
+        val updatedQubits = state.qubits.toMutableList()
+        updatedQubits[qubitIndex] = rotatedQubit
+
+        // Normalize the state
+        normalizeQubits(updatedQubits)
+
+        // Update the state
+        _quantumState.value = state.copy(qubits = updatedQubits)
+
+        // Log the fluctuation
+        Log.d(TAG, "Quantum fluctuation applied to qubit $qubitIndex")
+    }
+
+    /**
+     * Create quantum visualization for all habits
+     */
+    fun createQuantumVisualization(): QuantumVisualization {
+        val state = _quantumState.value
+
+        if (state == null) {
+            // Return empty visualization
+            return QuantumVisualization(
+                habitId = "",
+                amplitude = 0f,
+                phase = 0f,
+                particles = emptyList(),
+                entanglements = emptyList(),
+                energyLevel = 0
+            )
+        }
+
+        // Get all particles
+        val allParticles = _particles.value
+
+        // Get all entanglements
+        val allEntanglements = _entanglements.value
+
+        // Calculate average amplitude
+        val avgAmplitude = state.qubits.map { it.magnitude() }.average().toFloat()
+
+        // Calculate average phase
+        val avgPhase = state.qubits.map { it.phase() }.average().toFloat()
+
+        // Create visualization
+        return QuantumVisualization(
+            habitId = "all",
+            amplitude = avgAmplitude,
+            phase = avgPhase,
+            particles = allParticles,
+            entanglements = allEntanglements,
+            energyLevel = _energyLevels.value.values.average().toInt()
+        )
+    }
+
+    /**
      * Generate color for a qubit
      */
     private fun generateColorForQubit(index: Int): Int {
@@ -608,6 +757,8 @@ data class ComplexNumber(
 ) {
     fun magnitude(): Double = sqrt(real * real + imaginary * imaginary)
 
+    fun magnitudeSquared(): Double = real * real + imaginary * imaginary
+
     fun phase(): Double = atan2(imaginary, real)
 }
 
@@ -615,26 +766,10 @@ data class ComplexNumber(
  * Quantum state
  */
 data class QuantumState(
-    val qubits: Array<ComplexNumber>,
+    val qubits: MutableList<ComplexNumber>,
     val habitIds: List<String>
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as QuantumState
-
-        if (!qubits.contentEquals(other.qubits)) return false
-        if (habitIds != other.habitIds) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = qubits.contentHashCode()
-        result = 31 * result + habitIds.hashCode()
-        return result
-    }
+    constructor(qubits: Array<ComplexNumber>, habitIds: List<String>) : this(qubits.toMutableList(), habitIds)
 }
 
 /**

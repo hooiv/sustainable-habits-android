@@ -428,6 +428,38 @@ fun SettingsScreen(
                 Text("AR Visualization")
             }
 
+            // Three.js Visualization Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.THREEJS_VISUALIZATION) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Three.js Visualization")
+            }
+
+            // Biometric Integration Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Biometric Integration")
+            }
+
+            // Voice Integration Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.VOICE_INTEGRATION) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Voice Commands")
+            }
+
+            // Spatial Computing Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.SPATIAL_COMPUTING) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Spatial Computing")
+            }
+
             HorizontalDivider()
             // About Section
             Text(

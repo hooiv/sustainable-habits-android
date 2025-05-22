@@ -448,6 +448,8 @@ fun ARScene(
                         ARObjectType.HABIT_REMINDER -> Icons.Default.Notifications
                         ARObjectType.MOTIVATION_OBJECT -> Icons.Default.Star
                         ARObjectType.CUSTOM_OBJECT -> Icons.Default.Favorite
+                        ARObjectType.HABIT_CUBE -> Icons.Default.ViewInAr
+                        ARObjectType.HABIT_VISUALIZATION -> Icons.Default.Visibility
                     },
                     contentDescription = arObject.type.name,
                     tint = Color.White,
@@ -590,8 +592,10 @@ class ARCoreRenderer(
 
     private val TAG = "ARCoreRenderer"
     private val backgroundRenderer = BackgroundRenderer()
+    private val objectRenderer = ARObjectRenderer()
     private val arObjects = initialARObjects.toMutableList()
     private val anchors = mutableListOf<com.google.ar.core.Anchor>()
+    private val anchorToObjectMap = mutableMapOf<com.google.ar.core.Anchor, ARObject>()
 
     // Track session state manually since isResumed is not available in this ARCore version
     private var _isSessionResumed = true // Assume initially resumed
@@ -624,6 +628,20 @@ class ARCoreRenderer(
                         val pose = it.pose.compose(Pose.makeTranslation(0f, 0f, -1f)).extractTranslation()
                         val newAnchor = session.createAnchor(pose)
                         anchors.add(newAnchor)
+
+                        // Create a new AR object
+                        val newObject = ARObject(
+                            id = UUID.randomUUID().toString(),
+                            type = ARObjectType.HABIT_CUBE,
+                            position = Offset.Zero, // Position will be determined by the anchor
+                            scale = 0.15f,
+                            color = 0xFF6200EE.toInt()
+                        )
+
+                        // Add to our collections
+                        arObjects.add(newObject)
+                        anchorToObjectMap[newAnchor] = newObject
+
                         Log.d(TAG, "Object placed in front via FAB, new anchor: ${newAnchor.pose}")
                     }
                 } catch (e: com.google.ar.core.exceptions.SessionPausedException) {
@@ -655,6 +673,7 @@ class ARCoreRenderer(
             }
             anchors.clear()
             arObjects.clear()
+            anchorToObjectMap.clear()
             Log.d(TAG, "All objects and anchors cleared.")
         } catch (e: Exception) {
             Log.e(TAG, "Error clearing AR objects", e)
@@ -663,7 +682,13 @@ class ARCoreRenderer(
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
+
+        // Initialize renderers
         backgroundRenderer.createOnGlThread(context)
+        objectRenderer.createOnGlThread(context)
+
+        // Enable depth testing
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST)
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -718,7 +743,21 @@ class ARCoreRenderer(
                     val viewmtx = FloatArray(16)
                     camera.getViewMatrix(viewmtx, 0)
 
-                    // TODO: Render all `anchors` with their associated 3D models/ARObjects
+                    // Render all anchors with their associated AR objects
+                    GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+                    GLES20.glDepthMask(true)
+
+                    // Iterate through all anchors and render their associated objects
+                    for (anchor in anchors) {
+                        // Skip anchors that are not tracking
+                        if (anchor.trackingState != TrackingState.TRACKING) continue
+
+                        // Get the associated AR object
+                        val arObject = anchorToObjectMap[anchor] ?: continue
+
+                        // Draw the object
+                        objectRenderer.draw(viewmtx, projmtx, anchor, arObject.scale)
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "Exception handling AR interactions", e)
                 }
@@ -746,6 +785,20 @@ class ARCoreRenderer(
                     try {
                         val newAnchor = session.createAnchor(hitResult.hitPose)
                         anchors.add(newAnchor)
+
+                        // Create a new AR object
+                        val newObject = ARObject(
+                            id = UUID.randomUUID().toString(),
+                            type = ARObjectType.HABIT_VISUALIZATION,
+                            position = Offset.Zero, // Position will be determined by the anchor
+                            scale = 0.2f,
+                            color = 0xFF03DAC5.toInt()
+                        )
+
+                        // Add to our collections
+                        arObjects.add(newObject)
+                        anchorToObjectMap[newAnchor] = newObject
+
                         onScreenTapCallback(hitResult)
                         Log.d(TAG, "Hit test successful, new anchor created: ${newAnchor.pose}")
                     } catch (e: com.google.ar.core.exceptions.SessionPausedException) {

@@ -106,6 +106,8 @@ fun ARScreen(
                                         ARObjectType.HABIT_REMINDER -> Icons.Default.Notifications
                                         ARObjectType.MOTIVATION_OBJECT -> Icons.Default.Star
                                         ARObjectType.CUSTOM_OBJECT -> Icons.Default.Favorite
+                                        ARObjectType.HABIT_CUBE -> Icons.Default.ViewInAr
+                                        ARObjectType.HABIT_VISUALIZATION -> Icons.Default.Visibility
                                     },
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp),

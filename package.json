@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "animejs": "^4.0.2",
+    "three": "^0.176.0"
+  }
+}

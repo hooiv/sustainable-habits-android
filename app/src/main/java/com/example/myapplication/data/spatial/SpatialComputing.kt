@@ -280,6 +280,8 @@ class SpatialComputing @Inject constructor(
         return result
     }
 
+
+
     /**
      * Place a habit in AR space
      */
@@ -691,6 +693,8 @@ class SpatialComputing @Inject constructor(
             else -> 0xFFFF5722.toInt() // Deep Orange
         }
     }
+
+
 }
 
 /**

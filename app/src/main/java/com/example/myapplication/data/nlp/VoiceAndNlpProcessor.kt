@@ -199,6 +199,116 @@ class VoiceAndNlpProcessor @Inject constructor(
     }
 
     /**
+     * Start voice recognition
+     */
+    fun startVoiceRecognition() {
+        if (_isListening.value) return
+
+        try {
+            // Initialize speech recognizer if needed
+            if (speechRecognizer == null) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+                speechRecognizer?.setRecognitionListener(this)
+            }
+
+            // Create intent for speech recognition
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            }
+
+            // Start listening
+            speechRecognizer?.startListening(intent)
+            _isListening.value = true
+
+            Log.d(TAG, "Voice recognition started")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error starting voice recognition: ${e.message}")
+            _isListening.value = false
+        }
+    }
+
+    /**
+     * Stop voice recognition
+     */
+    fun stopVoiceRecognition() {
+        if (!_isListening.value) return
+
+        try {
+            speechRecognizer?.stopListening()
+            _isListening.value = false
+
+            Log.d(TAG, "Voice recognition stopped")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping voice recognition: ${e.message}")
+        }
+    }
+
+    /**
+     * Speak text using text-to-speech
+     */
+    fun speakText(text: String) {
+        if (_isSpeaking.value) return
+
+        try {
+            // Initialize text-to-speech if needed
+            if (textToSpeech == null) {
+                textToSpeech = TextToSpeech(context) { status ->
+                    isTtsInitialized = status == TextToSpeech.SUCCESS
+
+                    if (isTtsInitialized) {
+                        textToSpeech?.language = Locale.getDefault()
+                    } else {
+                        Log.e(TAG, "Failed to initialize TTS")
+                    }
+                }
+            }
+
+            // Wait for TTS to initialize
+            if (!isTtsInitialized) {
+                Log.e(TAG, "TTS not initialized")
+                return
+            }
+
+            // Set speaking state
+            _isSpeaking.value = true
+
+            // Add utterance listener
+            textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {
+                    // Speaking started
+                }
+
+                override fun onDone(utteranceId: String?) {
+                    // Speaking completed
+                    _isSpeaking.value = false
+                }
+
+                override fun onError(utteranceId: String?) {
+                    // Error occurred
+                    _isSpeaking.value = false
+                    Log.e(TAG, "TTS error for utterance: $utteranceId")
+                }
+            })
+
+            // Speak the text
+            textToSpeech?.speak(
+                text,
+                TextToSpeech.QUEUE_FLUSH,
+                null,
+                TTS_UTTERANCE_ID
+            )
+
+            Log.d(TAG, "Speaking text: $text")
+        } catch (e: Exception) {
+            _isSpeaking.value = false
+            Log.e(TAG, "Error speaking text: ${e.message}")
+        }
+    }
+
+    /**
      * Process text with NLP
      */
     fun processText(text: String) {

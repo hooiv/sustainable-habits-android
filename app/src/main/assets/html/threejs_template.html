@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #121212;
+        }
+        #container {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+    <!-- Import Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Import GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <!-- Import OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let objects = {};
+        let isSceneReady = false;
+        
+        // Initialize Three.js scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x121212);
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+            camera.position.y = 15;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Add grid
+            const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            // Add controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation loop
+            animate();
+            
+            // Scene is ready
+            isSceneReady = true;
+            if (window.AndroidBridge) {
+                window.AndroidBridge.onSceneReady();
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Create a cube
+        function createCube(id, x, y, z, size, color) {
+            const geometry = new THREE.BoxGeometry(size, size, size);
+            const material = new THREE.MeshStandardMaterial({ color: color });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(x, y, z);
+            
+            // Add to scene
+            scene.add(cube);
+            objects[id] = cube;
+            
+            // Animate entrance
+            gsap.from(cube.scale, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.3)"
+            });
+            
+            return id;
+        }
+        
+        // Create a sphere
+        function createSphere(id, x, y, z, radius, color) {
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshStandardMaterial({ color: color });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(x, y, z);
+            
+            // Add to scene
+            scene.add(sphere);
+            objects[id] = sphere;
+            
+            // Animate entrance
+            gsap.from(sphere.scale, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.3)"
+            });
+            
+            return id;
+        }
+        
+        // Create a cylinder
+        function createCylinder(id, x, y, z, radius, height, color) {
+            const geometry = new THREE.CylinderGeometry(radius, radius, height, 32);
+            const material = new THREE.MeshStandardMaterial({ color: color });
+            const cylinder = new THREE.Mesh(geometry, material);
+            cylinder.position.set(x, y + height/2, z);
+            
+            // Add to scene
+            scene.add(cylinder);
+            objects[id] = cylinder;
+            
+            // Animate entrance
+            gsap.from(cylinder.scale, {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.3)"
+            });
+            
+            return id;
+        }
+        
+        // Create text
+        function createText(id, text, x, y, z, size, color) {
+            // Create a canvas for the text
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 128;
+            
+            // Draw text on canvas
+            context.fillStyle = '#ffffff';
+            context.font = '48px Arial';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            // Create texture from canvas
+            const texture = new THREE.CanvasTexture(canvas);
+            
+            // Create material with texture
+            const material = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            
+            // Create plane geometry
+            const geometry = new THREE.PlaneGeometry(size * 2, size);
+            
+            // Create mesh
+            const textMesh = new THREE.Mesh(geometry, material);
+            textMesh.position.set(x, y, z);
+            textMesh.lookAt(camera.position);
+            
+            // Add to scene
+            scene.add(textMesh);
+            objects[id] = textMesh;
+            
+            return id;
+        }
+        
+        // Clear scene
+        function clearScene() {
+            for (const id in objects) {
+                scene.remove(objects[id]);
+            }
+            objects = {};
+        }
+        
+        // Initialize scene
+        init();
+        
+        // Android interface
+        window.Android = {
+            onHabitsLoaded: function(habitsJson) {
+                try {
+                    const habits = JSON.parse(habitsJson);
+                    visualizeHabits(habits);
+                } catch (e) {
+                    console.error("Error parsing habits JSON:", e);
+                    if (window.AndroidBridge) {
+                        window.AndroidBridge.onError("Error parsing habits JSON: " + e.message);
+                    }
+                }
+            }
+        };
+        
+        // Visualize habits
+        function visualizeHabits(habits) {
+            // Clear existing objects
+            clearScene();
+            
+            // Calculate positions in a circle
+            const radius = 15;
+            const angleStep = (2 * Math.PI) / habits.length;
+            
+            // Create objects for each habit
+            habits.forEach((habit, index) => {
+                const angle = index * angleStep;
+                const x = radius * Math.cos(angle);
+                const z = radius * Math.sin(angle);
+                
+                // Scale based on streak
+                const scale = Math.max(0.5, Math.min(3, habit.streak * 0.3 + 0.5));
+                
+                // Convert habit color to hex
+                const colorMap = {
+                    RED: 0xff5252,
+                    GREEN: 0x4caf50,
+                    BLUE: 0x2196f3,
+                    YELLOW: 0xffeb3b,
+                    PURPLE: 0x9c27b0,
+                    ORANGE: 0xff9800,
+                    TEAL: 0x009688,
+                    PINK: 0xe91e63
+                };
+                
+                const color = colorMap[habit.color] || 0xffffff;
+                
+                // Create sphere for habit
+                createSphere(
+                    habit.id, 
+                    x, 
+                    0, 
+                    z, 
+                    scale, 
+                    color
+                );
+                
+                // Create text label with habit name
+                createText(
+                    habit.id + "_label", 
+                    habit.name, 
+                    x, 
+                    scale + 1, 
+                    z, 
+                    scale, 
+                    color
+                );
+            });
+        }
+    </script>
+</body>
+</html>

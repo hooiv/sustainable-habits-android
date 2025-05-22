@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
@@ -38,6 +39,8 @@ import com.example.myapplication.features.stats.StatsScreen
 import com.example.myapplication.features.settings.SettingsScreen
 import com.example.myapplication.features.auth.SignInScreen
 import com.example.myapplication.features.demo.AnimationDemoScreen
+import com.example.myapplication.features.animation.AnimeJsAnimationScreen
+import com.example.myapplication.features.advanced.AdvancedFeaturesScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.R
 import java.time.LocalDate
@@ -76,6 +79,13 @@ fun MainBottomBar(
                 icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
                 label = { Text("Stats") }
             )
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.ADVANCED_FEATURES,
+                onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
+                label = { Text("Advanced") }
+            )
+
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.SETTINGS,
                 onClick = { onNavigate(NavRoutes.SETTINGS) },
@@ -384,6 +394,52 @@ fun AppNavigationGraph(navController: NavHostController) {
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
+        // Three.js visualization screen
+        composable(route = NavRoutes.THREEJS_VISUALIZATION) {
+            com.example.myapplication.features.threejs.ThreeJsVisualizationScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Anime.js animation screen
+        composable(route = NavRoutes.ANIMEJS_ANIMATION) {
+            AnimeJsAnimationScreen(
+                navController = navController
+            )
+        }
+
+        // Advanced features screen
+        composable(route = NavRoutes.ADVANCED_FEATURES) {
+            AdvancedFeaturesScreen(
+                navController = navController
+            )
+        }
+
+        // Multi-modal learning screen
+        composable(route = NavRoutes.MULTI_MODAL_LEARNING) {
+            com.example.myapplication.features.ml.MultiModalLearningScreen(
+                navController = navController
+            )
+        }
+
+        // Meta-learning screen
+        composable(route = NavRoutes.META_LEARNING) {
+            com.example.myapplication.features.ml.MetaLearningScreen(
+                navController = navController
+            )
+        }
+
+        // Neural network screen
+        composable(route = NavRoutes.NEURAL_NETWORK) {
+            com.example.myapplication.features.neural.NeuralNetworkScreen(
+                navController = navController
+            )
+        }
+
+
+
     }
 }
 

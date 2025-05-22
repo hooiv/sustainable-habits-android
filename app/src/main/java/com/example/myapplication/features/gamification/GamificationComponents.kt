@@ -37,6 +37,9 @@ import com.example.myapplication.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.*
+import com.example.myapplication.features.gamification.Badge
+import com.example.myapplication.features.gamification.Reward
+import com.example.myapplication.features.gamification.BadgeType
 
 /**
  * Displays a user's level and experience progress with animations
@@ -349,6 +352,318 @@ fun AchievementBadge(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 4.dp)
             )
+        }
+    }
+}
+
+/**
+ * Displays an animation when a badge is unlocked
+ */
+@Composable
+fun BadgeUnlockAnimation(
+    badge: Badge,
+    xpAwarded: Int = 0,
+    onAnimationComplete: () -> Unit = {}
+) {
+    var animationState by remember { mutableStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Animation states:
+    // 0 - Initial state
+    // 1 - Badge appears
+    // 2 - Badge grows
+    // 3 - XP appears
+    // 4 - Final state
+
+    // Scale animation
+    val scale by animateFloatAsState(
+        targetValue = when (animationState) {
+            0 -> 0.1f
+            1 -> 0.5f
+            2, 3, 4 -> 1.2f
+            else -> 1.0f
+        },
+        animationSpec = tween(
+            durationMillis = 500,
+            easing = androidx.compose.animation.core.EaseOutBack
+        ),
+        label = "badgeScale"
+    )
+
+    // Alpha animation
+    val alpha by animateFloatAsState(
+        targetValue = when (animationState) {
+            0 -> 0f
+            1, 2, 3, 4 -> 1f
+            else -> 0f
+        },
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = androidx.compose.animation.core.LinearEasing
+        ),
+        label = "badgeAlpha"
+    )
+
+    // XP text alpha
+    val xpAlpha by animateFloatAsState(
+        targetValue = when (animationState) {
+            0, 1, 2 -> 0f
+            3, 4 -> 1f
+            else -> 0f
+        },
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = androidx.compose.animation.core.LinearEasing
+        ),
+        label = "xpAlpha"
+    )
+
+    // Start animation sequence
+    LaunchedEffect(Unit) {
+        animationState = 1
+        delay(500)
+        animationState = 2
+        delay(500)
+        animationState = 3
+        delay(1500)
+        animationState = 4
+        delay(500)
+        onAnimationComplete()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.7f)),
+        contentAlignment = Alignment.Center
+    ) {
+        // Badge container
+        Column(
+            modifier = Modifier
+                .scale(scale)
+                .alpha(alpha)
+                .padding(32.dp)
+                .background(
+                    MaterialTheme.colorScheme.surface,
+                    RoundedCornerShape(16.dp)
+                )
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Badge icon
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+                    .glowEffect(16.dp, Color(0xFFFFD700)),
+                contentAlignment = Alignment.Center
+            ) {
+                // Particle effect
+                ParticleSystem(
+                    modifier = Modifier.matchParentSize(),
+                    particleCount = 30,
+                    particleColor = Color.White,
+                    particleShape = ParticleShape.STAR,
+                    glowEffect = true
+                )
+
+                // Badge icon
+                val iconVector = when (badge.type) {
+                    BadgeType.STREAK -> Icons.Default.LocalFireDepartment
+                    BadgeType.COMPLETION -> Icons.Default.CheckCircle
+                    BadgeType.CATEGORY -> Icons.Default.Category
+                    BadgeType.SPECIAL -> Icons.Default.EmojiEvents
+                }
+
+                Icon(
+                    imageVector = iconVector,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Badge title
+            Text(
+                text = "Badge Unlocked!",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Badge name
+            Text(
+                text = badge.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Badge description
+            Text(
+                text = badge.description,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // XP awarded
+            if (xpAwarded > 0) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .alpha(xpAlpha)
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = "+$xpAwarded XP",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Displays a reward item
+ */
+@Composable
+fun RewardItem(
+    reward: Reward,
+    currentXp: Int,
+    onRewardClaim: (Reward) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val canClaim = currentXp >= reward.xpCost && !reward.isUnlocked
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (reward.isUnlocked)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Reward icon
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            color = if (reward.isUnlocked)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CardGiftcard,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = reward.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = reward.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                if (reward.isUnlocked) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                CircleShape
+                            )
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Unlocked",
+                            tint = Color.White
+                        )
+                    }
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${reward.xpCost} XP",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Button(
+                            onClick = { onRewardClaim(reward) },
+                            enabled = canClaim,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text("Claim")
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -3,6 +3,8 @@ package com.example.myapplication.features.biometric
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -13,14 +15,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.data.model.BiometricReading
 import com.example.myapplication.data.model.BiometricType
-import com.example.myapplication.ui.components.AppScaffold
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -41,124 +45,87 @@ fun BiometricIntegrationScreen(
     val biometricReadings by viewModel.biometricReadings.collectAsState()
     val isMeasuring by viewModel.isMeasuring.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isMonitoring by viewModel.isMonitoring.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Initialize with specific habit if provided
+    // Set current habit ID if provided
     LaunchedEffect(habitId) {
-        if (habitId != null) {
-            viewModel.setCurrentHabitId(habitId)
+        habitId?.let {
+            viewModel.setCurrentHabitId(it)
         }
         viewModel.loadBiometricData()
     }
 
-    AppScaffold(
-        title = "Biometric Integration",
-        onNavigateBack = onNavigateBack
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Error message
-            errorMessage?.let { message ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = "Error",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            text = message,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = { viewModel.clearError() }) {
+    // Show error message if any
+    errorMessage?.let {
+        LaunchedEffect(it) {
+            // Show error message
+            delay(3000)
+            viewModel.clearErrorMessage()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Biometric Integration") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (isMonitoring) {
+                        IconButton(
+                            onClick = { viewModel.stopMonitoring() }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Dismiss",
-                                tint = MaterialTheme.colorScheme.error
+                                imageVector = Icons.Default.Stop,
+                                contentDescription = "Stop Monitoring",
+                                tint = Color.Red
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { viewModel.startMonitoring(lifecycleOwner) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Start Monitoring",
+                                tint = Color.Green
                             )
                         }
                     }
                 }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Error message
+            errorMessage?.let {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
             }
 
-            // Heart rate monitor
+            // Current biometric data
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                HeartRateMonitor(
-                    currentHeartRate = heartRate,
-                    historyData = biometricReadings
-                        .filter { it.type == BiometricType.HEART_RATE }
-                        .map { Pair(Date(it.timestamp), it.value.toInt()) },
-                    onMeasure = {
-                        coroutineScope.launch {
-                            viewModel.measureHeartRate()
-                        }
-                    }
-                )
-            }
-
-            // Sleep quality visualization
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                SleepQualityVisualizer(
-                    sleepData = sleepData,
-                    sleepScore = viewModel.calculateSleepScore(sleepData),
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            // Biometric readings list
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                BiometricComponents.BiometricReadingsList(
-                    readings = biometricReadings.take(10),
-                    modifier = Modifier.padding(16.dp),
-                    onReadingClick = { reading ->
-                        // Handle reading click
-                    }
-                )
-            }
-
-            // Measurement controls
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
@@ -167,10 +134,102 @@ fun BiometricIntegrationScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Biometric Measurements",
+                        text = "Current Biometric Data",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    // Heart rate
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Heart Rate:",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "$heartRate BPM",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    // Blood pressure
+                    bloodPressure?.let { (systolic, diastolic) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Speed,
+                                contentDescription = null,
+                                tint = Color.Blue
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Blood Pressure:",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "$systolic/$diastolic mmHg",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+
+                    // Stress level
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Psychology,
+                            contentDescription = null,
+                            tint = Color.Magenta
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Stress Level:",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${(stressLevel * 10).toInt()} / 10",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+
+            // Measurement buttons
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Measurements",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
 
                     Row(
@@ -183,32 +242,36 @@ fun BiometricIntegrationScreen(
                                     viewModel.measureHeartRate()
                                 }
                             },
-                            enabled = !isMeasuring
+                            enabled = !isMeasuring,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Favorite,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                contentDescription = null
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text("Heart Rate")
                         }
 
                         Button(
                             onClick = {
                                 coroutineScope.launch {
-                                    viewModel.measureStressLevel()
+                                    viewModel.measureBloodPressure()
                                 }
                             },
-                            enabled = !isMeasuring
+                            enabled = !isMeasuring,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Blue
+                            )
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Psychology,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                imageVector = Icons.Default.Speed,
+                                contentDescription = null
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Stress")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Blood Pressure")
                         }
                     }
 
@@ -221,18 +284,20 @@ fun BiometricIntegrationScreen(
                         Button(
                             onClick = {
                                 coroutineScope.launch {
-                                    viewModel.measureBloodPressure()
+                                    viewModel.measureStressLevel()
                                 }
                             },
-                            enabled = !isMeasuring
+                            enabled = !isMeasuring,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Magenta
+                            )
                         ) {
                             Icon(
-                                imageVector = Icons.Default.HealthAndSafety,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                imageVector = Icons.Default.Psychology,
+                                contentDescription = null
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Blood Pressure")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Stress Level")
                         }
 
                         Button(
@@ -241,19 +306,115 @@ fun BiometricIntegrationScreen(
                                     viewModel.analyzeSleepData()
                                 }
                             },
-                            enabled = !isMeasuring
+                            enabled = !isMeasuring,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.DarkGray
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Bedtime,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                contentDescription = null
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Sleep")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Sleep Analysis")
+                        }
+                    }
+
+                    // Show progress indicator when measuring
+                    if (isMeasuring) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
+                        )
+                    }
+                }
+
+            // Biometric readings history
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Biometric History",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    if (biometricReadings.isEmpty()) {
+                        Text(
+                            text = "No biometric readings available",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        ) {
+                            items(biometricReadings) { reading ->
+                                BiometricReadingItem(reading = reading)
+                            }
                         }
                     }
                 }
             }
+            }
+        }
+    }
+}
+
+/**
+ * Biometric reading item
+ */
+@Composable
+fun BiometricReadingItem(reading: BiometricReading) {
+    val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault()) }
+    val date = remember(reading.timestamp) { dateFormat.format(Date(reading.timestamp)) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Icon based on biometric type
+        val (icon, tint) = when (reading.type) {
+            BiometricType.HEART_RATE -> Icons.Default.Favorite to Color.Red
+            BiometricType.BLOOD_PRESSURE_SYSTOLIC, BiometricType.BLOOD_PRESSURE_DIASTOLIC ->
+                Icons.Default.Speed to Color.Blue
+            BiometricType.STRESS_LEVEL -> Icons.Default.Psychology to Color.Magenta
+            BiometricType.SLEEP_QUALITY -> Icons.Default.Bedtime to Color.DarkGray
+            else -> Icons.Default.HealthAndSafety to MaterialTheme.colorScheme.primary
+        }
+
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(24.dp)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Column {
+            Text(
+                text = reading.type.name.replace("_", " ").lowercase()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "${reading.value} ${reading.unit} - $date",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

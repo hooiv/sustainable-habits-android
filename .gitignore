@@ -55,3 +55,12 @@ app/build/outputs/apk/release/
 */build/
 cmake-build-*/
 .externalNativeBuild/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+.npm/
+.yarn/

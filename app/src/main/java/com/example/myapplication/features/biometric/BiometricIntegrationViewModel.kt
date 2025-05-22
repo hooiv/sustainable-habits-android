@@ -114,6 +114,45 @@ class BiometricIntegrationViewModel @Inject constructor(
         }
     }
 
+    // Add isMonitoring state
+    private val _isMonitoring = MutableStateFlow(false)
+    val isMonitoring: StateFlow<Boolean> = _isMonitoring
+
+    /**
+     * Start biometric monitoring
+     */
+    fun startMonitoring(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.startHeartRateMonitoring(lifecycleOwner)
+                _isMonitoring.value = true
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start monitoring: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Stop biometric monitoring
+     */
+    fun stopMonitoring() {
+        viewModelScope.launch {
+            try {
+                biometricIntegration.stopHeartRateMonitoring()
+                _isMonitoring.value = false
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to stop monitoring: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Clear error message
+     */
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
+
     /**
      * Measure heart rate
      */
@@ -293,5 +332,52 @@ class BiometricIntegrationViewModel @Inject constructor(
      */
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    /**
+     * Get current biometric data
+     */
+    fun getCurrentBiometricData(): com.example.myapplication.data.biometric.BiometricData {
+        return biometricIntegration.getBiometricData()
+    }
+
+    /**
+     * Start monitoring without lifecycle owner
+     */
+    fun startMonitoring() {
+        viewModelScope.launch {
+            try {
+                // Simulate starting monitoring
+                delay(1000)
+                _isMonitoring.value = true
+
+                // Start simulated heart rate updates
+                startSimulatedHeartRateUpdates()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to start monitoring: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Start simulated heart rate updates
+     */
+    private fun startSimulatedHeartRateUpdates() {
+        viewModelScope.launch {
+            while (_isMonitoring.value) {
+                // Update heart rate with small random changes
+                val currentHeartRate = _heartRate.value
+                val change = Random.nextInt(-3, 4)
+                _heartRate.value = (currentHeartRate + change).coerceIn(60, 100)
+
+                // Update stress level occasionally
+                if (Random.nextFloat() < 0.2f) {
+                    val stressChange = Random.nextInt(-1, 2)
+                    _stressLevel.value = (_stressLevel.value + stressChange).coerceIn(1, 10)
+                }
+
+                delay(1000)
+            }
+        }
     }
 }
