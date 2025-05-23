@@ -40,6 +40,7 @@ import com.example.myapplication.features.settings.SettingsScreen
 import com.example.myapplication.features.auth.SignInScreen
 import com.example.myapplication.features.demo.AnimationDemoScreen
 import com.example.myapplication.features.animation.AnimeJsAnimationScreen
+import com.example.myapplication.features.animation.AnimationsScreen
 import com.example.myapplication.features.advanced.AdvancedFeaturesScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.R
@@ -72,6 +73,29 @@ fun MainBottomBar(
                 onClick = { onNavigate(NavRoutes.HABIT_LIST) },
                 icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Habits") },
                 label = { Text("Habits") }
+            )
+
+            // Add Animations tab
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.ANIMATIONS ||
+                          currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
+                          currentRoute == NavRoutes.THREEJS_VISUALIZATION,
+                onClick = { onNavigate(NavRoutes.ANIMATIONS) },
+                icon = { Icon(Icons.Default.Animation, contentDescription = "Animations") },
+                label = { Text("Animations") }
+            )
+
+            // Add Advanced Features tab
+            NavigationBarItem(
+                selected = currentRoute == NavRoutes.ADVANCED_FEATURES ||
+                          currentRoute == NavRoutes.NEURAL_INTERFACE ||
+                          currentRoute == NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL ||
+                          currentRoute == NavRoutes.VOICE_INTEGRATION ||
+                          currentRoute == NavRoutes.SPATIAL_COMPUTING ||
+                          currentRoute == NavRoutes.QUANTUM_VISUALIZATION_GLOBAL,
+                onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
+                icon = { Icon(Icons.Default.Psychology, contentDescription = "Advanced") },
+                label = { Text("Advanced") }
             )
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.STATS,
@@ -231,6 +255,11 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         composable(route = NavRoutes.ANIMATION_DEMO) {
             AnimationDemoScreen(navController = navController)
+        }
+
+        // Main animations hub
+        composable(route = NavRoutes.ANIMATIONS) {
+            AnimationsScreen(navController = navController)
         }
 
         composable(

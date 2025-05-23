@@ -1,5 +1,6 @@
 package com.example.myapplication.features.habits
 
+import android.webkit.WebView
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
@@ -35,19 +36,23 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.features.animation.AnimeJsIntegration
 import com.example.myapplication.ui.animation.*
 import com.example.myapplication.ui.components.GradientButton
 import com.example.myapplication.ui.components.ThreeDCard
 import com.example.myapplication.ui.theme.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
@@ -110,6 +115,49 @@ fun FloatingIconsAnimation(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Composable for Anime.js animations within habit items
+ */
+@Composable
+fun HabitItemAnimeJs(
+    habit: Habit,
+    modifier: Modifier = Modifier,
+    animationType: String = "pulse"
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var animeJsIntegration: AnimeJsIntegration? by remember { mutableStateOf(null) }
+
+    // Create a WebView for Anime.js animations
+    Box(modifier = modifier.height(60.dp)) {
+        AndroidView(
+            factory = { ctx ->
+                WebView(ctx).apply {
+                    animeJsIntegration = AnimeJsIntegration(context, this)
+                }
+            },
+            update = { webView ->
+                // Initialize if needed
+                if (animeJsIntegration == null) {
+                    animeJsIntegration = AnimeJsIntegration(context, webView)
+                }
+
+                // Execute animation when habit changes
+                coroutineScope.launch {
+                    animeJsIntegration?.executeAnimation(
+                        when (animationType) {
+                            "pulse" -> AnimeJsIntegration.AnimationType.PULSE
+                            "rotate" -> AnimeJsIntegration.AnimationType.ROTATE
+                            "fade" -> AnimeJsIntegration.AnimationType.FADE
+                            else -> AnimeJsIntegration.AnimationType.PULSE
+                        }
+                    )
+                }
+            }
+        )
+    }
+}
+
 @Composable
 fun HabitItem(
     habit: Habit,
@@ -143,6 +191,9 @@ fun HabitItem(
     var rotationY by remember { mutableStateOf(0f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+
+    // Use Anime.js for advanced animations
+    var useAnimeJs by remember { mutableStateOf(true) }
 
     // Calculate progress percentage
     val progress = if (habit.goal > 0) {
@@ -251,6 +302,15 @@ fun HabitItem(
                 initialScale = 0.9f
             )
     ) {
+        // Anime.js animation when habit is completed
+        if (isCompletedToday && useAnimeJs) {
+            HabitItemAnimeJs(
+                habit = habit,
+                modifier = Modifier.matchParentSize(),
+                animationType = if (habit.streak > 5) "rotate" else "pulse"
+            )
+        }
+
         // Particle effects when habit is completed (visible only when completed)
         if (particleAlpha > 0) {
             Box(
@@ -567,6 +627,19 @@ fun HabitItem(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
+                            // Basic options section
+                            DropdownMenuItem(
+                                text = { Text("Basic Options", fontWeight = FontWeight.Bold) },
+                                enabled = false,
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
+
                             // Delete option
                             DropdownMenuItem(
                                 text = { Text("Delete") },
@@ -579,6 +652,51 @@ fun HabitItem(
                                         imageVector = Icons.Default.Delete,
                                         contentDescription = "Delete",
                                         tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+
+                            // Completion History option
+                            DropdownMenuItem(
+                                text = { Text("Completion History") },
+                                onClick = {
+                                    expanded = false
+                                    onCompletionHistoryClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.History,
+                                        contentDescription = "Completion History",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
+
+                            // Toggle Anime.js animations
+                            DropdownMenuItem(
+                                text = { Text(if (useAnimeJs) "Disable Animations" else "Enable Animations") },
+                                onClick = {
+                                    expanded = false
+                                    useAnimeJs = !useAnimeJs
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = if (useAnimeJs) Icons.Default.Animation else Icons.Default.AnimationDisabled,
+                                        contentDescription = if (useAnimeJs) "Disable animations" else "Enable animations",
+                                        tint = if (useAnimeJs) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                    )
+                                }
+                            )
+
+                            // Advanced features section
+                            DropdownMenuItem(
+                                text = { Text("Advanced Features", fontWeight = FontWeight.Bold) },
+                                enabled = false,
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Psychology,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
                             )
@@ -643,38 +761,6 @@ fun HabitItem(
                                         imageVector = Icons.Default.Biotech,
                                         contentDescription = "Quantum Visualization",
                                         tint = MaterialTheme.colorScheme.tertiary
-                                    )
-                                }
-                            )
-
-                            // Completion History option
-                            DropdownMenuItem(
-                                text = { Text("Completion History") },
-                                onClick = {
-                                    expanded = false
-                                    onCompletionHistoryClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.History,
-                                        contentDescription = "Completion History",
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            )
-
-                            // AR Visualization option
-                            DropdownMenuItem(
-                                text = { Text("AR Visualization") },
-                                onClick = {
-                                    expanded = false
-                                    onARVisualizationClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.ViewInAr,
-                                        contentDescription = "AR Visualization",
-                                        tint = MaterialTheme.colorScheme.secondary
                                     )
                                 }
                             )

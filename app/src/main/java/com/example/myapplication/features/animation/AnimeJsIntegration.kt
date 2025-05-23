@@ -119,6 +119,34 @@ class AnimeJsIntegration @Inject constructor(
     }
 
     /**
+     * Execute advanced animation with parameters
+     */
+    fun executeAdvancedAnimation(type: AnimationType, params: Map<String, Any>) {
+        try {
+            // Convert params to JSON
+            val paramsJson = gson.toJson(params)
+
+            // Execute animation with params
+            webView?.evaluateJavascript(
+                """
+                (function() {
+                    if (window.AnimeBridge) {
+                        const params = $paramsJson;
+                        executeAdvancedAnimation('${type.name.lowercase()}', params);
+                    }
+                })();
+                """,
+                null
+            )
+
+            Log.d(TAG, "Executing advanced animation: ${type.name}")
+        } catch (e: Exception) {
+            _error.value = "Error executing advanced animation: ${e.message}"
+            Log.e(TAG, "Error executing advanced animation", e)
+        }
+    }
+
+    /**
      * Animate habits
      */
     fun animateHabits() {
@@ -322,7 +350,14 @@ enum class AnimationType {
     PROGRESS,
     PULSE,
     ROTATE,
-    FADE
+    FADE,
+    BOUNCE,
+    PATH,
+    TIMELINE,
+    PARTICLES,
+    WAVE,
+    MORPH,
+    GRID
 }
 
 /**

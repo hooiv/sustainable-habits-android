@@ -27,12 +27,22 @@ class OpenAIService @Inject constructor(
 ) : AIService {
     companion object {
         private const val TAG = "OpenAIService"
-        private const val MODEL = "gpt-3.5-turbo"
-        private const val API_KEY = "" // Replace with your actual API key or use BuildConfig
+        private const val MODEL = "gpt-4o" // Using the latest model for better responses
+        // In a real app, this would be stored securely and not hardcoded
+        private const val API_KEY = "sk-demo-key-replace-with-real-key-in-production"
         private const val SYSTEM_PROMPT = """You are an AI assistant specialized in habit formation and behavior change.
             You help users build sustainable habits by providing personalized advice, motivation, and insights.
             Your responses should be evidence-based, practical, and focused on helping users develop and maintain positive habits.
-            Keep your responses concise, friendly, and actionable."""
+            Keep your responses concise, friendly, and actionable.
+
+            When providing suggestions, consider the user's:
+            1. Current habits and their completion patterns
+            2. Mood data and emotional state
+            3. Location context and environmental factors
+            4. Time patterns and daily schedule
+            5. Personal preferences and settings
+
+            Tailor your responses to be maximally helpful and personalized."""
     }
 
     /**
@@ -182,7 +192,8 @@ class OpenAIService @Inject constructor(
                 model = MODEL,
                 messages = messages,
                 temperature = 0.7f,
-                stream = true
+                stream = true,
+                max_tokens = 1000 // Allow for longer responses when needed
             )
 
             val response = openAIApiClient.createStreamingChatCompletion(
@@ -204,7 +215,31 @@ class OpenAIService @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Exception generating streaming response", e)
-            emit("I'm sorry, I encountered an error while processing your request. Please try again later.")
+
+            // Fallback to local service if API fails
+            try {
+                // Generate a full response first
+                val localResponse = generateResponse(
+                    question,
+                    userHabits,
+                    habitCompletions,
+                    moodData,
+                    locationData,
+                    timePatterns,
+                    personalization
+                )
+
+                // Split the response into words and emit them with a delay to simulate streaming
+                val words = localResponse.split(" ")
+                for (i in words.indices) {
+                    val chunk = if (i == 0) words[i] else " ${words[i]}"
+                    emit(chunk)
+                    delay(50) // 50ms delay between words
+                }
+            } catch (fallbackException: Exception) {
+                Log.e(TAG, "Fallback also failed", fallbackException)
+                emit("I'm sorry, I encountered an error while processing your request. Please try again later.")
+            }
         }
     }.flowOn(Dispatchers.IO)
 

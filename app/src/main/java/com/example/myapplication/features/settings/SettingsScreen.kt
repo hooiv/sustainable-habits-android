@@ -444,12 +444,63 @@ fun SettingsScreen(
                 Text("Biometric Integration")
             }
 
+            // Advanced Features Section
+            Text(
+                text = "Advanced Features",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
+
+            // AI Assistant Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.AI_ASSISTANT) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Assistant,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text("AI Assistant")
+            }
+
             // Voice Integration Button
             Button(
                 onClick = { navController.navigate(NavRoutes.VOICE_INTEGRATION) },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardVoice,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
                 Text("Voice Commands")
+            }
+
+            // Biometric Integration Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MonitorHeart,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text("Biometric Integration")
+            }
+
+            // Neural Interface Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.neuralInterface("global")) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Psychology,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text("Neural Interface")
             }
 
             // Spatial Computing Button
@@ -457,7 +508,25 @@ fun SettingsScreen(
                 onClick = { navController.navigate(NavRoutes.SPATIAL_COMPUTING) },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Icon(
+                    imageVector = Icons.Default.ViewInAr,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
                 Text("Spatial Computing")
+            }
+
+            // Quantum Visualization Button
+            Button(
+                onClick = { navController.navigate(NavRoutes.QUANTUM_VISUALIZATION_GLOBAL) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Biotech,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text("Quantum Visualization")
             }
 
             HorizontalDivider()

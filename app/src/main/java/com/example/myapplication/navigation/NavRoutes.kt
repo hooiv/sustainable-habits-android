@@ -34,7 +34,8 @@ object NavRoutes {
     // Three.js visualization route
     const val THREEJS_VISUALIZATION = "threejs_visualization" // Three.js visualization route
 
-    // Anime.js animation route
+    // Animation routes
+    const val ANIMATIONS = "animations" // Main animations hub
     const val ANIMEJS_ANIMATION = "animejs_animation" // Anime.js animation route
 
     // Advanced features route

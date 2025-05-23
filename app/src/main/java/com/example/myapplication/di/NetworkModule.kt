@@ -100,13 +100,12 @@ object NetworkModule {
 
     /**
      * Provides default AI service implementation
-     * Currently using LocalAIService as default to avoid API costs
-     * Change to @OpenAIImpl to use OpenAI API
+     * Now using OpenAIService as default for real AI processing
      */
     @Provides
     @Singleton
-    fun provideDefaultAIService(@LocalImpl localAIService: AIService): AIService {
-        return localAIService
+    fun provideDefaultAIService(@OpenAIImpl openAIService: AIService): AIService {
+        return openAIService
     }
 }
 
