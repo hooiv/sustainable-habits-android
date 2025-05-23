@@ -91,7 +91,10 @@ fun MainBottomBar(
                           currentRoute == NavRoutes.MULTI_MODAL_LEARNING ||
                           currentRoute == NavRoutes.META_LEARNING ||
                           currentRoute == NavRoutes.NEURAL_NETWORK ||
-                          currentRoute == NavRoutes.AI_ASSISTANT,
+                          currentRoute == NavRoutes.AI_ASSISTANT ||
+                          currentRoute == NavRoutes.GESTURE_CONTROLS ||
+                          currentRoute == NavRoutes.ADVANCED_ANALYTICS ||
+                          currentRoute == NavRoutes.PREDICTIVE_ML,
                 onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
                 icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
                 label = { Text("Advanced") }
@@ -453,6 +456,27 @@ fun AppNavigationGraph(navController: NavHostController) {
             com.example.myapplication.features.ai.AIAssistantScreen(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Gesture Controls screen
+        composable(route = NavRoutes.GESTURE_CONTROLS) {
+            com.example.myapplication.features.gestures.GestureControlsScreen(
+                navController = navController
+            )
+        }
+
+        // Advanced Analytics screen
+        composable(route = NavRoutes.ADVANCED_ANALYTICS) {
+            com.example.myapplication.features.analytics.AdvancedAnalyticsScreen(
+                navController = navController
+            )
+        }
+
+        // Predictive ML screen
+        composable(route = NavRoutes.PREDICTIVE_ML) {
+            com.example.myapplication.features.ml.PredictiveMLScreen(
+                navController = navController
             )
         }
 

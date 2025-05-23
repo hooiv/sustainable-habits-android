@@ -70,6 +70,34 @@ fun AdvancedFeaturesScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Interaction Features
+            SectionHeader(title = "Interaction Features")
+
+            FeatureCard(
+                title = "Gesture Controls",
+                description = "Control the app with intuitive gestures",
+                icon = Icons.Default.TouchApp,
+                onClick = {
+                    navController.navigate(NavRoutes.GESTURE_CONTROLS)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Analytics Features
+            SectionHeader(title = "Analytics Features")
+
+            FeatureCard(
+                title = "Advanced Analytics",
+                description = "Deep insights into your habit patterns",
+                icon = Icons.Default.Insights,
+                onClick = {
+                    navController.navigate(NavRoutes.ADVANCED_ANALYTICS)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Visualization Features
             SectionHeader(title = "Visualization Features")
 
@@ -170,6 +198,15 @@ fun AdvancedFeaturesScreen(
 
             // Machine Learning Features
             SectionHeader(title = "Machine Learning Features")
+
+            FeatureCard(
+                title = "Predictive ML",
+                description = "ML-powered predictions about your habits",
+                icon = Icons.Default.TrendingUp,
+                onClick = {
+                    navController.navigate(NavRoutes.PREDICTIVE_ML)
+                }
+            )
 
             FeatureCard(
                 title = "Multi-Modal Learning",

@@ -50,9 +50,9 @@ data class AnalyticsInsight(
     val title: String,
     val description: String,
     val type: InsightType,
-    val score: Float, // 0.0 to 1.0 (importance/relevance)
-    val timestamp: Date = Date(),
+    val confidence: Float, // 0.0 to 1.0 (confidence level)
     val relatedHabitIds: List<String> = emptyList(),
+    val timestamp: Long = System.currentTimeMillis(),
     val metadata: Map<String, Any> = emptyMap()
 )
 

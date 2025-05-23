@@ -23,6 +23,7 @@ data class HabitPrediction(
     val habitName: String,
     val predictionType: PredictionType,
     val probability: Float, // 0.0 to 1.0
+    val description: String,
     val timeframe: String,
     val confidenceInterval: Pair<Float, Float>,
     val factors: List<PredictionFactor> = emptyList(),

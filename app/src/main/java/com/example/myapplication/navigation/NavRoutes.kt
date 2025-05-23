@@ -53,6 +53,11 @@ object NavRoutes {
     const val AI_ASSISTANT = "ai_assistant" // AI Assistant route
     const val AI_ASSISTANT_SETTINGS = "ai_assistant_settings" // AI Assistant settings route
 
+    // New advanced feature routes
+    const val GESTURE_CONTROLS = "gesture_controls" // Gesture Controls route
+    const val ADVANCED_ANALYTICS = "advanced_analytics" // Advanced Analytics route
+    const val PREDICTIVE_ML = "predictive_ml" // Predictive ML route
+
     // Habit completion routes
     const val HABIT_COMPLETION_ROUTE = "habit_completion" // Base route name
     const val HABIT_COMPLETION_ARG_ID = "habitId" // Argument name
