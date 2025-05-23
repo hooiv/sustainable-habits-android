@@ -127,10 +127,6 @@ class MainActivity : ComponentActivity() {
                     val context = LocalContext.current
                     var startDestination by rememberSaveable(stateSaver = StartDestination.Saver) { mutableStateOf<StartDestination>(StartDestination.Splash) }
 
-                    // Remember if advanced features demo is shown
-                    var showAdvancedFeaturesDemo by remember { mutableStateOf(false) }
-                    var showUltraAdvancedFeaturesDemo by remember { mutableStateOf(false) }
-
                     LaunchedEffect(Unit) {
                         delay(1500) // Splash duration
                         // TODO: Replace with DataStore or SharedPreferences check for onboarding completion
@@ -139,62 +135,17 @@ class MainActivity : ComponentActivity() {
                         startDestination = if (completed) StartDestination.Main else StartDestination.Onboarding
                     }
 
-                    if (showUltraAdvancedFeaturesDemo) {
-                        UltraAdvancedFeaturesDemo(
-                            onClose = { showUltraAdvancedFeaturesDemo = false },
-                            onNavigateToFeature = { featureRoute ->
-                                showUltraAdvancedFeaturesDemo = false
-
-                                // Navigate to the feature
-                                startDestination = StartDestination.Main
-
-                                // The navigation will be handled by the AppNavigation component
-                                // when the startDestination is set to Main
-                            }
-                        )
-                    } else if (showAdvancedFeaturesDemo) {
-                        AdvancedFeaturesDemo(onClose = { showAdvancedFeaturesDemo = false })
-                    } else {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            when (startDestination) {
-                                StartDestination.Splash -> SplashScreen()
-                                StartDestination.Onboarding -> OnboardingScreen(
-                                    onFinish = {
-                                        context.getSharedPreferences("onboarding", MODE_PRIVATE)
-                                            .edit().putBoolean("completed", true).apply()
-                                        startDestination = StartDestination.Main
-                                    }
-                                )
-                                StartDestination.Main -> AppNavigation()
-                            }
-
-                            // Add buttons to show features demos
-                            // Only show when not in splash screen
-                            if (startDestination != StartDestination.Splash) {
-                                Column(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Button(
-                                        onClick = { showUltraAdvancedFeaturesDemo = true },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.tertiary
-                                        ),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Show Ultra-Advanced Features")
-                                    }
-
-                                    Button(
-                                        onClick = { showAdvancedFeaturesDemo = true },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Show Advanced Features")
-                                    }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        when (startDestination) {
+                            StartDestination.Splash -> SplashScreen()
+                            StartDestination.Onboarding -> OnboardingScreen(
+                                onFinish = {
+                                    context.getSharedPreferences("onboarding", MODE_PRIVATE)
+                                        .edit().putBoolean("completed", true).apply()
+                                    startDestination = StartDestination.Main
                                 }
-                            }
+                            )
+                            StartDestination.Main -> AppNavigation()
                         }
                     }
                 }

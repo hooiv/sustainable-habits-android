@@ -80,12 +80,21 @@ fun MainBottomBar(
                 label = { Text("Stats") }
             )
             NavigationBarItem(
-                selected = currentRoute == NavRoutes.ADVANCED_FEATURES,
+                selected = currentRoute == NavRoutes.ADVANCED_FEATURES ||
+                          currentRoute == NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL ||
+                          currentRoute == NavRoutes.AR_GLOBAL ||
+                          currentRoute == NavRoutes.VOICE_INTEGRATION ||
+                          currentRoute == NavRoutes.QUANTUM_VISUALIZATION_GLOBAL ||
+                          currentRoute == NavRoutes.SPATIAL_COMPUTING ||
+                          currentRoute == NavRoutes.THREEJS_VISUALIZATION ||
+                          currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
+                          currentRoute == NavRoutes.MULTI_MODAL_LEARNING ||
+                          currentRoute == NavRoutes.META_LEARNING ||
+                          currentRoute == NavRoutes.NEURAL_NETWORK,
                 onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
                 icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
                 label = { Text("Advanced") }
             )
-
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.SETTINGS,
                 onClick = { onNavigate(NavRoutes.SETTINGS) },

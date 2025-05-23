@@ -333,6 +333,12 @@ fun HabitListScreen(
                                 },
                                 onARVisualizationClick = {
                                     navController.navigate(NavRoutes.ar(habit.id))
+                                },
+                                onBiometricIntegrationClick = {
+                                    navController.navigate(NavRoutes.biometricIntegration(habit.id))
+                                },
+                                onQuantumVisualizationClick = {
+                                    navController.navigate(NavRoutes.quantumVisualization(habit.id))
                                 }
                             )
                         }

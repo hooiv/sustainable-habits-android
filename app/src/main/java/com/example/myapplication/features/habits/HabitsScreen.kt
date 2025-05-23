@@ -15,6 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.data.model.Habit
 import com.example.myapplication.navigation.Screen
+import com.example.myapplication.navigation.NavRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +25,7 @@ fun HabitsScreen(
 ) {
     val habits by viewModel.habits.collectAsState()
     var habitToDelete by remember { mutableStateOf<Habit?>(null) }
-    
+
     // Show confirmation dialog when deleting a habit
     habitToDelete?.let { habit ->
         AlertDialog(
@@ -123,6 +124,21 @@ fun HabitsScreen(
                             },
                             onToggleEnabled = {
                                 viewModel.toggleHabitEnabled(habit)
+                            },
+                            onNeuralInterfaceClick = {
+                                navController.navigate(NavRoutes.neuralInterface(habit.id))
+                            },
+                            onCompletionHistoryClick = {
+                                navController.navigate(NavRoutes.habitCompletion(habit.id, habit.name))
+                            },
+                            onARVisualizationClick = {
+                                navController.navigate(NavRoutes.ar(habit.id))
+                            },
+                            onBiometricIntegrationClick = {
+                                navController.navigate(NavRoutes.biometricIntegration(habit.id))
+                            },
+                            onQuantumVisualizationClick = {
+                                navController.navigate(NavRoutes.quantumVisualization(habit.id))
                             }
                         )
                     }

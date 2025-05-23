@@ -120,6 +120,8 @@ fun HabitItem(
     onNeuralInterfaceClick: () -> Unit = {},
     onCompletionHistoryClick: () -> Unit = {},
     onARVisualizationClick: () -> Unit = {},
+    onBiometricIntegrationClick: () -> Unit = {},
+    onQuantumVisualizationClick: () -> Unit = {},
     index: Int = 0 // Added index parameter for staggered animations
 ) {
     // Get current date for comparison and formatting
@@ -592,6 +594,54 @@ fun HabitItem(
                                     Icon(
                                         imageVector = Icons.Default.Psychology,
                                         contentDescription = "Neural Interface",
+                                        tint = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
+                            )
+
+                            // AR Visualization option
+                            DropdownMenuItem(
+                                text = { Text("AR Visualization") },
+                                onClick = {
+                                    expanded = false
+                                    onARVisualizationClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.ViewInAr,
+                                        contentDescription = "AR Visualization",
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            )
+
+                            // Biometric Integration option
+                            DropdownMenuItem(
+                                text = { Text("Biometric Data") },
+                                onClick = {
+                                    expanded = false
+                                    onBiometricIntegrationClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.MonitorHeart,
+                                        contentDescription = "Biometric Data",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
+
+                            // Quantum Visualization option
+                            DropdownMenuItem(
+                                text = { Text("Quantum View") },
+                                onClick = {
+                                    expanded = false
+                                    onQuantumVisualizationClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Biotech,
+                                        contentDescription = "Quantum Visualization",
                                         tint = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
