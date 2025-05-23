@@ -49,6 +49,10 @@ object NavRoutes {
     // Neural network route
     const val NEURAL_NETWORK = "neural_network" // Neural network route
 
+    // AI Assistant routes
+    const val AI_ASSISTANT = "ai_assistant" // AI Assistant route
+    const val AI_ASSISTANT_SETTINGS = "ai_assistant_settings" // AI Assistant settings route
+
     // Habit completion routes
     const val HABIT_COMPLETION_ROUTE = "habit_completion" // Base route name
     const val HABIT_COMPLETION_ARG_ID = "habitId" // Argument name

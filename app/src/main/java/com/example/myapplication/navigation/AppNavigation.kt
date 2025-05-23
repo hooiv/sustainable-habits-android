@@ -90,7 +90,8 @@ fun MainBottomBar(
                           currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
                           currentRoute == NavRoutes.MULTI_MODAL_LEARNING ||
                           currentRoute == NavRoutes.META_LEARNING ||
-                          currentRoute == NavRoutes.NEURAL_NETWORK,
+                          currentRoute == NavRoutes.NEURAL_NETWORK ||
+                          currentRoute == NavRoutes.AI_ASSISTANT,
                 onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
                 icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
                 label = { Text("Advanced") }
@@ -447,6 +448,20 @@ fun AppNavigationGraph(navController: NavHostController) {
             )
         }
 
+        // AI Assistant screen
+        composable(route = NavRoutes.AI_ASSISTANT) {
+            com.example.myapplication.features.ai.AIAssistantScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // AI Assistant Settings screen
+        composable(route = NavRoutes.AI_ASSISTANT_SETTINGS) {
+            com.example.myapplication.features.ai.AIAssistantSettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
 
 
     }

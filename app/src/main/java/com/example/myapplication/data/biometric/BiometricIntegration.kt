@@ -118,6 +118,9 @@ class BiometricIntegration @Inject constructor(
     private var lastHeartRateMeasurement = 0L
     private val handler = Handler(Looper.getMainLooper())
 
+    // Flash monitoring
+    private var flashCheckRunnable: Runnable? = null
+
     // Accelerometer data for step counting and stress level
     private val accelerometerData = FloatArray(3)
     private val accelerometerHistory = mutableListOf<FloatArray>()
@@ -154,9 +157,11 @@ class BiometricIntegration @Inject constructor(
         // Initialize camera executor
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Set up image analysis
+        // Set up image analysis with optimized settings
         imageAnalyzer = ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .setImageQueueDepth(4) // Increase buffer size to prevent "Unable to acquire a buffer item" errors
             .build()
             .also { analysis ->
                 analysis.setAnalyzer(cameraExecutor!!, HeartRateAnalyzer())
@@ -180,6 +185,9 @@ class BiometricIntegration @Inject constructor(
 
                 // Turn on flash
                 turnOnFlash()
+
+                // Start flash monitoring to ensure it stays on
+                startFlashMonitoring()
 
                 // Start heart rate calculation
                 startHeartRateCalculation()
@@ -215,76 +223,176 @@ class BiometricIntegration @Inject constructor(
     }
 
     /**
-     * Stop heart rate monitoring
+     * Start flash monitoring to ensure it stays on during heart rate monitoring
+     */
+    private fun startFlashMonitoring() {
+        // Cancel any existing flash check
+        stopFlashMonitoring()
+
+        // Create a new runnable for periodic flash checks
+        flashCheckRunnable = object : Runnable {
+            override fun run() {
+                if (_isMonitoring.value) {
+                    // Check if flash is on and turn it on if it's not
+                    try {
+                        cameraId?.let { id ->
+                            // Check if torch mode is currently on
+                            val isFlashOn = try {
+                                // This is a workaround since there's no direct way to check torch state
+                                // We'll just try to turn it on again, which is safe if it's already on
+                                cameraManager.setTorchMode(id, true)
+                                Log.d(TAG, "Flash check - ensuring flash is on")
+                                true
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Flash check failed: ${e.message}")
+                                false
+                            }
+
+                            // Schedule the next check
+                            handler.postDelayed(this, 2000) // Check every 2 seconds
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error during flash check: ${e.message}")
+                    }
+                }
+            }
+        }
+
+        // Start the periodic check
+        handler.postDelayed(flashCheckRunnable!!, 2000) // First check after 2 seconds
+    }
+
+    /**
+     * Stop flash monitoring
+     */
+    private fun stopFlashMonitoring() {
+        flashCheckRunnable?.let {
+            handler.removeCallbacks(it)
+            flashCheckRunnable = null
+        }
+    }
+
+    /**
+     * Stop heart rate monitoring with proper cleanup sequence
      */
     fun stopHeartRateMonitoring() {
         if (!_isMonitoring.value) return
 
         _isMonitoring.value = false
 
-        // Turn off flash
-        turnOffFlash()
+        // First, stop heart rate calculation to prevent further processing
+        handler.removeCallbacksAndMessages(null)
 
-        // Stop camera
-        cameraProvider?.unbindAll()
-        cameraExecutor?.shutdown()
-        cameraExecutor = null
-        imageAnalyzer = null
+        // Stop flash monitoring
+        stopFlashMonitoring()
 
         // Unregister sensor listeners
         sensorManager.unregisterListener(this)
 
-        // Stop heart rate calculation
-        handler.removeCallbacksAndMessages(null)
+        try {
+            // Unbind camera use cases first
+            cameraProvider?.unbindAll()
 
-        Log.d(TAG, "Stopped heart rate monitoring")
+            // Small delay to ensure camera is released before turning off flash
+            Thread.sleep(50)
+
+            // Now it's safe to turn off flash
+            turnOffFlash()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during camera cleanup: ${e.message}")
+        } finally {
+            // Clean up executor
+            cameraExecutor?.shutdown()
+            cameraExecutor = null
+            imageAnalyzer = null
+
+            Log.d(TAG, "Stopped heart rate monitoring")
+        }
     }
 
     /**
-     * Turn on camera flash
+     * Turn on camera flash with retry mechanism
      */
     private fun turnOnFlash() {
-        try {
-            // Get the ID of the back camera
-            for (id in cameraManager.cameraIdList) {
-                val characteristics = cameraManager.getCameraCharacteristics(id)
-                val cameraDirection = characteristics.get(CameraCharacteristics.LENS_FACING)
+        // Try up to 3 times with increasing delays
+        for (attempt in 1..3) {
+            try {
+                // Get the ID of the back camera if we don't already have it
+                if (cameraId == null) {
+                    for (id in cameraManager.cameraIdList) {
+                        val characteristics = cameraManager.getCameraCharacteristics(id)
+                        val cameraDirection = characteristics.get(CameraCharacteristics.LENS_FACING)
 
-                if (cameraDirection == CameraCharacteristics.LENS_FACING_BACK) {
-                    // Check if flash is available
-                    val hasFlash = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+                        if (cameraDirection == CameraCharacteristics.LENS_FACING_BACK) {
+                            // Check if flash is available
+                            val hasFlash = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
 
-                    if (hasFlash) {
-                        cameraId = id
-                        break
+                            if (hasFlash) {
+                                cameraId = id
+                                break
+                            }
+                        }
+                    }
+                }
+
+                // Turn on flash if camera ID is available
+                cameraId?.let {
+                    cameraManager.setTorchMode(it, true)
+                    Log.d(TAG, "Flash turned on successfully on attempt $attempt")
+                    return // Exit the retry loop if successful
+                } ?: run {
+                    Log.e(TAG, "No camera with flash available")
+                    return // Exit if no flash is available
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error turning on flash (attempt $attempt): ${e.message}")
+
+                // If this is the last attempt, don't delay
+                if (attempt < 3) {
+                    try {
+                        // Increase delay with each attempt
+                        Thread.sleep(attempt * 100L)
+                    } catch (ie: InterruptedException) {
+                        Thread.currentThread().interrupt()
                     }
                 }
             }
-
-            // Turn on flash if camera ID is available
-            cameraId?.let {
-                cameraManager.setTorchMode(it, true)
-                Log.d(TAG, "Flash turned on")
-            } ?: run {
-                Log.e(TAG, "No camera with flash available")
-            }
-        } catch (e: CameraAccessException) {
-            Log.e(TAG, "Error turning on flash: ${e.message}")
         }
+
+        // If we get here, all attempts failed
+        Log.w(TAG, "Failed to turn on flash after multiple attempts")
     }
 
     /**
-     * Turn off camera flash
+     * Turn off camera flash with retry mechanism
      */
     private fun turnOffFlash() {
-        try {
-            cameraId?.let {
-                cameraManager.setTorchMode(it, false)
-                Log.d(TAG, "Flash turned off")
+        // Try up to 3 times with increasing delays
+        for (attempt in 1..3) {
+            try {
+                cameraId?.let {
+                    cameraManager.setTorchMode(it, false)
+                    Log.d(TAG, "Flash turned off on attempt $attempt")
+                    // If successful, exit the retry loop
+                    return
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error turning off flash (attempt $attempt): ${e.message}")
+
+                // If this is the last attempt, don't delay
+                if (attempt < 3) {
+                    try {
+                        // Increase delay with each attempt
+                        Thread.sleep(attempt * 100L)
+                    } catch (ie: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                    }
+                }
             }
-        } catch (e: CameraAccessException) {
-            Log.e(TAG, "Error turning off flash: ${e.message}")
         }
+
+        // If we get here, all attempts failed
+        Log.w(TAG, "Failed to turn off flash after multiple attempts")
     }
 
     /**
@@ -503,30 +611,43 @@ class BiometricIntegration @Inject constructor(
      */
     private inner class HeartRateAnalyzer : ImageAnalysis.Analyzer {
         override fun analyze(image: ImageProxy) {
-            // Only process every 20ms
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastHeartRateMeasurement < HEART_RATE_SAMPLE_PERIOD) {
+            try {
+                // Only process every 20ms to avoid overwhelming the system
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastHeartRateMeasurement < HEART_RATE_SAMPLE_PERIOD) {
+                    // Skip this frame but make sure to close it
+                    image.close()
+                    return
+                }
+                lastHeartRateMeasurement = currentTime
+
+                // Get image data
+                val buffer = image.planes[0].buffer
+                val redIntensity = calculateRedIntensity(buffer, image.width, image.height)
+
+                // Add to intensity list if it's a valid reading
+                if (redIntensity > 0) {
+                    redIntensities.add(redIntensity)
+
+                    // Limit the size of redIntensities to prevent memory issues
+                    if (redIntensities.size > HEART_RATE_SAMPLE_COUNT * 2) {
+                        redIntensities.subList(0, redIntensities.size - HEART_RATE_SAMPLE_COUNT).clear()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error analyzing image: ${e.message}")
+            } finally {
+                // Always close the image to release resources
                 image.close()
-                return
             }
-            lastHeartRateMeasurement = currentTime
-
-            // Get image data
-            val buffer = image.planes[0].buffer
-            val redIntensity = calculateRedIntensity(buffer, image.width, image.height)
-
-            // Add to intensity list
-            redIntensities.add(redIntensity)
-
-            image.close()
         }
 
         /**
-         * Calculate average red intensity from image data
+         * Calculate average red intensity from image data with optimized sampling
          */
         private fun calculateRedIntensity(buffer: ByteBuffer, width: Int, height: Int): Int {
-            val data = ByteArray(buffer.remaining())
-            buffer.get(data)
+            // Don't copy the entire buffer, just read what we need
+            val bufferSize = buffer.remaining()
 
             var redSum = 0
             var pixelCount = 0
@@ -536,19 +657,37 @@ class BiometricIntegration @Inject constructor(
             val centerY = height / 2
             val sampleRadius = Math.min(width, height) / 4
 
-            for (y in centerY - sampleRadius until centerY + sampleRadius step 4) {
-                for (x in centerX - sampleRadius until centerX + sampleRadius step 4) {
-                    if (y < 0 || y >= height || x < 0 || x >= width) continue
+            // Use a larger step size to reduce processing load
+            // This reduces the number of pixels we sample by 16x
+            val stepSize = 8
 
+            // Calculate the center region to sample (more efficient than checking bounds for each pixel)
+            val startY = Math.max(0, centerY - sampleRadius)
+            val endY = Math.min(height, centerY + sampleRadius)
+            val startX = Math.max(0, centerX - sampleRadius)
+            val endX = Math.min(width, centerX + sampleRadius)
+
+            for (y in startY until endY step stepSize) {
+                for (x in startX until endX step stepSize) {
                     val index = y * width + x
-                    if (index >= 0 && index < data.size) {
+
+                    // Ensure we don't read outside the buffer
+                    if (index >= 0 && index < bufferSize) {
                         // Get red component (assuming YUV format)
-                        val red = data[index].toInt() and 0xFF
-                        redSum += red
-                        pixelCount++
+                        // Read directly from buffer instead of copying to a byte array
+                        val red = buffer.get(index).toInt() and 0xFF
+
+                        // Only count pixels that might be from the fingertip (filter out dark pixels)
+                        if (red > RED_THRESHOLD) {
+                            redSum += red
+                            pixelCount++
+                        }
                     }
                 }
             }
+
+            // Reset buffer position to not affect other readers
+            buffer.position(0)
 
             return if (pixelCount > 0) redSum / pixelCount else 0
         }

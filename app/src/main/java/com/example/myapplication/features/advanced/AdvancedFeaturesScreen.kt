@@ -129,6 +129,15 @@ fun AdvancedFeaturesScreen(
             SectionHeader(title = "AI Features")
 
             FeatureCard(
+                title = "AI Assistant",
+                description = "Get personalized habit advice from AI",
+                icon = Icons.Default.Assistant,
+                onClick = {
+                    navController.navigate(NavRoutes.AI_ASSISTANT)
+                }
+            )
+
+            FeatureCard(
                 title = "Neural Interface",
                 description = "Connect with neural networks",
                 icon = Icons.Default.Psychology,
