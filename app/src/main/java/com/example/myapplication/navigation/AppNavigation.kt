@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
@@ -81,7 +79,7 @@ fun MainBottomBar(
                           currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
                           currentRoute == NavRoutes.THREEJS_VISUALIZATION,
                 onClick = { onNavigate(NavRoutes.ANIMATIONS) },
-                icon = { Icon(Icons.Default.Animation, contentDescription = "Animations") },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Animations") },
                 label = { Text("Animations") }
             )
 
@@ -94,7 +92,7 @@ fun MainBottomBar(
                           currentRoute == NavRoutes.SPATIAL_COMPUTING ||
                           currentRoute == NavRoutes.QUANTUM_VISUALIZATION_GLOBAL,
                 onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
-                icon = { Icon(Icons.Default.Psychology, contentDescription = "Advanced") },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
                 label = { Text("Advanced") }
             )
             NavigationBarItem(

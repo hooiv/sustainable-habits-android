@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +38,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -126,32 +126,60 @@ fun HabitItemAnimeJs(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var animeJsIntegration: AnimeJsIntegration? by remember { mutableStateOf(null) }
 
-    // Create a WebView for Anime.js animations
+    // Create a WebView for Anime.js animations (simplified version)
     Box(modifier = modifier.height(60.dp)) {
         AndroidView(
             factory = { ctx ->
                 WebView(ctx).apply {
-                    animeJsIntegration = AnimeJsIntegration(context, this)
-                }
-            },
-            update = { webView ->
-                // Initialize if needed
-                if (animeJsIntegration == null) {
-                    animeJsIntegration = AnimeJsIntegration(context, webView)
-                }
-
-                // Execute animation when habit changes
-                coroutineScope.launch {
-                    animeJsIntegration?.executeAnimation(
-                        when (animationType) {
-                            "pulse" -> AnimeJsIntegration.AnimationType.PULSE
-                            "rotate" -> AnimeJsIntegration.AnimationType.ROTATE
-                            "fade" -> AnimeJsIntegration.AnimationType.FADE
-                            else -> AnimeJsIntegration.AnimationType.PULSE
-                        }
-                    )
+                    settings.javaScriptEnabled = true
+                    // Load a simple HTML with anime.js animation based on type
+                    val html = """
+                        <html>
+                        <head>
+                            <script src="https://animejs.com/lib/anime.min.js"></script>
+                        </head>
+                        <body>
+                            <div id="habit-animation" style="width: 100%; height: 100%; background: transparent;">
+                                <div id="habit-element" style="width: 50px; height: 50px; background: #6200EE; margin: auto; border-radius: 50%;"></div>
+                            </div>
+                            <script>
+                                function animateElement() {
+                                    const type = '$animationType';
+                                    const element = document.getElementById('habit-element');
+                                    
+                                    if (type === 'pulse') {
+                                        anime({
+                                            targets: element,
+                                            scale: [1, 1.3, 1],
+                                            duration: 1000,
+                                            easing: 'easeInOutQuad',
+                                            loop: true
+                                        });
+                                    } else if (type === 'rotate') {
+                                        anime({
+                                            targets: element,
+                                            rotate: '1turn',
+                                            duration: 2000,
+                                            easing: 'easeInOutQuad',
+                                            loop: true
+                                        });
+                                    } else if (type === 'fade') {
+                                        anime({
+                                            targets: element,
+                                            opacity: [1, 0.3, 1],
+                                            duration: 1500,
+                                            easing: 'easeInOutQuad',
+                                            loop: true
+                                        });
+                                    }
+                                }
+                                animateElement();
+                            </script>
+                        </body>
+                        </html>
+                    """.trimIndent()
+                    loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
                 }
             }
         )
@@ -630,6 +658,7 @@ fun HabitItem(
                             // Basic options section
                             DropdownMenuItem(
                                 text = { Text("Basic Options", fontWeight = FontWeight.Bold) },
+                                onClick = { }, // Empty onClick since it's disabled
                                 enabled = false,
                                 leadingIcon = {
                                     Icon(
@@ -681,7 +710,7 @@ fun HabitItem(
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = if (useAnimeJs) Icons.Default.Animation else Icons.Default.AnimationDisabled,
+                                        imageVector = if (useAnimeJs) Icons.Default.Animation else Icons.Default.Info,
                                         contentDescription = if (useAnimeJs) "Disable animations" else "Enable animations",
                                         tint = if (useAnimeJs) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                     )
@@ -692,6 +721,7 @@ fun HabitItem(
                             DropdownMenuItem(
                                 text = { Text("Advanced Features", fontWeight = FontWeight.Bold) },
                                 enabled = false,
+                                onClick = { }, // Empty onClick since it's disabled
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Psychology,
@@ -726,7 +756,7 @@ fun HabitItem(
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Default.ViewInAr,
+                                        imageVector = Icons.Default.Info,
                                         contentDescription = "AR Visualization",
                                         tint = MaterialTheme.colorScheme.secondary
                                     )
@@ -742,7 +772,7 @@ fun HabitItem(
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Default.MonitorHeart,
+                                        imageVector = Icons.Default.Info,
                                         contentDescription = "Biometric Data",
                                         tint = MaterialTheme.colorScheme.primary
                                     )
@@ -758,7 +788,7 @@ fun HabitItem(
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Default.Biotech,
+                                        imageVector = Icons.Default.Info,
                                         contentDescription = "Quantum Visualization",
                                         tint = MaterialTheme.colorScheme.tertiary
                                     )

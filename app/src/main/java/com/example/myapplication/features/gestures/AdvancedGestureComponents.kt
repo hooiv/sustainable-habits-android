@@ -35,17 +35,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.*
 
 /**
- * Data class representing a gesture action
- */
-data class GestureAction(
-    val id: String,
-    val name: String,
-    val description: String,
-    val icon: ImageVector,
-    val action: () -> Unit
-)
-
-/**
  * A component that provides a radial gesture menu activated by long press
  */
 @Composable

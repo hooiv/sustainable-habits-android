@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.1"
+agp = "8.13.0"
 kotlin = "1.9.24" # Updated to match Compose Compiler requirements
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -12,12 +12,30 @@ navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0" # Added Hilt Navigation Compose version
-composeBom = "2024.05.00" # Downgraded for compatibility with Kotlin 1.9.24 and Compiler 1.5.14
+composeBom = "2024.02.02" # Downgraded for compatibility with Kotlin 1.9.24 and Compiler 1.5.14
+composeCompiler = "1.5.14" # Explicitly set Compose Compiler version
 activityCompose = "1.9.0" # Ensure this is compatible with new BOM, or let BOM manage it
 composeNavigation = "2.8.0-beta05" # Ensure this is compatible, or let BOM manage it
 room = "2.6.1"
 googleServices = "4.4.1" # Added Google Services version
 ksp = "1.9.24-1.0.20" # Ensure this KSP version is compatible with your Kotlin version
+coroutines = "1.8.0"
+lottie = "6.4.0"
+gson = "2.10.1"
+retrofit = "2.9.0"
+okhttp = "4.12.0"
+coil = "2.6.0"
+mpandroidchart = "v3.1.0"
+firebaseBom = "32.8.1"
+playServicesAuth = "21.1.1"
+tensorflowLite = "2.16.1"
+workmanager = "2.9.0"
+hiltWork = "1.2.0"
+datastore = "1.1.1"
+biometric = "1.2.0-alpha05"
+camera = "1.3.3"
+lifecycle = "2.8.0"
+arcore = "1.41.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +50,10 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 
+# Coroutines
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
@@ -43,6 +65,12 @@ androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
+androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry" }
+androidx-compose-material = { group = "androidx.compose.material", name = "material" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+
 
 # Compose Navigation
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" } # Corrected to use specific version
@@ -65,10 +93,65 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 
+# Lottie
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+
 # Room
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" } # For Coroutines support
+
+# Gson
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# Retrofit
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Coil
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# MPAndroidChart
+mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+
+# TensorFlow Lite
+tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
+
+# WorkManager
+workmanager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workmanager" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+hilt-work-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
+
+# DataStore
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+# Biometric
+biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+
+# CameraX
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camera" }
+camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camera" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camera" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camera" }
+camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camera" }
+
+# Lifecycle
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+# ARCore
+arcore = { group = "com.google.ar", name = "core", version.ref = "arcore" }
+
 
 # Hilt Dependency for Navigation Compose
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -79,4 +162,3 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" } # Added Google Services plugin
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-

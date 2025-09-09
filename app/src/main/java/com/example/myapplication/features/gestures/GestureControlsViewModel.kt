@@ -9,29 +9,20 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
- * Data class for gesture actions
- */
-data class GestureAction(
-    val name: String,
-    val icon: ImageVector,
-    val action: () -> Unit
-)
-
-/**
  * ViewModel for the Gesture Controls screen
  */
 @HiltViewModel
 class GestureControlsViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-    
+
     /**
      * Show a toast message
      */
     fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
-    
+
     /**
      * Save gesture settings
      */
@@ -45,7 +36,7 @@ class GestureControlsViewModel @Inject constructor(
         // For now, we'll just show a toast
         showToast("Settings saved")
     }
-    
+
     /**
      * Save gesture action assignment
      */

@@ -26,9 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.ml.HabitPrediction
-import com.example.myapplication.data.ml.PredictionFactor
-import com.example.myapplication.data.ml.PredictionType
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,14 +40,14 @@ fun PredictiveMLScreen(
     viewModel: PredictiveMLViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    
+
     // State
     val predictions by viewModel.predictions.collectAsState()
     val isTraining by viewModel.isTraining.collectAsState()
     val trainingProgress by viewModel.trainingProgress.collectAsState()
     val modelAccuracy by viewModel.modelAccuracy.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,7 +98,7 @@ fun PredictiveMLScreen(
                 1 -> TrainingTab(isTraining, trainingProgress, modelAccuracy, viewModel)
                 2 -> InsightsTab(predictions, viewModel)
             }
-            
+
             // Training overlay
             AnimatedVisibility(
                 visible = isTraining,
@@ -129,32 +126,32 @@ fun PredictiveMLScreen(
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             CircularProgressIndicator(
                                 progress = { trainingProgress },
                                 modifier = Modifier.size(80.dp),
                                 strokeWidth = 8.dp
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "${(trainingProgress * 100).toInt()}%",
                                 style = MaterialTheme.typography.titleMedium
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = "Please wait while the model is being trained...",
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Button(
                                 onClick = { viewModel.cancelTraining() },
                                 colors = ButtonDefaults.buttonColors(
@@ -189,16 +186,16 @@ fun PredictionsTab(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "ML-powered predictions about your habits",
             style = MaterialTheme.typography.bodyLarge
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         if (predictions.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -215,26 +212,26 @@ fun PredictionsTab(
                         modifier = Modifier.size(64.dp),
                         tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "No predictions available",
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = "Train the model to generate predictions",
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    
+
                     Button(onClick = { viewModel.startTraining() }) {
                         Icon(
                             imageVector = Icons.Default.ModelTraining,
@@ -251,7 +248,7 @@ fun PredictionsTab(
                 modifier = Modifier.weight(1f),
                 onPredictionClick = { prediction ->
                     // Handle prediction click
-                    viewModel.showToast("Prediction: ${prediction.description}")
+                    viewModel.showToast("Prediction: ${prediction.habitName}")
                 }
             )
         }
@@ -278,16 +275,16 @@ fun TrainingTab(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Train and visualize your ML model",
             style = MaterialTheme.typography.bodyLarge
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Model accuracy
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -301,9 +298,9 @@ fun TrainingTab(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -312,16 +309,16 @@ fun TrainingTab(
                         modifier = Modifier.size(60.dp),
                         strokeWidth = 6.dp
                     )
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Column {
                         Text(
                             text = "${(modelAccuracy * 100).toInt()}%",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Text(
                             text = if (modelAccuracy < 0.7f) {
                                 "Needs more training data"
@@ -337,26 +334,26 @@ fun TrainingTab(
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Training visualizer
         Text(
             text = "Training Visualization",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         MLModelTrainingVisualizer(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Training controls
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -374,7 +371,7 @@ fun TrainingTab(
                 )
                 Text("Train Model")
             }
-            
+
             OutlinedButton(
                 onClick = { viewModel.resetModel() },
                 modifier = Modifier.weight(1f),
@@ -409,16 +406,16 @@ fun InsightsTab(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Understand what factors influence your habits",
             style = MaterialTheme.typography.bodyLarge
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         if (predictions.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -435,17 +432,17 @@ fun InsightsTab(
                         modifier = Modifier.size(64.dp),
                         tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "No insights available",
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = "Train the model to generate insights",
                         style = MaterialTheme.typography.bodyLarge,
@@ -473,9 +470,9 @@ fun InsightsTab(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             // Feature importance bars
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -484,22 +481,22 @@ fun InsightsTab(
                                     feature = "Time of Day",
                                     importance = 0.85f
                                 )
-                                
+
                                 FeatureImportanceBar(
                                     feature = "Day of Week",
                                     importance = 0.72f
                                 )
-                                
+
                                 FeatureImportanceBar(
                                     feature = "Location",
                                     importance = 0.64f
                                 )
-                                
+
                                 FeatureImportanceBar(
                                     feature = "Mood",
                                     importance = 0.58f
                                 )
-                                
+
                                 FeatureImportanceBar(
                                     feature = "Previous Habit",
                                     importance = 0.45f
@@ -508,7 +505,7 @@ fun InsightsTab(
                         }
                     }
                 }
-                
+
                 // Prediction factors
                 item {
                     Card(
@@ -523,9 +520,9 @@ fun InsightsTab(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
@@ -533,17 +530,17 @@ fun InsightsTab(
                                     factor = PredictionFactor.TIME_OF_DAY,
                                     description = "Morning (6-9 AM) is your most productive time"
                                 )
-                                
+
                                 PredictionFactorItem(
                                     factor = PredictionFactor.DAY_OF_WEEK,
                                     description = "You're most consistent on Tuesdays and Thursdays"
                                 )
-                                
+
                                 PredictionFactorItem(
                                     factor = PredictionFactor.LOCATION,
                                     description = "Home environment increases completion by 35%"
                                 )
-                                
+
                                 PredictionFactorItem(
                                     factor = PredictionFactor.MOOD,
                                     description = "Positive mood correlates with 28% higher completion"
@@ -575,7 +572,7 @@ fun FeatureImportanceBar(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.width(120.dp)
             )
-            
+
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -591,7 +588,7 @@ fun FeatureImportanceBar(
                         .background(MaterialTheme.colorScheme.primary)
                 )
             }
-            
+
             Text(
                 text = "${(importance * 100).toInt()}%",
                 style = MaterialTheme.typography.bodySmall,
@@ -627,7 +624,7 @@ fun PredictionFactorItem(
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 2.dp, end = 16.dp)
         )
-        
+
         Column {
             Text(
                 text = factor.name.replace("_", " ").lowercase()
@@ -636,9 +633,9 @@ fun PredictionFactorItem(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(2.dp))
-            
+
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,

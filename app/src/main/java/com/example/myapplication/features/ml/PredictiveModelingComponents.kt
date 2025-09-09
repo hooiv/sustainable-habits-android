@@ -54,7 +54,7 @@ data class HabitPrediction(
     val predictionType: PredictionType,
     val probability: Float, // 0.0 to 1.0
     val timeframe: String,
-    val factors: List<PredictionFactor>,
+    val factors: List<PredictionFactorDetail>, // renamed type
     val timestamp: Date = Date(),
     val confidenceInterval: Pair<Float, Float> = Pair(0f, 0f)
 )
@@ -62,7 +62,7 @@ data class HabitPrediction(
 /**
  * Data class representing a factor influencing a prediction
  */
-data class PredictionFactor(
+data class PredictionFactorDetail(
     val name: String,
     val impact: Float, // -1.0 to 1.0 (negative to positive impact)
     val confidence: Float // 0.0 to 1.0
@@ -78,6 +78,19 @@ enum class PredictionType {
     HABIT_ABANDONMENT,
     OPTIMAL_TIME,
     DIFFICULTY_CHANGE
+}
+
+/**
+ * Enum for different prediction factors
+ */
+enum class PredictionFactor {
+    TIME_OF_DAY,
+    DAY_OF_WEEK,
+    LOCATION,
+    MOOD,
+    PREVIOUS_HABIT,
+    SOCIAL_CONTEXT,
+    WEATHER
 }
 
 /**
@@ -295,7 +308,7 @@ fun MLModelTrainingVisualizer(
 
         // Progress bar
         LinearProgressIndicator(
-            progress = trainingProgress,
+            progress = { trainingProgress },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp)
@@ -695,7 +708,7 @@ fun PredictionCard(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        progress = prediction.probability,
+                        progress = { prediction.probability },
                         modifier = Modifier.fillMaxSize(),
                         color = when {
                             prediction.probability > 0.7f -> MaterialTheme.colorScheme.primary

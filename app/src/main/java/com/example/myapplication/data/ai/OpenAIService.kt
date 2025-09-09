@@ -1,19 +1,19 @@
 package com.example.myapplication.data.ai
 
 import android.util.Log
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.data.model.*
 import com.example.myapplication.features.ai.AISuggestion
 import com.example.myapplication.features.ai.SuggestionType
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import okio.Buffer
 import okio.BufferedSource
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -192,8 +192,7 @@ class OpenAIService @Inject constructor(
                 model = MODEL,
                 messages = messages,
                 temperature = 0.7f,
-                stream = true,
-                max_tokens = 1000 // Allow for longer responses when needed
+                stream = true
             )
 
             val response = openAIApiClient.createStreamingChatCompletion(
@@ -402,7 +401,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -426,7 +425,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -450,7 +449,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -474,7 +473,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -498,7 +497,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -522,7 +521,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**
@@ -546,7 +545,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
     }
 
     /**

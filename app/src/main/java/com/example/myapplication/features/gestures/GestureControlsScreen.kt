@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,77 +53,102 @@ fun GestureControlsScreen(
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-    
+
     // State
     var selectedTab by remember { mutableStateOf(0) }
     var showGestureDemo by remember { mutableStateOf(false) }
     var showRadialMenu by remember { mutableStateOf(false) }
     var showSwipeArea by remember { mutableStateOf(false) }
     var showCustomGestures by remember { mutableStateOf(false) }
-    
+
     // Sample gesture actions
     val gestureActions = remember {
         listOf(
-            GestureAction("Complete Habit", Icons.Default.Check) { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                coroutineScope.launch {
-                    viewModel.showToast("Habit completed")
-                    delay(500)
+            GestureAction(
+                name = "Complete Habit",
+                description = "Complete the current habit",
+                icon = Icons.Default.Check,
+                action = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    coroutineScope.launch {
+                        viewModel.showToast("Habit completed")
+                        delay(500)
+                    }
                 }
-            },
-            GestureAction("Skip Habit", Icons.Default.SkipNext) { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                coroutineScope.launch {
-                    viewModel.showToast("Habit skipped")
-                    delay(500)
+            ),
+            GestureAction(
+                name = "Skip Habit",
+                description = "Skip the current habit",
+                icon = Icons.Default.SkipNext,
+                action = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    coroutineScope.launch {
+                        viewModel.showToast("Habit skipped")
+                        delay(500)
+                    }
                 }
-            },
-            GestureAction("Add Note", Icons.Default.Edit) { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                coroutineScope.launch {
-                    viewModel.showToast("Adding note")
-                    delay(500)
+            ),
+            GestureAction(
+                name = "Add Note",
+                description = "Add a note to the current habit",
+                icon = Icons.Default.Edit,
+                action = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    coroutineScope.launch {
+                        viewModel.showToast("Adding note")
+                        delay(500)
+                    }
                 }
-            },
-            GestureAction("Set Reminder", Icons.Default.Alarm) { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                coroutineScope.launch {
-                    viewModel.showToast("Setting reminder")
-                    delay(500)
+            ),
+            GestureAction(
+                name = "Set Reminder",
+                description = "Set a reminder for the current habit",
+                icon = Icons.Default.Alarm,
+                action = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    coroutineScope.launch {
+                        viewModel.showToast("Setting reminder")
+                        delay(500)
+                    }
                 }
-            },
-            GestureAction("View Stats", Icons.Default.BarChart) { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                coroutineScope.launch {
-                    viewModel.showToast("Viewing stats")
-                    delay(500)
+            ),
+            GestureAction(
+                name = "View Stats",
+                description = "View stats for the current habit",
+                icon = Icons.Default.BarChart,
+                action = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    coroutineScope.launch {
+                        viewModel.showToast("Viewing stats")
+                        delay(500)
+                    }
                 }
-            }
+            )
         )
     }
-    
+
     // Sample swipe actions
     val swipeActions = remember {
         mapOf(
-            "Left" to { 
+            "Left" to {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                viewModel.showToast("Swiped Left: Skip habit") 
+                viewModel.showToast("Swiped Left: Skip habit")
             },
-            "Right" to { 
+            "Right" to {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                viewModel.showToast("Swiped Right: Complete habit") 
+                viewModel.showToast("Swiped Right: Complete habit")
             },
-            "Up" to { 
+            "Up" to {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                viewModel.showToast("Swiped Up: View details") 
+                viewModel.showToast("Swiped Up: View details")
             },
-            "Down" to { 
+            "Down" to {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                viewModel.showToast("Swiped Down: Hide habit") 
+                viewModel.showToast("Swiped Down: Hide habit")
             }
         )
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -177,17 +203,17 @@ fun GestureControlsScreen(
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = "Explore and test different gesture controls to interact with your habits more efficiently.",
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            
+
                             Spacer(modifier = Modifier.height(24.dp))
                         }
-                        
+
                         item {
                             GestureCard(
                                 title = "Radial Menu",
@@ -197,7 +223,7 @@ fun GestureControlsScreen(
                                 onToggle = { showRadialMenu = it }
                             )
                         }
-                        
+
                         item {
                             GestureCard(
                                 title = "Swipe Gestures",
@@ -207,7 +233,7 @@ fun GestureControlsScreen(
                                 onToggle = { showSwipeArea = it }
                             )
                         }
-                        
+
                         item {
                             GestureCard(
                                 title = "Custom Gestures",
@@ -217,19 +243,19 @@ fun GestureControlsScreen(
                                 onToggle = { showCustomGestures = it }
                             )
                         }
-                        
+
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "Gesture Demo Area",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
                         }
-                        
+
                         item {
                             // Demo area
                             Card(
@@ -251,7 +277,7 @@ fun GestureControlsScreen(
                                             }
                                         )
                                     }
-                                    
+
                                     // Swipe Area Demo
                                     if (showSwipeArea) {
                                         SwipeGestureArea(
@@ -259,14 +285,16 @@ fun GestureControlsScreen(
                                             onSwipeRight = swipeActions["Right"] ?: {},
                                             onSwipeUp = swipeActions["Up"] ?: {},
                                             onSwipeDown = swipeActions["Down"] ?: {}
-                                        )
+                                        ) {
+
+                                        }
                                     }
-                                    
+
                                     // Custom Gestures Demo
                                     if (showCustomGestures) {
                                         CustomGestureRecognizer()
                                     }
-                                    
+
                                     // Default state
                                     if (!showRadialMenu && !showSwipeArea && !showCustomGestures) {
                                         Text(
@@ -323,9 +351,9 @@ fun GestureCard(
                 tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.size(32.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -334,14 +362,14 @@ fun GestureCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
-            
+
             Switch(
                 checked = isActive,
                 onCheckedChange = { onToggle(it) }
@@ -359,7 +387,7 @@ fun GestureSettingsTab() {
     var hapticFeedbackEnabled by remember { mutableStateOf(true) }
     var gestureSpeed by remember { mutableStateOf(0.5f) }
     var gestureSensitivity by remember { mutableStateOf(0.7f) }
-    
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -372,10 +400,10 @@ fun GestureSettingsTab() {
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         item {
             SettingsSwitch(
                 title = "Enable Gestures",
@@ -384,7 +412,7 @@ fun GestureSettingsTab() {
                 onCheckedChange = { gestureEnabled = it }
             )
         }
-        
+
         item {
             SettingsSwitch(
                 title = "Haptic Feedback",
@@ -393,14 +421,14 @@ fun GestureSettingsTab() {
                 onCheckedChange = { hapticFeedbackEnabled = it }
             )
         }
-        
+
         item {
             Text(
                 text = "Gesture Speed",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Slider(
                 value = gestureSpeed,
                 onValueChange = { gestureSpeed = it },
@@ -408,7 +436,7 @@ fun GestureSettingsTab() {
                 steps = 10,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -425,14 +453,14 @@ fun GestureSettingsTab() {
                 )
             }
         }
-        
+
         item {
             Text(
                 text = "Gesture Sensitivity",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Slider(
                 value = gestureSensitivity,
                 onValueChange = { gestureSensitivity = it },
@@ -440,7 +468,7 @@ fun GestureSettingsTab() {
                 steps = 10,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -484,14 +512,14 @@ fun SettingsSwitch(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
-        
+
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
@@ -505,7 +533,7 @@ fun SettingsSwitch(
 @Composable
 fun GestureCustomizationTab(gestureActions: List<GestureAction>) {
     var editingAction by remember { mutableStateOf<GestureAction?>(null) }
-    
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -518,24 +546,24 @@ fun GestureCustomizationTab(gestureActions: List<GestureAction>) {
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = "Assign actions to different gestures and customize their behavior",
                 style = MaterialTheme.typography.bodyLarge
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         items(gestureActions) { action ->
             ActionAssignmentCard(
                 action = action,
                 onEdit = { editingAction = action }
             )
         }
-        
+
         item {
             Button(
                 onClick = { /* Add new gesture action */ },
@@ -552,7 +580,7 @@ fun GestureCustomizationTab(gestureActions: List<GestureAction>) {
             }
         }
     }
-    
+
     // Edit dialog
     if (editingAction != null) {
         AlertDialog(
@@ -604,15 +632,15 @@ fun ActionAssignmentCard(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Text(
                 text = action.name,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )
-            
+
             IconButton(onClick = onEdit) {
                 Icon(
                     imageVector = Icons.Default.Edit,
@@ -631,14 +659,14 @@ fun CustomGestureRecognizer() {
     val hapticFeedback = LocalHapticFeedback.current
     var gesturePoints by remember { mutableStateOf(listOf<Offset>()) }
     var currentGesture by remember { mutableStateOf<String?>(null) }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.05f))
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = { 
+                    onDragStart = {
                         gesturePoints = listOf(it)
                         currentGesture = null
                     },
@@ -665,7 +693,7 @@ fun CustomGestureRecognizer() {
                 // Drawing code would go here
             }
         }
-        
+
         // Show recognized gesture
         AnimatedVisibility(
             visible = currentGesture != null,
@@ -686,7 +714,7 @@ fun CustomGestureRecognizer() {
                 }
             }
         }
-        
+
         // Instructions
         if (gesturePoints.isEmpty() && currentGesture == null) {
             Text(

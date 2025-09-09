@@ -7,9 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -457,7 +455,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Assistant,
+                    imageVector = Icons.Default.Face,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -483,7 +481,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.MonitorHeart,
+                    imageVector = Icons.Default.Favorite,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -496,7 +494,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Psychology,
+                    imageVector = Icons.Default.Star,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -509,7 +507,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.ViewInAr,
+                    imageVector = Icons.Default.Place,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -522,7 +520,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Biotech,
+                    imageVector = Icons.Default.Star,
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp)
                 )

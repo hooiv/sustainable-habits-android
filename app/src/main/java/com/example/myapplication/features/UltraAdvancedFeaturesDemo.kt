@@ -30,9 +30,9 @@ import com.example.myapplication.data.model.Offset3D
 import com.example.myapplication.data.model.Rotation3D
 import com.example.myapplication.data.model.SpatialObject
 import com.example.myapplication.data.model.SpatialObjectType
-import com.example.myapplication.data.ml.PredictionType
-import com.example.myapplication.data.ml.HabitPrediction
-import com.example.myapplication.data.ml.PredictionFactor
+import com.example.myapplication.features.ml.PredictionType
+import com.example.myapplication.features.ml.HabitPrediction
+import com.example.myapplication.features.ml.PredictionFactorDetail
 import com.example.myapplication.data.model.VoiceCommand
 import com.example.myapplication.data.model.VoiceIntent
 import com.example.myapplication.data.model.VoiceEntity
@@ -185,9 +185,9 @@ fun UltraAdvancedFeaturesDemo(
                 timeframe = "Today",
                 confidenceInterval = Pair(0.82f, 0.92f),
                 factors = listOf(
-                    PredictionFactor("Previous completion pattern", 0.6f, 0.9f),
-                    PredictionFactor("Sleep quality", 0.3f, 0.8f),
-                    PredictionFactor("Morning schedule", -0.1f, 0.7f)
+                    PredictionFactorDetail("Previous completion pattern", 0.6f, 0.9f),
+                    PredictionFactorDetail("Sleep quality", 0.3f, 0.8f),
+                    PredictionFactorDetail("Morning schedule", -0.1f, 0.7f)
                 )
             ),
             HabitPrediction(
@@ -198,9 +198,9 @@ fun UltraAdvancedFeaturesDemo(
                 timeframe = "Next 7 days",
                 confidenceInterval = Pair(0.58f, 0.72f),
                 factors = listOf(
-                    PredictionFactor("Current streak momentum", 0.4f, 0.85f),
-                    PredictionFactor("Evening availability", -0.2f, 0.75f),
-                    PredictionFactor("Content interest level", 0.5f, 0.9f)
+                    PredictionFactorDetail("Current streak momentum", 0.4f, 0.85f),
+                    PredictionFactorDetail("Evening availability", -0.2f, 0.75f),
+                    PredictionFactorDetail("Content interest level", 0.5f, 0.9f)
                 )
             ),
             HabitPrediction(
@@ -211,9 +211,9 @@ fun UltraAdvancedFeaturesDemo(
                 timeframe = "Today",
                 confidenceInterval = Pair(0.88f, 0.96f),
                 factors = listOf(
-                    PredictionFactor("Historical completion times", 0.7f, 0.95f),
-                    PredictionFactor("Weather forecast", 0.2f, 0.8f),
-                    PredictionFactor("Energy level pattern", 0.5f, 0.85f)
+                    PredictionFactorDetail("Historical completion times", 0.7f, 0.95f),
+                    PredictionFactorDetail("Weather forecast", 0.2f, 0.8f),
+                    PredictionFactorDetail("Energy level pattern", 0.5f, 0.85f)
                 )
             )
         )
@@ -525,7 +525,7 @@ fun UltraAdvancedFeaturesDemo(
                                     .padding(bottom = 24.dp)
                             )
 
-                            com.example.myapplication.features.biometric.BiometricComponents.BiometricReadingsList(
+                            BiometricComponents.BiometricReadingsList(
                                 readings = sampleBiometricReadings,
                                 modifier = Modifier.fillMaxWidth().weight(1f)
                             )
@@ -606,7 +606,7 @@ fun UltraAdvancedFeaturesDemo(
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
 
-                            com.example.myapplication.features.voice.VoiceComponents.VoiceRecognitionInterface(
+                            com.example.myapplication.features.voice.VoiceRecognitionInterface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 24.dp),
@@ -615,7 +615,7 @@ fun UltraAdvancedFeaturesDemo(
                                 }
                             )
 
-                            com.example.myapplication.features.voice.VoiceComponents.NLPResultDisplay(
+                            com.example.myapplication.features.voice.NLPResultDisplay(
                                 command = sampleVoiceCommand,
                                 modifier = Modifier.fillMaxWidth()
                             )

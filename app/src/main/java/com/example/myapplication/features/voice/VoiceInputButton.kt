@@ -1,5 +1,6 @@
 package com.example.myapplication.features.voice
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -49,27 +50,27 @@ fun VoiceInputButton(
         ),
         label = "buttonSize"
     )
-    
+
     // Button color animation
     val buttonColor by animateColorAsState(
-        targetValue = if (isListening) 
-            MaterialTheme.colorScheme.primary 
-        else 
+        targetValue = if (isListening)
+            MaterialTheme.colorScheme.primary
+        else
             MaterialTheme.colorScheme.primaryContainer,
         animationSpec = tween(300),
         label = "buttonColor"
     )
-    
+
     // Content color animation
     val contentColor by animateColorAsState(
-        targetValue = if (isListening) 
-            MaterialTheme.colorScheme.onPrimary 
-        else 
+        targetValue = if (isListening)
+            MaterialTheme.colorScheme.onPrimary
+        else
             MaterialTheme.colorScheme.onPrimaryContainer,
         animationSpec = tween(300),
         label = "contentColor"
     )
-    
+
     Box(
         modifier = modifier
             .padding(16.dp),
@@ -88,7 +89,7 @@ fun VoiceInputButton(
                     ),
                     label = "rippleScale$index"
                 )
-                
+
                 val alpha by infiniteTransition.animateFloat(
                     initialValue = 0.7f,
                     targetValue = 0f,
@@ -98,7 +99,7 @@ fun VoiceInputButton(
                     ),
                     label = "rippleAlpha$index"
                 )
-                
+
                 Canvas(
                     modifier = Modifier
                         .size(buttonSize * 2)
@@ -112,7 +113,7 @@ fun VoiceInputButton(
                 }
             }
         }
-        
+
         // Voice amplitude visualization
         if (isListening && voiceAmplitude > 0) {
             val animatedAmplitude by animateFloatAsState(
@@ -120,7 +121,7 @@ fun VoiceInputButton(
                 animationSpec = tween(100),
                 label = "amplitude"
             )
-            
+
             Canvas(
                 modifier = Modifier
                     .size(buttonSize * 1.5f)
@@ -131,7 +132,7 @@ fun VoiceInputButton(
                 )
             }
         }
-        
+
         // Main button
         FloatingActionButton(
             onClick = {
@@ -156,7 +157,7 @@ fun VoiceInputButton(
                 modifier = Modifier.size(24.dp)
             )
         }
-        
+
         // Voice input text display
         if (isListening && voiceInputText.isNotEmpty()) {
             Surface(
@@ -178,7 +179,7 @@ fun VoiceInputButton(
                 )
             }
         }
-        
+
         // Mode indicators
         if (isListening) {
             Row(
@@ -199,7 +200,7 @@ fun VoiceInputButton(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
+
                 if (continuous && useWakeWord) {
                     Spacer(modifier = Modifier.width(4.dp))
                     Box(
@@ -212,7 +213,7 @@ fun VoiceInputButton(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }
-                
+
                 if (useWakeWord) {
                     Text(
                         text = "Wake Word",

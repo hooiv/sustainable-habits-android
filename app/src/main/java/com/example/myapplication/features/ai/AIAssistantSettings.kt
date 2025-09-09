@@ -16,35 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
-/**
- * Data class for AI Assistant personalization settings
- */
-data class AIAssistantPersonalization(
-    // General settings
-    val useStreaming: Boolean = true,
-    val useVoice: Boolean = false,
-    val voiceSpeed: Float = 1.0f,
-    val voicePitch: Float = 1.0f,
-    
-    // Voice recognition settings
-    val continuousListening: Boolean = false,
-    val useWakeWord: Boolean = false,
-    val customWakeWords: List<String> = emptyList(),
-    
-    // Context settings
-    val includeMoodData: Boolean = true,
-    val includeLocationData: Boolean = true,
-    val includeTimePatterns: Boolean = true,
-    
-    // Appearance settings
-    val showAnimations: Boolean = true,
-    val darkTheme: Boolean = false,
-    
-    // Privacy settings
-    val saveConversationHistory: Boolean = true,
-    val shareHabitData: Boolean = true
-)
+import com.example.myapplication.data.model.AIAssistantPersonalization
 
 /**
  * AI Assistant Settings Screen

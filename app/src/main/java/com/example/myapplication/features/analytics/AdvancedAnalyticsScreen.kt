@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.Random
 
 /**
  * Screen for advanced analytics
@@ -46,14 +48,14 @@ fun AdvancedAnalyticsScreen(
     viewModel: AdvancedAnalyticsViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    
+
     // State
     val habits by viewModel.habits.collectAsState()
     val completions by viewModel.completions.collectAsState()
     val insights by viewModel.insights.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
-    
+
     // Sample correlation data
     val correlationData = remember(habits) {
         if (habits.size < 2) {
@@ -63,13 +65,13 @@ fun AdvancedAnalyticsScreen(
             for (i in habits.indices) {
                 for (j in i + 1 until habits.size) {
                     // In a real app, this would be calculated based on actual data
-                    result[Pair(habits[i].id, habits[j].id)] = (-0.8f..0.8f).random()
+                    result[Pair(habits[i].id, habits[j].id)] = Random.nextDouble(-0.8, 0.8).toFloat()
                 }
             }
             result
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -163,26 +165,26 @@ fun InsightsTab(
                     modifier = Modifier.size(64.dp),
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "No insights available yet",
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "Complete more habits to generate insights",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 Button(onClick = { viewModel.generateInsights() }) {
                     Icon(
                         imageVector = Icons.Default.Refresh,
@@ -231,17 +233,17 @@ fun TrendsTab(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "Analyze how your habits have evolved over time",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            
+
             items(habits) { habit ->
                 TrendCard(habit, completions.filter { it.habitId == habit.id })
             }
@@ -258,7 +260,7 @@ fun TrendCard(
     completions: List<HabitCompletion>
 ) {
     var expanded by remember { mutableStateOf(false) }
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -277,7 +279,7 @@ fun TrendCard(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
-                
+
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
@@ -285,11 +287,11 @@ fun TrendCard(
                     )
                 }
             }
-            
+
             AnimatedVisibility(visible = expanded) {
                 Column {
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // Trend visualization
                     Box(
                         modifier = Modifier
@@ -315,18 +317,18 @@ fun TrendCard(
                             TrendVisualization(completions)
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // Trend analysis
                     Text(
                         text = "Analysis",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
-                    
+
                     Spacer(modifier = Modifier.height(4.dp))
-                    
+
                     Text(
                         text = if (completions.isEmpty()) {
                             "Complete this habit more to see trend analysis"
@@ -382,16 +384,16 @@ fun CorrelationsTab(
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = "Discover how your habits influence each other",
                 style = MaterialTheme.typography.bodyLarge
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Correlation matrix
             HabitCorrelationMatrix(
                 habits = habits,
@@ -434,17 +436,17 @@ fun PatternsTab(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "Discover patterns in your habit completion",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            
+
             items(habits) { habit ->
                 PatternCard(habit, completions.filter { it.habitId == habit.id })
             }
@@ -472,9 +474,9 @@ fun PatternCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             if (completions.isEmpty()) {
                 Text(
                     text = "Not enough data to analyze patterns",
@@ -494,9 +496,9 @@ fun PatternCard(
                     // For now, we'll just show a placeholder
                     PatternVisualization(completions)
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Pattern insights
                 Text(
                     text = "You tend to complete this habit most often on ${
@@ -548,17 +550,17 @@ fun EmptyStateMessage(
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyLarge,

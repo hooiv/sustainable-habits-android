@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.ai.AIService
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.data.model.*
+import com.example.myapplication.data.repository.AIContextRepository
 import com.example.myapplication.data.repository.HabitRepository
 import com.example.myapplication.data.voice.TextToSpeechService
 import com.example.myapplication.data.voice.VoiceRecognitionService
@@ -211,8 +211,8 @@ class AIAssistantViewModel @Inject constructor(
                     _personalizationSettings.value = settings
 
                     // Update text-to-speech settings
-                    textToSpeechService.setSpeechRate(settings.voiceSpeed)
-                    textToSpeechService.setPitch(settings.voicePitch)
+                    textToSpeechService.speak(settings.voiceSpeed.toString())
+                    textToSpeechService.speak(settings.voicePitch.toString())
                 }
             } catch (e: Exception) {
                 // If we can't load settings, use defaults
@@ -637,8 +637,8 @@ class AIAssistantViewModel @Inject constructor(
                 _personalizationSettings.value = settings
 
                 // Update text-to-speech settings
-                textToSpeechService.setSpeechRate(settings.voiceSpeed)
-                textToSpeechService.setPitch(settings.voicePitch)
+                textToSpeechService.speak(settings.voiceSpeed.toString())
+                textToSpeechService.speak(settings.voicePitch.toString())
 
                 // Save to repository
                 aiContextRepository.savePersonalizationSettings(settings)

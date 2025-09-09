@@ -444,7 +444,7 @@ fun AnalyticsInsightsPanel(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(insights.sortedByDescending { it.score }) { insight ->
+                items(insights.sortedByDescending { it.confidence }) { insight ->
                     val isExpanded = expandedInsightId == insight.id
 
                     InsightCard(
@@ -549,7 +549,7 @@ fun InsightCard(
 
                         // Score indicator
                         LinearProgressIndicator(
-                            progress = insight.score,
+                            progress = insight.confidence,
                             modifier = Modifier
                                 .width(60.dp)
                                 .height(4.dp),

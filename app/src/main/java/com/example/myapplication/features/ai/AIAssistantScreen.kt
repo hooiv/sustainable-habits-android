@@ -1,19 +1,9 @@
 package com.example.myapplication.features.ai
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,11 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MicOff
-import androidx.compose.material.icons.filled.VolumeOff
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.*
@@ -41,8 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.features.ai.AISuggestion
-import com.example.myapplication.features.ai.SuggestionType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -50,6 +34,7 @@ import kotlinx.coroutines.launch
  * AI Assistant Screen
  * Provides an AI assistant to help users with habit formation and tracking
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AIAssistantScreen(
     navController: NavController,
@@ -447,6 +432,7 @@ fun ResponseItem(
 /**
  * Voice input button with amplitude visualization
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoiceInputButton(
     isListening: Boolean,
@@ -582,25 +568,31 @@ fun VoiceInputButton(
                 modifier = Modifier.padding(top = 4.dp)
             ) {
                 if (continuous) {
-                    Chip(
-                        onClick = { },
-                        colors = ChipDefaults.chipColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                        ),
-                        modifier = Modifier.padding(end = 4.dp)
+                    Surface(
+                        modifier = Modifier.padding(end = 4.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                     ) {
-                        Text("Continuous", style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = "Continuous",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
                     }
                 }
 
                 if (useWakeWord) {
-                    Chip(
-                        onClick = { },
-                        colors = ChipDefaults.chipColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
-                        )
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
                     ) {
-                        Text("Wake Word", style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = "Wake Word",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
                     }
                 }
             }
@@ -637,6 +629,9 @@ fun BlinkingCursor() {
  */
 @Composable
 fun SpeakingIndicator() {
+    // Extract color outside of Canvas to avoid @Composable invocation error
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -677,7 +672,7 @@ fun SpeakingIndicator() {
                         .alpha(alpha)
                 ) {
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = primaryColor,
                         radius = size.minDimension / 2 * scale,
                         style = Stroke(width = 1.5.dp.toPx())
                     )

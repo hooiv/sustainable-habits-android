@@ -99,12 +99,12 @@ object NetworkModule {
     }
 
     /**
-     * Provides default AI service implementation
-     * Now using OpenAIService as default for real AI processing
+     * Provides default AI service implementation - using OpenAI as default
+     * This is the unqualified binding that will be injected when no qualifier is specified
      */
     @Provides
     @Singleton
-    fun provideDefaultAIService(@OpenAIImpl openAIService: AIService): AIService {
+    fun provideAIService(@OpenAIImpl openAIService: AIService): AIService {
         return openAIService
     }
 }
