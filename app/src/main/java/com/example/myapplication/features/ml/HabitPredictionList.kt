@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.ml.HabitPrediction
-import com.example.myapplication.data.ml.PredictionType
+import com.example.myapplication.features.ml.HabitPrediction
+import com.example.myapplication.features.ml.PredictionType
 
 /**
  * A list of habit predictions
@@ -181,14 +181,14 @@ fun HabitPredictionCard(
                         // Impact indicator
                         Icon(
                             imageVector = when {
-                                factor.weight > 0.3f -> Icons.Default.TrendingUp
-                                factor.weight < -0.3f -> Icons.Default.TrendingDown
+                                factor.impact > 0.3f -> Icons.Default.TrendingUp
+                                factor.impact < -0.3f -> Icons.Default.TrendingDown
                                 else -> Icons.Default.TrendingFlat
                             },
                             contentDescription = "Factor impact",
                             tint = when {
-                                factor.weight > 0.3f -> MaterialTheme.colorScheme.primary
-                                factor.weight < -0.3f -> MaterialTheme.colorScheme.error
+                                factor.impact > 0.3f -> MaterialTheme.colorScheme.primary
+                                factor.impact < -0.3f -> MaterialTheme.colorScheme.error
                                 else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             },
                             modifier = Modifier.size(20.dp)
@@ -206,13 +206,13 @@ fun HabitPredictionCard(
                         // Impact value
                         Text(
                             text = when {
-                                factor.weight > 0 -> "+${(factor.weight * 100).toInt()}%"
-                                else -> "${(factor.weight * 100).toInt()}%"
+                                factor.impact > 0 -> "+${(factor.impact * 100).toInt()}%"
+                                else -> "${(factor.impact * 100).toInt()}%"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = when {
-                                factor.weight > 0.3f -> MaterialTheme.colorScheme.primary
-                                factor.weight < -0.3f -> MaterialTheme.colorScheme.error
+                                factor.impact > 0.3f -> MaterialTheme.colorScheme.primary
+                                factor.impact < -0.3f -> MaterialTheme.colorScheme.error
                                 else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             }
                         )

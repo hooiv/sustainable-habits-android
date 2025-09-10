@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.model.BiometricReading
-import com.example.myapplication.data.model.BiometricType
+import com.example.myapplication.core.data.model.BiometricReading
+import com.example.myapplication.core.data.model.BiometricType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

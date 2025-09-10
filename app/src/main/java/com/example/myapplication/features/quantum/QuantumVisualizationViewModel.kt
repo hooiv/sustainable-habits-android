@@ -2,12 +2,12 @@ package com.example.myapplication.features.quantum
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.quantum.QuantumEntanglement
-import com.example.myapplication.data.quantum.QuantumParticle
-import com.example.myapplication.data.quantum.QuantumVisualizer
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.network.quantum.QuantumEntanglement
+import com.example.myapplication.core.network.quantum.QuantumParticle
+import com.example.myapplication.core.network.quantum.QuantumVisualizer
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

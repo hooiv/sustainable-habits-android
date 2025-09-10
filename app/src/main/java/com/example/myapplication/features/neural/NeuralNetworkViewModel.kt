@@ -3,7 +3,8 @@ package com.example.myapplication.features.neural
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.repository.NeuralNetworkRepository
+import com.example.myapplication.core.data.repository.NeuralNetworkRepository
+import com.example.myapplication.core.data.model.NeuralNodeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +88,7 @@ class NeuralNetworkViewModel @Inject constructor(
             nodes.add(
                 NeuralNode(
                     id = "input_$i",
-                    type = com.example.myapplication.data.model.NeuralNodeType.INPUT,
+                    type = NeuralNodeType.INPUT,
                     position = androidx.compose.ui.geometry.Offset(0.2f, 0.1f + 0.8f * (i / 4f)),
                     activationLevel = 0f
                 )
@@ -99,7 +100,7 @@ class NeuralNetworkViewModel @Inject constructor(
             nodes.add(
                 NeuralNode(
                     id = "hidden1_$i",
-                    type = com.example.myapplication.data.model.NeuralNodeType.HIDDEN,
+                    type = NeuralNodeType.HIDDEN,
                     position = androidx.compose.ui.geometry.Offset(0.5f, 0.1f + 0.8f * (i / 6f)),
                     activationLevel = 0f
                 )
@@ -111,7 +112,7 @@ class NeuralNetworkViewModel @Inject constructor(
             nodes.add(
                 NeuralNode(
                     id = "output_$i",
-                    type = com.example.myapplication.data.model.NeuralNodeType.OUTPUT,
+                    type = NeuralNodeType.OUTPUT,
                     position = androidx.compose.ui.geometry.Offset(0.8f, 0.25f + 0.5f * (i / 2f)),
                     activationLevel = 0f
                 )
@@ -129,9 +130,9 @@ class NeuralNetworkViewModel @Inject constructor(
         val random = Random()
 
         // Get nodes by type
-        val inputNodes = nodes.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.INPUT }
-        val hiddenNodes = nodes.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.HIDDEN }
-        val outputNodes = nodes.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.OUTPUT }
+        val inputNodes = nodes.filter { it.type == NeuralNodeType.INPUT }
+        val hiddenNodes = nodes.filter { it.type == NeuralNodeType.HIDDEN }
+        val outputNodes = nodes.filter { it.type == NeuralNodeType.OUTPUT }
 
         // Connect input to hidden layer
         for (inputNode in inputNodes) {
@@ -267,9 +268,9 @@ class NeuralNetworkViewModel @Inject constructor(
                 appendLine("Training complete!")
                 appendLine()
                 appendLine("Network statistics:")
-                appendLine("- Input nodes: ${_nodes.value.count { it.type == com.example.myapplication.data.model.NeuralNodeType.INPUT }}")
-                appendLine("- Hidden nodes: ${_nodes.value.count { it.type == com.example.myapplication.data.model.NeuralNodeType.HIDDEN }}")
-                appendLine("- Output nodes: ${_nodes.value.count { it.type == com.example.myapplication.data.model.NeuralNodeType.OUTPUT }}")
+                appendLine("- Input nodes: ${_nodes.value.count { it.type == NeuralNodeType.INPUT }}")
+                appendLine("- Hidden nodes: ${_nodes.value.count { it.type == NeuralNodeType.HIDDEN }}")
+                appendLine("- Output nodes: ${_nodes.value.count { it.type == NeuralNodeType.OUTPUT }}")
                 appendLine("- Connections: ${_connections.value.size}")
                 appendLine()
                 appendLine("The neural network has been trained on your habit data and can now make predictions about your habit patterns.")
@@ -296,7 +297,7 @@ class NeuralNetworkViewModel @Inject constructor(
 
             // Activate input nodes with random values
             val nodesList = _nodes.value.toMutableList()
-            val inputNodes = nodesList.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.INPUT }
+            val inputNodes = nodesList.filter { it.type == NeuralNodeType.INPUT }
             val random = Random()
 
             for (node in inputNodes) {
@@ -313,7 +314,7 @@ class NeuralNetworkViewModel @Inject constructor(
             propagateActivation(nodesList, _connections.value)
 
             // Generate inference result
-            val outputNodes = _nodes.value.filter { it.type == com.example.myapplication.data.model.NeuralNodeType.OUTPUT }
+            val outputNodes = _nodes.value.filter { it.type == NeuralNodeType.OUTPUT }
             val resultMessage = buildString {
                 appendLine("Inference complete!")
                 appendLine()

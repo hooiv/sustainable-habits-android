@@ -1,7 +1,7 @@
 package com.example.myapplication.features.neural
 
 import androidx.compose.ui.geometry.Offset
-import com.example.myapplication.data.model.NeuralNodeType
+import com.example.myapplication.core.data.model.NeuralNodeType
 import java.util.UUID
 
 /**

@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.repository.SpatialObject
-import com.example.myapplication.data.repository.SpatialObjectType
-import com.example.myapplication.data.repository.Offset3D
+import com.example.myapplication.core.data.model.SpatialObject
+import com.example.myapplication.core.data.model.SpatialObjectType
+import com.example.myapplication.core.data.model.Offset3D
 import kotlinx.coroutines.launch
 import kotlin.math.*
 
@@ -148,13 +148,13 @@ fun SpatialEnvironment(
                                 SpatialObjectType.REMINDER_CLOCK -> CircleShape
                             }
                         )
-                        .background(obj.color)
+                        .background(Color(obj.color))
                         .clickable { onObjectClick(obj) },
                     contentAlignment = Alignment.Center
                 ) {
                     if (obj.type == SpatialObjectType.REMINDER_CLOCK) {
                         Text(
-                            text = obj.label.take(1), // First letter as label
+                            text = obj.label?.take(1) ?: "", // First letter as label
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = (12 * animatedScale).sp
@@ -269,7 +269,7 @@ fun SpatialComputingScreen(
                     // 3D environment
                     SpatialEnvironment(
                         spatialObjects = spatialObjects,
-                        onObjectClick = { obj -> viewModel.selectObject(obj.id) },
+                        onObjectClick = { obj: SpatialObject -> viewModel.selectObject(obj.id) },
                         modifier = Modifier.fillMaxSize()
                     )
 

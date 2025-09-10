@@ -2,13 +2,13 @@ package com.example.myapplication.features.spatial
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.repository.Offset3D
-import com.example.myapplication.data.repository.Rotation3D
-import com.example.myapplication.data.repository.SpatialObject
-import com.example.myapplication.data.repository.SpatialObjectType
-import com.example.myapplication.data.repository.HabitRepository
-import com.example.myapplication.data.repository.SpatialRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.SpatialObject
+import com.example.myapplication.core.data.model.SpatialObjectType
+import com.example.myapplication.core.data.model.Offset3D
+import com.example.myapplication.core.data.model.Rotation3D
+import com.example.myapplication.core.data.repository.HabitRepository
+import com.example.myapplication.core.data.repository.SpatialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -66,12 +66,86 @@ class SpatialComputingViewModel @Inject constructor(
     fun loadSpatialObjects() {
         viewModelScope.launch {
             try {
-                val objects = spatialRepository.getSpatialObjects()
-                _spatialObjects.value = objects
+                val repositoryObjects = spatialRepository.getSpatialObjects()
+                val modelObjects = repositoryObjects.map { convertToModelSpatialObject(it) }
+                _spatialObjects.value = modelObjects
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load spatial objects: ${e.message}"
             }
         }
+    }
+
+    /**
+     * Convert repository SpatialObject to model SpatialObject
+     */
+    private fun convertToModelSpatialObject(repoObject: com.example.myapplication.core.data.repository.SpatialObject): com.example.myapplication.core.data.model.SpatialObject {
+        return com.example.myapplication.core.data.model.SpatialObject(
+            id = repoObject.id,
+            type = convertToModelSpatialObjectType(repoObject.type),
+            position = convertToModelOffset3D(repoObject.position),
+            rotation = convertToModelRotation3D(repoObject.rotation),
+            scale = repoObject.scale,
+            color = repoObject.color.toLong(),
+            label = repoObject.label,
+            relatedHabitId = repoObject.relatedHabitId
+        )
+    }
+
+    /**
+     * Convert model SpatialObject to repository SpatialObject
+     */
+    private fun convertToRepositorySpatialObject(modelObject: com.example.myapplication.core.data.model.SpatialObject): com.example.myapplication.core.data.repository.SpatialObject {
+        return com.example.myapplication.core.data.repository.SpatialObject(
+            id = modelObject.id,
+            type = convertToRepositorySpatialObjectType(modelObject.type),
+            position = convertToRepositoryOffset3D(modelObject.position),
+            rotation = convertToRepositoryRotation3D(modelObject.rotation),
+            scale = modelObject.scale,
+            color = modelObject.color.toInt(),
+            label = modelObject.label ?: "",
+            relatedHabitId = modelObject.relatedHabitId
+        )
+    }
+
+    /**
+     * Convert between SpatialObjectType enum types
+     */
+    private fun convertToModelSpatialObjectType(repoType: com.example.myapplication.core.data.repository.SpatialObjectType): com.example.myapplication.core.data.model.SpatialObjectType {
+        return when (repoType) {
+            com.example.myapplication.core.data.repository.SpatialObjectType.HABIT_SPHERE -> com.example.myapplication.core.data.model.SpatialObjectType.HABIT_SPHERE
+            com.example.myapplication.core.data.repository.SpatialObjectType.STREAK_TOWER -> com.example.myapplication.core.data.model.SpatialObjectType.STREAK_TOWER
+            com.example.myapplication.core.data.repository.SpatialObjectType.GOAL_PYRAMID -> com.example.myapplication.core.data.model.SpatialObjectType.GOAL_PYRAMID
+            com.example.myapplication.core.data.repository.SpatialObjectType.ACHIEVEMENT_STAR -> com.example.myapplication.core.data.model.SpatialObjectType.ACHIEVEMENT_STAR
+            com.example.myapplication.core.data.repository.SpatialObjectType.CATEGORY_CUBE -> com.example.myapplication.core.data.model.SpatialObjectType.CATEGORY_CUBE
+            com.example.myapplication.core.data.repository.SpatialObjectType.REMINDER_CLOCK -> com.example.myapplication.core.data.model.SpatialObjectType.REMINDER_CLOCK
+        }
+    }
+
+    private fun convertToRepositorySpatialObjectType(modelType: com.example.myapplication.core.data.model.SpatialObjectType): com.example.myapplication.core.data.repository.SpatialObjectType {
+        return when (modelType) {
+            com.example.myapplication.core.data.model.SpatialObjectType.HABIT_SPHERE -> com.example.myapplication.core.data.repository.SpatialObjectType.HABIT_SPHERE
+            com.example.myapplication.core.data.model.SpatialObjectType.STREAK_TOWER -> com.example.myapplication.core.data.repository.SpatialObjectType.STREAK_TOWER
+            com.example.myapplication.core.data.model.SpatialObjectType.GOAL_PYRAMID -> com.example.myapplication.core.data.repository.SpatialObjectType.GOAL_PYRAMID
+            com.example.myapplication.core.data.model.SpatialObjectType.ACHIEVEMENT_STAR -> com.example.myapplication.core.data.repository.SpatialObjectType.ACHIEVEMENT_STAR
+            com.example.myapplication.core.data.model.SpatialObjectType.CATEGORY_CUBE -> com.example.myapplication.core.data.repository.SpatialObjectType.CATEGORY_CUBE
+            com.example.myapplication.core.data.model.SpatialObjectType.REMINDER_CLOCK -> com.example.myapplication.core.data.repository.SpatialObjectType.REMINDER_CLOCK
+        }
+    }
+
+    private fun convertToModelOffset3D(repoOffset: com.example.myapplication.core.data.repository.Offset3D): com.example.myapplication.core.data.model.Offset3D {
+        return com.example.myapplication.core.data.model.Offset3D(repoOffset.x, repoOffset.y, repoOffset.z)
+    }
+
+    private fun convertToRepositoryOffset3D(modelOffset: com.example.myapplication.core.data.model.Offset3D): com.example.myapplication.core.data.repository.Offset3D {
+        return com.example.myapplication.core.data.repository.Offset3D(modelOffset.x, modelOffset.y, modelOffset.z)
+    }
+
+    private fun convertToModelRotation3D(repoRotation: com.example.myapplication.core.data.repository.Rotation3D): com.example.myapplication.core.data.model.Rotation3D {
+        return com.example.myapplication.core.data.model.Rotation3D(repoRotation.x, repoRotation.y, repoRotation.z)
+    }
+
+    private fun convertToRepositoryRotation3D(modelRotation: com.example.myapplication.core.data.model.Rotation3D): com.example.myapplication.core.data.repository.Rotation3D {
+        return com.example.myapplication.core.data.repository.Rotation3D(modelRotation.x, modelRotation.y, modelRotation.z)
     }
 
     /**
@@ -94,7 +168,7 @@ class SpatialComputingViewModel @Inject constructor(
                 val updatedObject = objectToMove.copy(position = newPosition)
 
                 // Update in repository
-                spatialRepository.updateSpatialObject(updatedObject)
+                spatialRepository.updateSpatialObject(convertToRepositorySpatialObject(updatedObject))
 
                 // Update in view model
                 _spatialObjects.value = _spatialObjects.value.map {
@@ -171,13 +245,13 @@ class SpatialComputingViewModel @Inject constructor(
                     position = position,
                     rotation = Rotation3D(0f, 0f, 0f),
                     scale = 1.0f,
-                    color = getColorForObjectType(_selectedObjectType.value),
+                    color = getColorForObjectType(_selectedObjectType.value).value.toLong(),
                     label = habitToAssociate?.name ?: "New Object",
                     relatedHabitId = habitToAssociate?.id
                 )
 
                 // Add to repository
-                spatialRepository.addSpatialObject(newObject)
+                spatialRepository.addSpatialObject(convertToRepositorySpatialObject(newObject))
 
                 // Add to view model
                 _spatialObjects.value = _spatialObjects.value + newObject

@@ -2,8 +2,8 @@ package com.example.myapplication.features.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

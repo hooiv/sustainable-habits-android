@@ -2,12 +2,12 @@ package com.example.myapplication.features.voice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.EntityType
-import com.example.myapplication.data.model.VoiceCommand
-import com.example.myapplication.data.model.VoiceEntity
-import com.example.myapplication.data.model.VoiceIntent
-import com.example.myapplication.data.repository.HabitRepository
-import com.example.myapplication.data.voice.VoiceRecognitionService
+import com.example.myapplication.core.data.model.EntityType
+import com.example.myapplication.core.data.model.VoiceCommand
+import com.example.myapplication.core.data.model.VoiceEntity
+import com.example.myapplication.core.data.model.VoiceIntent
+import com.example.myapplication.core.data.repository.HabitRepository
+import com.example.myapplication.core.network.voice.VoiceRecognitionService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*

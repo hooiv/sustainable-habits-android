@@ -3,11 +3,11 @@ package com.example.myapplication.ui.quantum
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.quantum.QuantumVisualization
-import com.example.myapplication.data.quantum.QuantumVisualizer
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.network.quantum.QuantumVisualization
+import com.example.myapplication.core.network.quantum.QuantumVisualizer
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

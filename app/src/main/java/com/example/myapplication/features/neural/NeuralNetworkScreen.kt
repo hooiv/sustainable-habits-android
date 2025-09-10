@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.ui.components.AppBar
+import com.example.myapplication.core.data.model.NeuralNodeType
 import kotlinx.coroutines.launch
 import kotlin.math.pow
 
@@ -438,11 +439,11 @@ fun NeuralNetworkVisualization(
                             if (node != null) {
                                 Text(
                                     text = when (node.type) {
-                                        com.example.myapplication.data.model.NeuralNodeType.INPUT -> "I"
-                                        com.example.myapplication.data.model.NeuralNodeType.HIDDEN -> "H"
-                                        com.example.myapplication.data.model.NeuralNodeType.OUTPUT -> "O"
-                                        com.example.myapplication.data.model.NeuralNodeType.BIAS -> "B"
-                                        com.example.myapplication.data.model.NeuralNodeType.RECURRENT -> "R"
+                                        NeuralNodeType.INPUT -> "I"
+                                        NeuralNodeType.HIDDEN -> "H"
+                                        NeuralNodeType.OUTPUT -> "O"
+                                        NeuralNodeType.BIAS -> "B"
+                                        NeuralNodeType.RECURRENT -> "R"
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onPrimary.copy(

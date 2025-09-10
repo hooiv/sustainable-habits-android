@@ -25,9 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.nlp.NlpIntent
-import com.example.myapplication.data.quantum.QuantumParticle
-import com.example.myapplication.data.quantum.QuantumVisualization
+import com.example.myapplication.core.network.nlp.NlpIntent
+import com.example.myapplication.core.network.quantum.QuantumParticle
+import com.example.myapplication.core.network.quantum.QuantumVisualization
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.*
@@ -486,7 +486,17 @@ fun QuantumVisualizationCard(
                 // Quantum particle visualization
                 QuantumParticleVisualization(
                     particles = quantumVisualization.particles,
-                    entanglements = quantumVisualization.entanglements,
+                    entanglements = quantumVisualization.entanglements.map { coreEntanglement ->
+                        com.example.myapplication.data.quantum.QuantumEntanglement(
+                            id = coreEntanglement.id,
+                            qubit1Index = coreEntanglement.qubit1Index,
+                            qubit2Index = coreEntanglement.qubit2Index,
+                            habit1Id = coreEntanglement.habit1Id,
+                            habit2Id = coreEntanglement.habit2Id,
+                            strength = coreEntanglement.strength,
+                            color = coreEntanglement.color
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)

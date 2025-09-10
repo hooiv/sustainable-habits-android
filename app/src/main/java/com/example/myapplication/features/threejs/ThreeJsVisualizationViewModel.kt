@@ -3,9 +3,9 @@ package com.example.myapplication.features.threejs
 import android.webkit.WebView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

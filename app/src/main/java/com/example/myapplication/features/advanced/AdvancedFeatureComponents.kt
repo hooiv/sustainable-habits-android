@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.biometric.BiometricData
-import com.example.myapplication.data.nlp.NlpIntent
-import com.example.myapplication.data.quantum.QuantumParticle
-import com.example.myapplication.data.quantum.QuantumVisualization
+import com.example.myapplication.core.network.biometric.BiometricData
+import com.example.myapplication.core.network.nlp.NlpIntent
+import com.example.myapplication.core.network.quantum.QuantumParticle
+import com.example.myapplication.core.network.quantum.QuantumVisualization
 import com.example.myapplication.data.spatial.SpatialObject
 import java.text.SimpleDateFormat
 import java.util.*

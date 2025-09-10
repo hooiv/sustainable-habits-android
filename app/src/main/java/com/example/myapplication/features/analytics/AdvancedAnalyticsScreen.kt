@@ -1,4 +1,4 @@
-package com.example.myapplication.features.analytics
+package com.example.myapplication.features.analytics.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
+import com.example.myapplication.features.analytics.viewmodel.AdvancedAnalyticsViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,8 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*

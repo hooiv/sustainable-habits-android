@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.ui.geometry.Offset
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.model.Habit
 import com.google.ar.core.*
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.CameraNotAvailableException
@@ -54,7 +54,7 @@ class ARRenderer(private val context: Context) {
             if (session == null) {
                 val sessionConfig = Config(Session(context))
                 sessionConfig.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
-                sessionConfig.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+                sessionConfig.lightEstimationMode = Config.LightEstimationMode.AMBIENT_INTENSITY
                 sessionConfig.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
 
                 session = Session(context).apply {
@@ -342,7 +342,7 @@ class ARRenderer(private val context: Context) {
      */
     fun cleanup() {
         try {
-            session?.close()
+            session?.pause()
             session = null
             anchors.clear()
             _arObjectsMap.clear()

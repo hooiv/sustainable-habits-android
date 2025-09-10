@@ -1,7 +1,6 @@
 package com.example.myapplication.data.ai
 
-import com.example.myapplication.features.ai.AISuggestion
-import com.example.myapplication.data.model.*
+import com.example.myapplication.core.data.model.*
 import kotlinx.coroutines.flow.Flow
 
 /**

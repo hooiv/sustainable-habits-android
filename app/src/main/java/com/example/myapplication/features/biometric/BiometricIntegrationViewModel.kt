@@ -2,10 +2,10 @@ package com.example.myapplication.features.biometric
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.biometric.BiometricIntegration
-import com.example.myapplication.data.model.BiometricReading
-import com.example.myapplication.data.model.BiometricType
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.network.biometric.BiometricIntegration
+import com.example.myapplication.core.data.model.BiometricReading
+import com.example.myapplication.core.data.model.BiometricType
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -338,7 +338,19 @@ class BiometricIntegrationViewModel @Inject constructor(
      * Get current biometric data
      */
     fun getCurrentBiometricData(): com.example.myapplication.data.biometric.BiometricData {
-        return biometricIntegration.getBiometricData()
+        val coreData = biometricIntegration.getBiometricData()
+        return com.example.myapplication.data.biometric.BiometricData(
+            heartRate = coreData.heartRate,
+            heartRateConfidence = coreData.heartRateConfidence,
+            stepCount = coreData.stepCount,
+            caloriesBurned = coreData.caloriesBurned,
+            stressLevel = coreData.stressLevel,
+            sleepQuality = coreData.sleepQuality,
+            energyLevel = coreData.energyLevel,
+            focusLevel = coreData.focusLevel,
+            mood = coreData.mood,
+            activityLevel = com.example.myapplication.data.biometric.ActivityLevel.valueOf(coreData.activityLevel.name)
+        )
     }
 
     /**

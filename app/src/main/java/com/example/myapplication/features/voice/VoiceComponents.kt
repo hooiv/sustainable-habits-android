@@ -16,10 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.model.EntityType
-import com.example.myapplication.data.model.VoiceCommand
-import com.example.myapplication.data.model.VoiceEntity
-import com.example.myapplication.data.model.VoiceIntent
+import com.example.myapplication.core.data.model.EntityType
+import com.example.myapplication.core.data.model.VoiceCommand
+import com.example.myapplication.core.data.model.VoiceEntity
+import com.example.myapplication.core.data.model.VoiceIntent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*

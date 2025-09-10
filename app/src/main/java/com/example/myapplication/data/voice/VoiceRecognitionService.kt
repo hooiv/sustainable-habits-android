@@ -300,7 +300,7 @@ class VoiceRecognitionService @Inject constructor(
      * @return True if a wake word is found, false otherwise
      */
     fun containsWakeWord(text: String): Boolean {
-        val lowerText = text.toLowerCase(Locale.ROOT)
+        val lowerText = text.lowercase()
         return wakeWords.any { lowerText.contains(it) }
     }
 
@@ -310,7 +310,7 @@ class VoiceRecognitionService @Inject constructor(
      * @return The command part of the text (without the wake word)
      */
     fun extractCommand(text: String): String {
-        val lowerText = text.toLowerCase(Locale.ROOT)
+        val lowerText = text.lowercase()
 
         // Find the wake word that was used
         val usedWakeWord = wakeWords.firstOrNull { lowerText.contains(it) } ?: return text

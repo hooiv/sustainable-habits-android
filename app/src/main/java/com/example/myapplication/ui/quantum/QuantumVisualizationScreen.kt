@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.data.quantum.*
+import com.example.myapplication.core.network.quantum.*
 import com.example.myapplication.ui.components.LoadingIndicator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

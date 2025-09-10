@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
+import com.example.myapplication.core.data.repository.HabitRepository
 import com.example.myapplication.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth

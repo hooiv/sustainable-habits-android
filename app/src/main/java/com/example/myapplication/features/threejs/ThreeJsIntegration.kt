@@ -5,9 +5,9 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.repository.HabitRepository
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope

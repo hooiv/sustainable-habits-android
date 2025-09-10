@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.core.data.model.NeuralNodeType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -140,11 +141,11 @@ fun NeuralInterfaceSimulation(
 
                 // Determine node color based on type and activation
                 val nodeColor = when (node.type) {
-                    com.example.myapplication.data.model.NeuralNodeType.INPUT -> Color(0xFF4CAF50)
-                    com.example.myapplication.data.model.NeuralNodeType.HIDDEN -> Color(0xFF2196F3)
-                    com.example.myapplication.data.model.NeuralNodeType.OUTPUT -> Color(0xFFF44336)
-                    com.example.myapplication.data.model.NeuralNodeType.BIAS -> Color(0xFFFF9800)
-                    com.example.myapplication.data.model.NeuralNodeType.RECURRENT -> Color(0xFF9C27B0)
+                    NeuralNodeType.INPUT -> Color(0xFF4CAF50)
+                    NeuralNodeType.HIDDEN -> Color(0xFF2196F3)
+                    NeuralNodeType.OUTPUT -> Color(0xFFF44336)
+                    NeuralNodeType.BIAS -> Color(0xFFFF9800)
+                    NeuralNodeType.RECURRENT -> Color(0xFF9C27B0)
                 }.copy(alpha = 0.5f + node.activationLevel * 0.5f)
 
                 // Node size based on activation

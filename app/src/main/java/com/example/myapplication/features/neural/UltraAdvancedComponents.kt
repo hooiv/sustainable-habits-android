@@ -18,10 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.ml.CompressionStats
-import com.example.myapplication.data.ml.Hyperparameters
-import com.example.myapplication.data.ml.TrialResult
-import com.example.myapplication.data.ml.HabitAnomaly
+import com.example.myapplication.core.network.ml.CompressionStats
+import com.example.myapplication.core.network.ml.Hyperparameters
+import com.example.myapplication.core.network.ml.TrialResult
+import com.example.myapplication.core.network.ml.HabitAnomaly
+import com.example.myapplication.core.network.ml.AnomalyType
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -750,18 +751,18 @@ fun AnomalyItem(
                 .clip(CircleShape)
                 .background(
                     when (anomaly.type) {
-                        com.example.myapplication.data.ml.AnomalyType.TIME -> MaterialTheme.colorScheme.primary
-                        com.example.myapplication.data.ml.AnomalyType.FREQUENCY -> MaterialTheme.colorScheme.secondary
-                        com.example.myapplication.data.ml.AnomalyType.PATTERN -> MaterialTheme.colorScheme.tertiary
+                        AnomalyType.TIME -> MaterialTheme.colorScheme.primary
+                        AnomalyType.FREQUENCY -> MaterialTheme.colorScheme.secondary
+                        AnomalyType.PATTERN -> MaterialTheme.colorScheme.tertiary
                     }
                 ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = when (anomaly.type) {
-                    com.example.myapplication.data.ml.AnomalyType.TIME -> Icons.Default.Schedule
-                    com.example.myapplication.data.ml.AnomalyType.FREQUENCY -> Icons.Default.CalendarToday
-                    com.example.myapplication.data.ml.AnomalyType.PATTERN -> Icons.Default.Insights
+                    AnomalyType.TIME -> Icons.Default.Schedule
+                    AnomalyType.FREQUENCY -> Icons.Default.CalendarToday
+                    AnomalyType.PATTERN -> Icons.Default.Insights
                 },
                 contentDescription = null,
                 tint = Color.White

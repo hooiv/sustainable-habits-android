@@ -1,10 +1,8 @@
-package com.example.myapplication.data.repository
+package com.example.myapplication.core.data.repository
 
-import com.example.myapplication.data.database.HabitDao
-import com.example.myapplication.data.database.HabitCompletionDao
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.core.data.database.HabitDao
+import com.example.myapplication.core.data.database.HabitCompletionDao
+import com.example.myapplication.core.data.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow

@@ -1,11 +1,11 @@
 package com.example.myapplication.features.habits
 
-import android.util.Log // Import Log
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
-import com.example.myapplication.data.repository.HabitRepository // Import HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,15 +16,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HabitViewModel @Inject constructor(
-    private val repository: HabitRepository // Inject HabitRepository
+    private val repository: HabitRepository
 ) : ViewModel() {
 
     // Expose habits from the repository, converting the Flow to a StateFlow
     val habits: StateFlow<List<Habit>> = repository.getAllHabits()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // Keep collecting for 5s after last subscriber
-            initialValue = emptyList() // Initial value while the flow is loading
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
 
     fun addHabit(
@@ -35,7 +35,7 @@ class HabitViewModel @Inject constructor(
         goal: Int = 1,
         reminderTime: String? = null
     ) {
-        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Category: $category, Freq: $frequency, Goal: $goal, Reminder: $reminderTime") // Add log statement
+        Log.d("HabitViewModel", "addHabit called. Name: $name, Desc: $description, Category: $category, Freq: $frequency, Goal: $goal, Reminder: $reminderTime")
         viewModelScope.launch {
             val newHabit = Habit(
                 name = name,
@@ -46,12 +46,12 @@ class HabitViewModel @Inject constructor(
                 goal = goal,
                 goalProgress = 0,
                 streak = 0,
-                completionHistory = mutableListOf(), // Changed from emptyList() to mutableListOf()
+                completionHistory = mutableListOf(),
                 isEnabled = true,
                 reminderTime = reminderTime
             )
-            Log.d("HabitViewModel", "Inserting new habit: $newHabit") // Add log statement
-            repository.insertHabit(newHabit) // Use repository to insert habit
+            Log.d("HabitViewModel", "Inserting new habit: $newHabit")
+            repository.insertHabit(newHabit)
         }
     }
 
@@ -74,7 +74,7 @@ class HabitViewModel @Inject constructor(
     fun restoreHabits(habitsToRestore: List<Habit>) {
         viewModelScope.launch {
             Log.d("HabitViewModel", "Restoring ${habitsToRestore.size} habits.")
-            repository.insertOrReplaceHabits(habitsToRestore) // Assuming this method exists in repository
+            repository.insertOrReplaceHabits(habitsToRestore)
         }
     }
     
@@ -85,7 +85,6 @@ class HabitViewModel @Inject constructor(
     fun markHabitCompleted(habitId: String) {
         Log.d("HabitViewModel", "Marking habit as completed: $habitId")
         viewModelScope.launch {
-            // Use the repository's markHabitCompleted function which has the proper logic
             repository.markHabitCompleted(habitId)
         }
     }

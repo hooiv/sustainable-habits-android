@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.myapplication.data.database.Converters
+import com.example.myapplication.core.data.database.Converters
 import java.util.Date
 import java.util.UUID
 

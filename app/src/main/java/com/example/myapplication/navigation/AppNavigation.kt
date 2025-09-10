@@ -28,9 +28,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.myapplication.features.habits.AddHabitScreen
-import com.example.myapplication.features.habits.EditHabitScreen
-import com.example.myapplication.features.habits.HabitListScreen
+import com.example.myapplication.features.habits.ui.AddHabitScreen
+import com.example.myapplication.features.habits.ui.EditHabitScreen
+import com.example.myapplication.features.habits.ui.HabitListScreen
 import com.example.myapplication.features.neural.NeuralInterfaceScreen
 import com.example.myapplication.features.neural.NeuralInterfaceViewModel
 import com.example.myapplication.features.stats.StatsScreen
@@ -271,19 +271,19 @@ fun AppNavigationGraph(navController: NavHostController) {
 
             habitId?.let { id ->
                 // Get the habit from the repository
-                val database = com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current)
-                val habitRepository = com.example.myapplication.data.repository.HabitRepository(
+                val database = com.example.myapplication.core.data.database.AppDatabase.getInstance(LocalContext.current)
+                val habitRepository = com.example.myapplication.core.data.repository.HabitRepository(
                     database.habitDao(),
                     database.habitCompletionDao()
                 )
 
                 // For simplicity, we're creating a sample habit
                 // In a real app, you would get this from the repository
-                val habit = com.example.myapplication.data.model.Habit(
+                val habit = com.example.myapplication.core.data.model.Habit(
                     id = id,
                     name = "Sample Habit",
                     description = "This is a sample habit for the neural interface demo",
-                    frequency = com.example.myapplication.data.model.HabitFrequency.DAILY,
+                    frequency = com.example.myapplication.core.data.model.HabitFrequency.DAILY,
                     streak = 5,
                     goal = 10,
                     goalProgress = 7
@@ -311,7 +311,7 @@ fun AppNavigationGraph(navController: NavHostController) {
             val habitId = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_ID) ?: ""
             val habitName = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_NAME) ?: ""
 
-            com.example.myapplication.features.habits.HabitCompletionScreen(
+            com.example.myapplication.features.habits.ui.HabitCompletionScreen(
                 navController = navController,
                 habitId = habitId,
                 habitName = habitName
@@ -330,19 +330,19 @@ fun AppNavigationGraph(navController: NavHostController) {
             val habitId = backStackEntry.arguments?.getString(NavRoutes.AR_ARG_ID) ?: ""
 
             // Get the habit from the repository
-            val database = com.example.myapplication.data.database.AppDatabase.getInstance(LocalContext.current)
-            val habitRepository = com.example.myapplication.data.repository.HabitRepository(
+            val database = com.example.myapplication.core.data.database.AppDatabase.getInstance(LocalContext.current)
+            val habitRepository = com.example.myapplication.core.data.repository.HabitRepository(
                 database.habitDao(),
                 database.habitCompletionDao()
             )
 
             // For simplicity, we're creating a sample habit
             // In a real app, you would get this from the repository
-            val habit = com.example.myapplication.data.model.Habit(
+            val habit = com.example.myapplication.core.data.model.Habit(
                 id = habitId,
                 name = "Sample Habit",
                 description = "This is a sample habit for AR visualization",
-                frequency = com.example.myapplication.data.model.HabitFrequency.DAILY,
+                frequency = com.example.myapplication.core.data.model.HabitFrequency.DAILY,
                 streak = 5,
                 goal = 10,
                 goalProgress = 7
@@ -480,7 +480,7 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         // AI Assistant screen
         composable(route = NavRoutes.AI_ASSISTANT) {
-            com.example.myapplication.features.ai.AIAssistantScreen(
+            com.example.myapplication.features.ai.ui.AIAssistantScreen(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -495,7 +495,7 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         // Advanced Analytics screen
         composable(route = NavRoutes.ADVANCED_ANALYTICS) {
-            com.example.myapplication.features.analytics.AdvancedAnalyticsScreen(
+            com.example.myapplication.features.analytics.ui.AdvancedAnalyticsScreen(
                 navController = navController
             )
         }
@@ -509,7 +509,7 @@ fun AppNavigationGraph(navController: NavHostController) {
 
         // AI Assistant Settings screen
         composable(route = NavRoutes.AI_ASSISTANT_SETTINGS) {
-            com.example.myapplication.features.ai.AIAssistantSettingsScreen(
+            com.example.myapplication.features.ai.ui.AIAssistantSettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

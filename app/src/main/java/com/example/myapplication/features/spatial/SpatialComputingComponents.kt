@@ -36,11 +36,11 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.Offset3D
-import com.example.myapplication.data.model.Rotation3D
-import com.example.myapplication.data.model.SpatialObject
-import com.example.myapplication.data.model.SpatialObjectType
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.Offset3D
+import com.example.myapplication.core.data.model.Rotation3D
+import com.example.myapplication.core.data.model.SpatialObject
+import com.example.myapplication.core.data.model.SpatialObjectType
 import com.example.myapplication.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ import kotlin.math.*
  * A component that provides a 3D spatial environment for habit visualization
  */
 @Composable
-fun SpatialEnvironment(
+fun HabitSpatialEnvironment(
     modifier: Modifier = Modifier,
     spatialObjects: List<SpatialObject> = emptyList(),
     onObjectClick: (SpatialObject) -> Unit = {}
@@ -205,14 +205,14 @@ fun SpatialEnvironment(
                                             SpatialObjectType.HABIT_SPHERE -> {
                                                 // Draw sphere
                                                 drawCircle(
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     radius = 50f,
                                                     style = if (isSelected) Fill else Stroke(width = 2f)
                                                 )
 
                                                 // Draw glow effect
                                                 drawCircle(
-                                                    color = obj.color.copy(alpha = 0.3f),
+                                                    color = Color(obj.color).copy(alpha = 0.3f),
                                                     radius = 60f + 10f * sin(floatAnimation * 2 * PI.toFloat())
                                                 )
                                             }
@@ -222,7 +222,7 @@ fun SpatialEnvironment(
                                                 val towerWidth = 40f
 
                                                 drawRect(
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     topLeft = Offset(-towerWidth / 2, -towerHeight),
                                                     size = Size(towerWidth, towerHeight),
                                                     style = if (isSelected) Fill else Stroke(width = 2f)
@@ -230,7 +230,7 @@ fun SpatialEnvironment(
 
                                                 // Draw glow effect
                                                 drawRect(
-                                                    color = obj.color.copy(alpha = 0.3f),
+                                                    color = Color(obj.color).copy(alpha = 0.3f),
                                                     topLeft = Offset(
                                                         -towerWidth / 2 - 5f,
                                                         -towerHeight - 5f
@@ -247,14 +247,14 @@ fun SpatialEnvironment(
 
                                                 drawPath(
                                                     path = starPath,
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     style = if (isSelected) Fill else Stroke(width = 2f)
                                                 )
 
                                                 // Draw glow effect
                                                 drawPath(
                                                     path = createStarPath(60f + 10f * sin(floatAnimation * 2 * PI.toFloat())),
-                                                    color = obj.color.copy(alpha = 0.3f)
+                                                    color = Color(obj.color).copy(alpha = 0.3f)
                                                 )
                                             }
                                             SpatialObjectType.GOAL_PYRAMID -> {
@@ -280,7 +280,7 @@ fun SpatialEnvironment(
 
                                                 drawPath(
                                                     path = pyramidPath,
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     style = Stroke(width = if (isSelected) 3f else 2f)
                                                 )
                                             }
@@ -290,7 +290,7 @@ fun SpatialEnvironment(
 
                                                 // Front face
                                                 drawRect(
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     topLeft = Offset(-cubeSize / 2, -cubeSize / 2),
                                                     size = Size(cubeSize, cubeSize),
                                                     style = if (isSelected) Fill else Stroke(width = 2f)
@@ -301,7 +301,7 @@ fun SpatialEnvironment(
 
                                                 // Top-left corner
                                                 drawLine(
-                                                    color = obj.color.copy(alpha = 0.5f),
+                                                    color = Color(obj.color).copy(alpha = 0.5f),
                                                     start = Offset(-cubeSize / 2, -cubeSize / 2),
                                                     end = Offset(-cubeSize / 2 - perspectiveOffset, -cubeSize / 2 - perspectiveOffset),
                                                     strokeWidth = 2f
@@ -309,7 +309,7 @@ fun SpatialEnvironment(
 
                                                 // Top-right corner
                                                 drawLine(
-                                                    color = obj.color.copy(alpha = 0.5f),
+                                                    color = Color(obj.color).copy(alpha = 0.5f),
                                                     start = Offset(cubeSize / 2, -cubeSize / 2),
                                                     end = Offset(cubeSize / 2 + perspectiveOffset, -cubeSize / 2 - perspectiveOffset),
                                                     strokeWidth = 2f
@@ -317,7 +317,7 @@ fun SpatialEnvironment(
 
                                                 // Bottom-right corner
                                                 drawLine(
-                                                    color = obj.color.copy(alpha = 0.5f),
+                                                    color = Color(obj.color).copy(alpha = 0.5f),
                                                     start = Offset(cubeSize / 2, cubeSize / 2),
                                                     end = Offset(cubeSize / 2 + perspectiveOffset, cubeSize / 2 + perspectiveOffset),
                                                     strokeWidth = 2f
@@ -325,7 +325,7 @@ fun SpatialEnvironment(
 
                                                 // Bottom-left corner
                                                 drawLine(
-                                                    color = obj.color.copy(alpha = 0.5f),
+                                                    color = Color(obj.color).copy(alpha = 0.5f),
                                                     start = Offset(-cubeSize / 2, cubeSize / 2),
                                                     end = Offset(-cubeSize / 2 - perspectiveOffset, cubeSize / 2 + perspectiveOffset),
                                                     strokeWidth = 2f
@@ -333,7 +333,7 @@ fun SpatialEnvironment(
 
                                                 // Back face
                                                 drawRect(
-                                                    color = obj.color.copy(alpha = 0.3f),
+                                                    color = Color(obj.color).copy(alpha = 0.3f),
                                                     topLeft = Offset(-cubeSize / 2 - perspectiveOffset, -cubeSize / 2 - perspectiveOffset),
                                                     size = Size(cubeSize + perspectiveOffset * 2, cubeSize + perspectiveOffset * 2),
                                                     style = Stroke(width = 2f)
@@ -344,7 +344,7 @@ fun SpatialEnvironment(
                                                 val clockRadius = 50f
 
                                                 drawCircle(
-                                                    color = obj.color.copy(alpha = 0.7f),
+                                                    color = Color(obj.color).copy(alpha = 0.7f),
                                                     radius = clockRadius,
                                                     style = if (isSelected) Fill else Stroke(width = 2f)
                                                 )
@@ -571,20 +571,20 @@ fun SpatialHabitGarden(
                 position = Offset3D(x, y, 0f),
                 rotation = Rotation3D(0f, 0f, 0f),
                 scale = 0.5f + (habit.streak.coerceAtMost(10) / 10f) * 0.5f,
-                color = color,
+                color = color.value.toLong(),
                 label = habit.name,
                 relatedHabitId = habit.id
             )
         }
     }
 
-    SpatialEnvironment(
+    HabitSpatialEnvironment(
         modifier = modifier,
         spatialObjects = spatialObjects,
-        onObjectClick = { spatialObject ->
+        onObjectClick = { spatialObject: SpatialObject ->
             // Find the corresponding habit and trigger the click handler
-            spatialObject.relatedHabitId?.let { habitId ->
-                habits.find { it.id == habitId }?.let { habit ->
+            spatialObject.relatedHabitId?.let { habitId: String ->
+                habits.find { it.id == habitId }?.let { habit: Habit ->
                     onHabitClick(habit)
                 }
             }

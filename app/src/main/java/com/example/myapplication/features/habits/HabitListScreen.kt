@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import com.example.myapplication.features.habits.HabitViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.myapplication.features.habits.ui.HabitItem
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,9 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.myapplication.R
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.navigation.NavRoutes
 import com.example.myapplication.ui.animation.AnimeEasing
 import com.example.myapplication.ui.animation.ParticleWave
@@ -197,7 +200,7 @@ fun HabitListScreen(
                 val filteredHabits = if (selectedCategory == "All")
                     habits
                 else
-                    habits.filter { it.category == selectedCategory }
+                    habits.filter { habit -> habit.category == selectedCategory }
 
                 if (isLoading) {
                     // Loading state with pulsing animation
@@ -319,7 +322,7 @@ fun HabitListScreen(
                     ) {
                         items(
                             items = filteredHabits,
-                            key = { it.id }
+                            key = { habit -> habit.id }
                         ) { habit ->
                             HabitItem(
                                 habit = habit,

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.analytics
+package com.example.myapplication.features.analytics.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.animation.animateContentSize
@@ -34,7 +34,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.ui.animation.AnimeEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

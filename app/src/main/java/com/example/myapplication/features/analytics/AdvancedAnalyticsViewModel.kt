@@ -1,12 +1,14 @@
-package com.example.myapplication.features.analytics
+package com.example.myapplication.features.analytics.viewmodel
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.repository.HabitRepository
+import com.example.myapplication.features.analytics.ui.AnalyticsInsight
+import com.example.myapplication.features.analytics.ui.InsightType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay

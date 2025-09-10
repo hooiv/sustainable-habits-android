@@ -1,0 +1,25 @@
+build: # Workflow name
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Run detekt
+      run: ./gradlew detekt
+    - name: Run ktlint
+      run: ./gradlew ktlintCheck
+    - name: Build project
+      run: ./gradlew build
+    - name: Run tests
+      run: ./gradlew test

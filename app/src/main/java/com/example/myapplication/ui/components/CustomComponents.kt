@@ -70,7 +70,7 @@ fun GradientButton(
         modifier = modifier
             .clickable(
                 interactionSource = interactionSource,
-                indication = androidx.compose.material.ripple.rememberRipple(),
+                indication = null, // Using Material 3 ripple via Surface
                 enabled = enabled,
                 onClick = onClick
             ),

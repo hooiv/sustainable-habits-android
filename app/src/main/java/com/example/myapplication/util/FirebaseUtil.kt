@@ -1,17 +1,17 @@
 package com.example.myapplication.util
 
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.model.Habit
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+// import com.google.firebase.firestore.ktx.firestore
+// import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 object FirebaseUtil {
-    private val firestore = Firebase.firestore
+    private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance() // Add FirebaseAuth instance
 
     fun getCurrentUser(): FirebaseUser? { // Function to get current user

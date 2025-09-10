@@ -2,8 +2,8 @@ package com.example.myapplication.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.myapplication.data.voice.TextToSpeechService
-import com.example.myapplication.data.voice.VoiceRecognitionService
+import com.example.myapplication.core.network.voice.TextToSpeechService
+import com.example.myapplication.core.network.voice.VoiceRecognitionService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

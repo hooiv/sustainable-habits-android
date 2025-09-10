@@ -1,9 +1,9 @@
 package com.example.myapplication.di
 
-import com.example.myapplication.data.ai.AIService
-import com.example.myapplication.data.ai.LocalAIService
-import com.example.myapplication.data.ai.OpenAIApiClient
-import com.example.myapplication.data.ai.OpenAIService
+import com.example.myapplication.core.network.ai.AIService
+import com.example.myapplication.core.network.ai.LocalAIService
+import com.example.myapplication.core.network.ai.OpenAIApiClient
+import com.example.myapplication.core.network.ai.OpenAIService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module

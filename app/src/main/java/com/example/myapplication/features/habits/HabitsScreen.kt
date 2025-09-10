@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +13,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.features.habits.HabitViewModel
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.features.habits.ui.HabitItem
 import com.example.myapplication.navigation.Screen
 import com.example.myapplication.navigation.NavRoutes
 
@@ -109,7 +111,7 @@ fun HabitsScreen(
                 ) {
                     items(
                         items = habits,
-                        key = { it.id } // Use stable ID for better animations
+                        key = { habit -> habit.id } // Use stable ID for better animations
                     ) { habit ->
                         HabitItem(
                             habit = habit,

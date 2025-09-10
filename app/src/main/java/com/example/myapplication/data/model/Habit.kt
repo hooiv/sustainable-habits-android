@@ -3,7 +3,7 @@ package com.example.myapplication.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.myapplication.data.database.Converters // Import Converters
+import com.example.myapplication.core.data.database.Converters // Import Converters
 import java.util.UUID
 import java.util.Date
 

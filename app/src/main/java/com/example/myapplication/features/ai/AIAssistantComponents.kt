@@ -1,5 +1,6 @@
-package com.example.myapplication.features.ai
+package com.example.myapplication.features.ai.ui
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -28,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -182,7 +183,7 @@ fun AIAssistantCard(
                         placeholder = { Text("Type your question...") },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                        colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )

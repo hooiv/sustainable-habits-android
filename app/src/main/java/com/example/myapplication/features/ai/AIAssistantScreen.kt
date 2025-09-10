@@ -1,4 +1,4 @@
-package com.example.myapplication.features.ai
+package com.example.myapplication.features.ai.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myapplication.features.ai.ui.AISuggestion
+import com.example.myapplication.features.ai.ui.SuggestionType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -159,10 +162,32 @@ fun AIAssistantScreen(
         ) {
             // AI Assistant Card
             AIAssistantCard(
-                suggestions = suggestions,
+                suggestions = suggestions.map { coreSuggestion ->
+                    AISuggestion(
+                        id = coreSuggestion.id,
+                        title = coreSuggestion.title,
+                        description = coreSuggestion.description,
+                        type = SuggestionType.valueOf(coreSuggestion.type.name),
+                        confidence = coreSuggestion.confidence,
+                        timestamp = coreSuggestion.timestamp,
+                        relatedHabitId = coreSuggestion.relatedHabitId,
+                        actionable = coreSuggestion.actionable
+                    )
+                },
                 onSuggestionClick = { suggestion ->
+                    // Convert back to core model for view model
+                    val coreSuggestion = com.example.myapplication.core.data.model.AISuggestion(
+                        id = suggestion.id,
+                        title = suggestion.title,
+                        description = suggestion.description,
+                        type = com.example.myapplication.core.data.model.SuggestionType.valueOf(suggestion.type.name),
+                        confidence = suggestion.confidence,
+                        timestamp = suggestion.timestamp,
+                        relatedHabitId = suggestion.relatedHabitId,
+                        actionable = suggestion.actionable
+                    )
                     coroutineScope.launch {
-                        viewModel.processSuggestion(suggestion, useStreaming, useVoice)
+                        viewModel.processSuggestion(coreSuggestion, useStreaming, useVoice)
                         // Auto-scroll to bottom when processing starts
                         coroutineScope.launch {
                             delay(100)

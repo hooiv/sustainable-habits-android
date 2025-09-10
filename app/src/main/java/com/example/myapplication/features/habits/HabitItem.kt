@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import android.webkit.WebView
 import androidx.compose.animation.animateColorAsState
@@ -44,8 +44,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
 import com.example.myapplication.features.animation.AnimeJsIntegration
 import com.example.myapplication.ui.animation.*
 import com.example.myapplication.ui.components.GradientButton
@@ -584,7 +584,7 @@ fun HabitItem(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = habit.description,
+                            text = habit.description ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = if (isExpanded) Int.MAX_VALUE else 2,

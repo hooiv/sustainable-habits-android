@@ -2,10 +2,10 @@ package com.example.myapplication.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.myapplication.data.database.AppDatabase
-import com.example.myapplication.data.database.HabitDao
-import com.example.myapplication.data.database.HabitCompletionDao
-import com.example.myapplication.data.database.NeuralNetworkDao
+import com.example.myapplication.core.data.database.AppDatabase
+import com.example.myapplication.core.data.database.HabitDao
+import com.example.myapplication.core.data.database.HabitCompletionDao
+import com.example.myapplication.core.data.database.NeuralNetworkDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

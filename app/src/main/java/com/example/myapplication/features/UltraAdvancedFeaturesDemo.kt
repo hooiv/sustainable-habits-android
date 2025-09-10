@@ -19,24 +19,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
-import com.example.myapplication.data.model.BiometricReading
-import com.example.myapplication.data.model.BiometricType
-import com.example.myapplication.data.model.BiometricTrend
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
+import com.example.myapplication.core.data.model.BiometricReading
+import com.example.myapplication.core.data.model.BiometricType
+import com.example.myapplication.core.data.model.BiometricTrend
 import com.example.myapplication.features.neural.NeuralNode
-import com.example.myapplication.data.model.NeuralNodeType
-import com.example.myapplication.data.model.Offset3D
-import com.example.myapplication.data.model.Rotation3D
-import com.example.myapplication.data.model.SpatialObject
-import com.example.myapplication.data.model.SpatialObjectType
+import com.example.myapplication.core.data.model.NeuralNodeType
+import com.example.myapplication.core.data.model.Offset3D
+import com.example.myapplication.core.data.model.Rotation3D
+import com.example.myapplication.core.data.model.SpatialObject
+import com.example.myapplication.core.data.model.SpatialObjectType
 import com.example.myapplication.features.ml.PredictionType
 import com.example.myapplication.features.ml.HabitPrediction
 import com.example.myapplication.features.ml.PredictionFactorDetail
-import com.example.myapplication.data.model.VoiceCommand
-import com.example.myapplication.data.model.VoiceIntent
-import com.example.myapplication.data.model.VoiceEntity
-import com.example.myapplication.data.model.EntityType
+import com.example.myapplication.core.data.model.VoiceCommand
+import com.example.myapplication.core.data.model.VoiceIntent
+import com.example.myapplication.core.data.model.VoiceEntity
+import com.example.myapplication.core.data.model.EntityType
 import com.example.myapplication.ui.components.SwipeGestureArea
 import com.example.myapplication.features.biometric.*
 import com.example.myapplication.features.ml.*
@@ -133,31 +133,31 @@ fun UltraAdvancedFeaturesDemo(
     val sampleNeuralNodes = remember {
         val nodes = listOf(
             NeuralNode(
-                type = com.example.myapplication.data.model.NeuralNodeType.INPUT,
+                type = NeuralNodeType.INPUT,
                 position = Offset(100f, 100f),
                 label = "Habit Trigger",
                 activationLevel = 0.8f
             ),
             NeuralNode(
-                type = com.example.myapplication.data.model.NeuralNodeType.INPUT,
+                type = NeuralNodeType.INPUT,
                 position = Offset(100f, 250f),
                 label = "Environment",
                 activationLevel = 0.6f
             ),
             NeuralNode(
-                type = com.example.myapplication.data.model.NeuralNodeType.HIDDEN,
+                type = NeuralNodeType.HIDDEN,
                 position = Offset(300f, 150f),
                 label = "Motivation",
                 activationLevel = 0.7f
             ),
             NeuralNode(
-                type = com.example.myapplication.data.model.NeuralNodeType.HIDDEN,
+                type = NeuralNodeType.HIDDEN,
                 position = Offset(300f, 300f),
                 label = "Difficulty",
                 activationLevel = 0.4f
             ),
             NeuralNode(
-                type = com.example.myapplication.data.model.NeuralNodeType.OUTPUT,
+                type = NeuralNodeType.OUTPUT,
                 position = Offset(500f, 200f),
                 label = "Habit Completion",
                 activationLevel = 0.5f
@@ -310,7 +310,7 @@ fun UltraAdvancedFeaturesDemo(
                 position = Offset3D(x, y, 0f),
                 rotation = Rotation3D(0f, 0f, 0f),
                 scale = 0.5f + (habit.streak.coerceAtMost(10) / 10f) * 0.5f,
-                color = color,
+                color = color.value.toLong(),
                 label = habit.name,
                 relatedHabitId = habit.id
             )
@@ -569,7 +569,8 @@ fun UltraAdvancedFeaturesDemo(
                                     .fillMaxWidth()
                                     .height(500.dp)
                                     .clip(RoundedCornerShape(16.dp)),
-                                spatialObjects = sampleSpatialObjects
+                                spatialObjects = sampleSpatialObjects,
+                                onObjectClick = { _ -> /* Handle object click */ }
                             )
                         }
                     }
@@ -610,7 +611,7 @@ fun UltraAdvancedFeaturesDemo(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 24.dp),
-                                onVoiceCommand = { command: com.example.myapplication.data.model.VoiceCommand ->
+                                onVoiceCommand = { command: VoiceCommand ->
                                     sampleVoiceCommand = command
                                 }
                             )

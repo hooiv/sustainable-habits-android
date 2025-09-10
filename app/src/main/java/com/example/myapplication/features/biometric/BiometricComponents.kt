@@ -32,9 +32,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.model.BiometricReading
-import com.example.myapplication.data.model.BiometricTrend
-import com.example.myapplication.data.model.BiometricType
+import com.example.myapplication.core.data.model.BiometricReading
+import com.example.myapplication.core.data.model.BiometricTrend
+import com.example.myapplication.core.data.model.BiometricType
 import com.example.myapplication.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

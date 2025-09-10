@@ -50,9 +50,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
-import com.example.myapplication.features.habits.HabitViewModel
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
+// import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.ui.animation.*
 import com.example.myapplication.ui.animation.ThreeJSScene
 import com.example.myapplication.ui.animation.ParticleWave
@@ -147,8 +147,10 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavController) {
-    val viewModel: HabitViewModel = hiltViewModel()
-    val habits by viewModel.habits.collectAsState(emptyList())
+    // TODO: Fix ViewModel dependency issue - need proper multi-module setup
+    // val viewModel: HabitViewModel = hiltViewModel()
+    // val habits: List<Habit> by viewModel.habits.collectAsState(emptyList())
+    val habits: List<Habit> = emptyList() // Temporary placeholder
     val completedCount = habits.count { it.goalProgress >= it.goal }
     val totalCount = habits.size
     val completionRate = if (totalCount > 0) completedCount * 100f / totalCount else 0f

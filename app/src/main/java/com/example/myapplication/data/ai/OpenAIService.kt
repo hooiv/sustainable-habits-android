@@ -1,9 +1,7 @@
 package com.example.myapplication.data.ai
 
 import android.util.Log
-import com.example.myapplication.data.model.*
-import com.example.myapplication.features.ai.AISuggestion
-import com.example.myapplication.features.ai.SuggestionType
+import com.example.myapplication.core.data.model.*
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

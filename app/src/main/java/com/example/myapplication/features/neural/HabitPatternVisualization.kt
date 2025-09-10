@@ -22,9 +22,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.model.NeuralPrediction
-import com.example.myapplication.data.model.PredictionType
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.model.NeuralPrediction
+import com.example.myapplication.core.data.model.PredictionType
 import java.util.*
 
 /**

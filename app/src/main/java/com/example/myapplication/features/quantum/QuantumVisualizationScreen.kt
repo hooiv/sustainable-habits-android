@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.quantum.QuantumEntanglement
-import com.example.myapplication.data.quantum.QuantumParticle
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.network.quantum.QuantumEntanglement
+import com.example.myapplication.core.network.quantum.QuantumParticle
 import com.example.myapplication.ui.components.AppScaffold
 import com.example.myapplication.ui.theme.Purple40
 import com.example.myapplication.ui.theme.Purple80

@@ -6,18 +6,19 @@ import androidx.lifecycle.viewModelScope
 import android.net.Uri
 import com.example.myapplication.data.ml.HabitRecommendation
 import com.example.myapplication.data.ml.ReinforcementAction
-import com.example.myapplication.data.ml.TestResult
-import com.example.myapplication.data.ml.CompressionStats
-import com.example.myapplication.data.ml.Hyperparameters
-import com.example.myapplication.data.ml.TrialResult
-import com.example.myapplication.data.ml.HabitAnomaly
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.model.HabitCategory
-import com.example.myapplication.data.ml.*
-import com.example.myapplication.data.model.*
+import com.example.myapplication.core.network.ml.TestResult
+import com.example.myapplication.core.network.ml.CompressionStats
+import com.example.myapplication.core.network.ml.Hyperparameters
+import com.example.myapplication.core.network.ml.TrialResult
+import com.example.myapplication.core.network.ml.HabitAnomaly
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.model.HabitCategory
+import com.example.myapplication.core.network.ml.*
+import com.example.myapplication.core.data.model.*
+import com.example.myapplication.core.data.model.NeuralNodeType
 import java.nio.ByteBuffer
-import com.example.myapplication.data.repository.HabitRepository
-import com.example.myapplication.data.repository.NeuralNetworkRepository
+import com.example.myapplication.core.data.repository.HabitRepository
+import com.example.myapplication.core.data.repository.NeuralNetworkRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -45,7 +46,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     private val metaLearning: MetaLearning,
     private val biometricIntegration: com.example.myapplication.data.biometric.BiometricIntegration,
     private val spatialComputing: com.example.myapplication.data.spatial.SpatialComputing,
-    private val voiceAndNlpProcessor: com.example.myapplication.data.nlp.VoiceAndNlpProcessor,
+    private val voiceAndNlpProcessor: com.example.myapplication.core.network.nlp.VoiceAndNlpProcessor,
     private val quantumVisualizer: com.example.myapplication.data.quantum.QuantumVisualizer
 ) : ViewModel() {
 
@@ -193,8 +194,8 @@ class NeuralInterfaceViewModel @Inject constructor(
     val commandHistory = voiceAndNlpProcessor.commandHistory
 
     // State for quantum visualization
-    private val _quantumVisualization = MutableStateFlow<com.example.myapplication.data.quantum.QuantumVisualization?>(null)
-    val quantumVisualization: StateFlow<com.example.myapplication.data.quantum.QuantumVisualization?> = _quantumVisualization.asStateFlow()
+    private val _quantumVisualization = MutableStateFlow<com.example.myapplication.core.network.quantum.QuantumVisualization?>(null)
+    val quantumVisualization: StateFlow<com.example.myapplication.core.network.quantum.QuantumVisualization?> = _quantumVisualization.asStateFlow()
 
     // State for quantum-enhanced habit success probabilities
     private val _habitSuccessProbabilities = MutableStateFlow<Map<String, Double>>(emptyMap())
@@ -203,6 +204,43 @@ class NeuralInterfaceViewModel @Inject constructor(
     // State for optimal habit schedule
     private val _optimalHabitSchedule = MutableStateFlow<List<Pair<Habit, Double>>>(emptyList())
     val optimalHabitSchedule: StateFlow<List<Pair<Habit, Double>>> = _optimalHabitSchedule.asStateFlow()
+
+    /**
+     * Convert core.data.model.Habit to data.model.Habit for spatial computing compatibility
+     */
+    private fun convertHabitForSpatial(coreHabit: com.example.myapplication.core.data.model.Habit): com.example.myapplication.data.model.Habit {
+        return com.example.myapplication.data.model.Habit(
+            id = coreHabit.id,
+            name = coreHabit.name,
+            description = coreHabit.description,
+            frequency = when (coreHabit.frequency) {
+                com.example.myapplication.core.data.model.HabitFrequency.DAILY -> com.example.myapplication.data.model.HabitFrequency.DAILY
+                com.example.myapplication.core.data.model.HabitFrequency.WEEKLY -> com.example.myapplication.data.model.HabitFrequency.WEEKLY
+                com.example.myapplication.core.data.model.HabitFrequency.MONTHLY -> com.example.myapplication.data.model.HabitFrequency.MONTHLY
+                com.example.myapplication.core.data.model.HabitFrequency.CUSTOM -> com.example.myapplication.data.model.HabitFrequency.CUSTOM
+            },
+            goal = coreHabit.goal,
+            goalProgress = coreHabit.goalProgress,
+            streak = coreHabit.streak,
+            lastCompletedDate = coreHabit.lastCompletedDate,
+            createdDate = coreHabit.createdDate,
+            category = coreHabit.category
+        )
+    }
+
+    /**
+     * Convert core.data.model.HabitCompletion to data.model.HabitCompletion for spatial computing compatibility
+     */
+    private fun convertHabitCompletionsForSpatial(coreCompletions: List<com.example.myapplication.core.data.model.HabitCompletion>): List<com.example.myapplication.data.model.HabitCompletion> {
+        return coreCompletions.map { coreCompletion ->
+            com.example.myapplication.data.model.HabitCompletion(
+                id = coreCompletion.id,
+                habitId = coreCompletion.habitId,
+                completionDate = coreCompletion.completionDate,
+                note = coreCompletion.note
+            )
+        }
+    }
 
     /**
      * Load neural network for a habit
@@ -247,9 +285,20 @@ class NeuralInterfaceViewModel @Inject constructor(
     private fun loadNodesForNetwork(networkId: String) {
         viewModelScope.launch {
             try {
-                neuralNetworkRepository.getUINodesForHabit(_currentHabitId.value ?: return@launch)
-                    .collect { nodes ->
-                        _nodes.value = nodes
+                neuralNetworkRepository.getNodesForNetwork(networkId)
+                    .collect { dbNodes ->
+                        // Convert database nodes to UI nodes
+                        val uiNodes = dbNodes.map { dbNode ->
+                            NeuralNode(
+                                id = dbNode.id,
+                                type = dbNode.type,
+                                position = Offset(dbNode.positionX, dbNode.positionY),
+                                connections = mutableListOf(), // We'll load connections separately if needed
+                                activationLevel = dbNode.activationLevel,
+                                label = dbNode.label
+                            )
+                        }
+                        _nodes.value = uiNodes
                     }
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load nodes: ${e.message}"
@@ -306,13 +355,13 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Add a new node
      */
-    fun addNode(type: com.example.myapplication.data.model.NeuralNodeType, position: Offset, label: String? = null) {
+    fun addNode(type: NeuralNodeType, position: Offset, label: String? = null) {
         viewModelScope.launch {
             try {
                 val networkId = _currentNetworkId.value ?: return@launch
 
                 // Add the node to the database
-                val nodeId = neuralNetworkRepository.addNode(networkId, type, position, label)
+                val nodeId = neuralNetworkRepository.addNode(networkId, type, position.x, position.y, label)
 
                 // Reload nodes to reflect the new node
                 loadNodesForNetwork(networkId)
@@ -338,7 +387,11 @@ class NeuralInterfaceViewModel @Inject constructor(
                 val updatedNode = node.copy(position = position)
 
                 // Update the node in the database
-                neuralNetworkRepository.updateNode(updatedNode)
+                neuralNetworkRepository.updateNode(
+                    nodeId = nodeId,
+                    positionX = position.x,
+                    positionY = position.y
+                )
 
                 // Update the UI state
                 val updatedNodes = _nodes.value.map {
@@ -519,7 +572,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Get latest prediction of a specific type
      */
-    fun getLatestPrediction(predictionType: com.example.myapplication.data.model.PredictionType): NeuralPrediction? {
+    fun getLatestPrediction(predictionType: PredictionType): NeuralPrediction? {
         return _predictions.value
             .filter { it.predictionType == predictionType }
             .maxByOrNull { it.timestamp }
@@ -612,7 +665,8 @@ class NeuralInterfaceViewModel @Inject constructor(
     fun addSpatialObjectForHabit(habit: Habit, position: com.example.myapplication.data.spatial.SpatialPosition) {
         viewModelScope.launch {
             try {
-                val objectId = spatialComputing.placeHabitInSpace(habit, position)
+                val convertedHabit = convertHabitForSpatial(habit)
+                val objectId = spatialComputing.placeHabitInSpace(convertedHabit, position)
 
                 // Select the new object
                 val objects = spatialComputing.spatialObjects.value
@@ -633,7 +687,8 @@ class NeuralInterfaceViewModel @Inject constructor(
                 val habit = habitRepository.getHabitById(habitId).firstOrNull() ?: return@launch
 
                 // Use current device position
-                val objectId = spatialComputing.placeHabitInSpace(habit)
+                val convertedHabit = convertHabitForSpatial(habit)
+                val objectId = spatialComputing.placeHabitInSpace(convertedHabit)
 
                 // Select the new object
                 val objects = spatialComputing.spatialObjects.value
@@ -734,16 +789,27 @@ class NeuralInterfaceViewModel @Inject constructor(
                     completionsMap[habit.id] = completions
                 }
 
+                // Convert to data.model types for quantum visualizer
+                val convertedHabits = habits.map { convertHabitForSpatial(it) }
+                val convertedCompletionsMap = completionsMap.mapValues { (_, completions) ->
+                    convertHabitCompletionsForSpatial(completions)
+                }
+
                 // Initialize quantum state
-                quantumVisualizer.initializeQuantumState(habits, completionsMap)
+                quantumVisualizer.initializeQuantumState(convertedHabits, convertedCompletionsMap)
 
                 // Calculate success probabilities
-                val probabilities = quantumVisualizer.applyQuantumEffect(habits, completionsMap)
+                val probabilities = quantumVisualizer.applyQuantumEffect(convertedHabits, convertedCompletionsMap)
                 _habitSuccessProbabilities.value = probabilities
 
                 // Calculate optimal schedule
-                val schedule = quantumVisualizer.getOptimalHabitSchedule(habits)
-                _optimalHabitSchedule.value = schedule
+                val schedule = quantumVisualizer.getOptimalHabitSchedule(convertedHabits)
+                // Convert back to core model for UI consumption
+                val coreSchedule = schedule.map { (dataHabit, score) ->
+                    val coreHabit = habits.find { it.id == dataHabit.id }!!
+                    Pair(coreHabit, score)
+                }
+                _optimalHabitSchedule.value = coreSchedule
 
                 // Start simulation update loop
                 startQuantumSimulationLoop()
@@ -766,8 +832,41 @@ class NeuralInterfaceViewModel @Inject constructor(
                     // Get visualization for current habit
                     val habitId = _currentHabitId.value
                     if (habitId != null) {
-                        val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
-                        _quantumVisualization.value = visualization
+                        val dataVisualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
+                        // Convert from data.quantum to core.network.quantum
+                        val coreVisualization = dataVisualization?.let { dataViz ->
+                            com.example.myapplication.core.network.quantum.QuantumVisualization(
+                                habitId = habitId,
+                                amplitude = dataViz.amplitude,
+                                phase = dataViz.phase,
+                                energyLevel = dataViz.energyLevel,
+                                particles = dataViz.particles.map { dataParticle ->
+                                    com.example.myapplication.core.network.quantum.QuantumParticle(
+                                        id = dataParticle.id,
+                                        position = dataParticle.position,
+                                        velocity = dataParticle.velocity,
+                                        amplitude = dataParticle.amplitude,
+                                        phase = dataParticle.phase,
+                                        qubitIndex = dataParticle.qubitIndex,
+                                        habitId = dataParticle.habitId ?: "",
+                                        color = dataParticle.color,
+                                        size = dataParticle.size
+                                    )
+                                },
+                                entanglements = dataViz.entanglements.map { dataEntanglement ->
+                                    com.example.myapplication.core.network.quantum.QuantumEntanglement(
+                                        id = dataEntanglement.id,
+                                        qubit1Index = dataEntanglement.qubit1Index,
+                                        qubit2Index = dataEntanglement.qubit2Index,
+                                        habit1Id = dataEntanglement.habit1Id,
+                                        habit2Id = dataEntanglement.habit2Id,
+                                        strength = dataEntanglement.strength,
+                                        color = dataEntanglement.color
+                                    )
+                                }
+                            )
+                        }
+                        _quantumVisualization.value = coreVisualization
                     }
 
                     // Delay before next update
@@ -786,7 +885,9 @@ class NeuralInterfaceViewModel @Inject constructor(
     fun predictHabitSuccess(habit: Habit): Double {
         return try {
             val completions = _habitCompletions.value.filter { it.habitId == habit.id }
-            quantumVisualizer.predictHabitSuccess(habit, completions)
+            val convertedHabit = convertHabitForSpatial(habit)
+            val convertedCompletions = convertHabitCompletionsForSpatial(completions)
+            quantumVisualizer.predictHabitSuccess(convertedHabit, convertedCompletions)
         } catch (e: Exception) {
             _errorMessage.value = "Failed to predict habit success: ${e.message}"
             0.0
@@ -805,8 +906,41 @@ class NeuralInterfaceViewModel @Inject constructor(
                 // Get visualization for current habit
                 val habitId = _currentHabitId.value
                 if (habitId != null) {
-                    val visualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
-                    _quantumVisualization.value = visualization
+                    val dataVisualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
+                    // Convert from data.quantum to core.network.quantum
+                    val coreVisualization = dataVisualization?.let { dataViz ->
+                        com.example.myapplication.core.network.quantum.QuantumVisualization(
+                            habitId = habitId,
+                            amplitude = dataViz.amplitude,
+                            phase = dataViz.phase,
+                            energyLevel = dataViz.energyLevel,
+                            particles = dataViz.particles.map { dataParticle ->
+                                com.example.myapplication.core.network.quantum.QuantumParticle(
+                                    id = dataParticle.id,
+                                    position = dataParticle.position,
+                                    velocity = dataParticle.velocity,
+                                    amplitude = dataParticle.amplitude,
+                                    phase = dataParticle.phase,
+                                    qubitIndex = dataParticle.qubitIndex,
+                                    habitId = dataParticle.habitId ?: "",
+                                    color = dataParticle.color,
+                                    size = dataParticle.size
+                                )
+                            },
+                            entanglements = dataViz.entanglements.map { dataEntanglement ->
+                                com.example.myapplication.core.network.quantum.QuantumEntanglement(
+                                    id = dataEntanglement.id,
+                                    qubit1Index = dataEntanglement.qubit1Index,
+                                    qubit2Index = dataEntanglement.qubit2Index,
+                                    habit1Id = dataEntanglement.habit1Id,
+                                    habit2Id = dataEntanglement.habit2Id,
+                                    strength = dataEntanglement.strength,
+                                    color = dataEntanglement.color
+                                )
+                            }
+                        )
+                    }
+                    _quantumVisualization.value = coreVisualization
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to update quantum visualization: ${e.message}"
@@ -893,8 +1027,14 @@ class NeuralInterfaceViewModel @Inject constructor(
     /**
      * Get action description for reinforcement learning
      */
-    fun getActionDescription(action: com.example.myapplication.data.model.ReinforcementAction): String {
-        return reinforcementLearningAgent.getActionDescription(action)
+    fun getActionDescription(action: com.example.myapplication.data.ml.ReinforcementAction): String {
+        // Convert from data.ml.ReinforcementAction to core.data.model.ReinforcementAction
+        val coreAction = com.example.myapplication.core.data.model.ReinforcementAction(
+            habitId = action.habitId,
+            actionType = com.example.myapplication.core.data.model.ActionType.values()[action.actionType.ordinal % com.example.myapplication.core.data.model.ActionType.values().size],
+            timestamp = action.timestamp
+        )
+        return reinforcementLearningAgent.getActionDescription(coreAction)
     }
 
     /**
@@ -1266,12 +1406,13 @@ class NeuralInterfaceViewModel @Inject constructor(
             try {
                 val habitId = _currentHabitId.value ?: return@launch
                 val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
+                val convertedHabit = convertHabitForSpatial(habit)
 
-                spatialComputing.placeHabitInSpace(habit)
+                spatialComputing.placeHabitInSpace(convertedHabit)
 
                 // Also place streak visualization
                 if (habit.streak > 0) {
-                    spatialComputing.placeStreakVisualization(habit, habit.streak)
+                    spatialComputing.placeStreakVisualization(convertedHabit, habit.streak)
                 }
 
                 _errorMessage.value = "Placed habit in AR space"

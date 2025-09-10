@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,8 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myapplication.features.habits.HabitCompletionViewModel
 import com.example.myapplication.R
-import com.example.myapplication.data.model.HabitCompletion
+import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.ui.components.AppScaffold
 import java.text.SimpleDateFormat
 import java.util.*
@@ -313,10 +314,10 @@ fun CompletionItem(
                 }
             }
             
-            if (completion.note != null) {
+            completion.note?.let { note ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = completion.note,
+                    text = note,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

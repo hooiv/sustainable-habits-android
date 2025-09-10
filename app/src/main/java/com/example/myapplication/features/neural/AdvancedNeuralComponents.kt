@@ -19,11 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.ml.TestResult
-import com.example.myapplication.data.model.HabitRecommendation
-import com.example.myapplication.data.model.NeuralPrediction
-import com.example.myapplication.data.model.PredictionType
-import com.example.myapplication.data.model.SimpleReinforcementAction
+import com.example.myapplication.core.network.ml.TestResult
+import com.example.myapplication.core.data.model.HabitRecommendation
+import com.example.myapplication.core.data.model.NeuralPrediction
+import com.example.myapplication.core.data.model.PredictionType
+import com.example.myapplication.core.data.model.SimpleReinforcementAction
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -10,10 +10,11 @@ import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.ml.MultiModalLearning
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitCompletion
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.network.ml.MultiModalLearning
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitCompletion
+import com.example.myapplication.core.data.model.HabitFrequency
+import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -165,7 +166,7 @@ class MultiModalLearningViewModel @Inject constructor(
                 id = UUID.randomUUID().toString(),
                 name = "Sample Habit",
                 description = "This is a sample habit for multi-modal learning",
-                frequency = com.example.myapplication.data.model.HabitFrequency.DAILY,
+                frequency = HabitFrequency.DAILY,
                 streak = 5,
                 goal = 10,
                 goalProgress = 7
@@ -192,14 +193,14 @@ class MultiModalLearningViewModel @Inject constructor(
                 appendLine("Multi-modal processing complete!")
                 appendLine()
                 appendLine("Feature dimensions:")
-                if (result.imageFeatures != null) {
-                    appendLine("- Image features: ${result.imageFeatures.size} dimensions")
+                result.imageFeatures?.let { imageFeatures ->
+                    appendLine("- Image features: ${imageFeatures.size} dimensions")
                 }
-                if (result.textFeatures != null) {
-                    appendLine("- Text features: ${result.textFeatures.size} dimensions")
+                result.textFeatures?.let { textFeatures ->
+                    appendLine("- Text features: ${textFeatures.size} dimensions")
                 }
-                if (result.sensorFeatures != null) {
-                    appendLine("- Sensor features: ${result.sensorFeatures.size} dimensions")
+                result.sensorFeatures?.let { sensorFeatures ->
+                    appendLine("- Sensor features: ${sensorFeatures.size} dimensions")
                 }
                 appendLine("- Fused features: ${result.fusedFeatures.size} dimensions")
                 appendLine()

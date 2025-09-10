@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Data
-import com.example.myapplication.data.database.AppDatabase
-import com.example.myapplication.data.repository.HabitRepository
+import com.example.myapplication.core.data.database.AppDatabase
+import com.example.myapplication.core.data.repository.HabitRepository
 
 /**
  * Broadcast receiver for handling habit-related actions from notifications

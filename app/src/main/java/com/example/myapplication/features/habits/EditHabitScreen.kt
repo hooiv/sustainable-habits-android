@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.myapplication.HabitViewModel
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
@@ -21,8 +22,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.R
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.HabitFrequency
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.components.JupiterGradientButton
 import kotlinx.coroutines.flow.collectLatest

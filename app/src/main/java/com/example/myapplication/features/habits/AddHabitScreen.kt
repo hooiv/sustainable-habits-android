@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.example.myapplication.features.habits.ui
 
 import com.example.myapplication.R
 
@@ -8,6 +8,7 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import com.example.myapplication.HabitViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -37,7 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.model.HabitFrequency
+import com.example.myapplication.core.data.model.HabitFrequency
 import com.example.myapplication.ui.animation.AnimeEasing
 import com.example.myapplication.ui.animation.ParticleWave
 import com.example.myapplication.ui.animation.animeEntrance

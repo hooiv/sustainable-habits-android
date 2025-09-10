@@ -1,6 +1,7 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.data.model.Habit
+import com.example.myapplication.core.data.repository.HabitRepository
+import com.example.myapplication.core.data.model.Habit
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

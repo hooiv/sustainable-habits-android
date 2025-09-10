@@ -32,9 +32,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.data.model.Habit
-import com.example.myapplication.data.model.NeuralPrediction
-import com.example.myapplication.data.model.PredictionType
+import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.NeuralPrediction
+import com.example.myapplication.core.data.model.PredictionType
 import java.util.Date
 
 /**
@@ -515,10 +515,12 @@ fun NeuralInterfaceScreen(
                                             )
 
                                             if (session.finalAccuracy != null) {
-                                                Text(
-                                                    text = "Final Accuracy: ${(session.finalAccuracy * 100).toInt()}%",
-                                                    style = MaterialTheme.typography.bodySmall
-                                                )
+                                                session.finalAccuracy?.let { accuracy ->
+                                                    Text(
+                                                        text = "Final Accuracy: ${(accuracy * 100).toInt()}%",
+                                                        style = MaterialTheme.typography.bodySmall
+                                                    )
+                                                }
                                             }
 
                                             if (session.finalLoss != null) {
@@ -549,7 +551,18 @@ fun NeuralInterfaceScreen(
                                 )
 
                                 // Simple line chart for accuracy and loss
-                                TrainingProgressChart(trainingEpochs = trainingEpochs)
+                                // Convert from core.data.model to data.model
+                                val convertedEpochs = trainingEpochs.map { coreEpoch ->
+                                    com.example.myapplication.data.model.NeuralTrainingEpoch(
+                                        id = coreEpoch.id,
+                                        sessionId = coreEpoch.sessionId,
+                                        epochNumber = coreEpoch.epochNumber,
+                                        loss = coreEpoch.loss,
+                                        accuracy = coreEpoch.accuracy,
+                                        timestamp = coreEpoch.timestamp
+                                    )
+                                }
+                                TrainingProgressChart(trainingEpochs = convertedEpochs)
                             }
                         }
 
@@ -640,14 +653,14 @@ fun NeuralInterfaceScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // Personalized recommendations
-                            // Convert from data.ml.HabitRecommendation to data.model.HabitRecommendation
+                            // Convert from data.ml.HabitRecommendation to core.data.model.HabitRecommendation
                             val modelRecommendations = recommendations.map { mlRec ->
                                 // Extract title and description from the message
                                 val messageParts = mlRec.message.split(": ", limit = 2)
                                 val title = if (messageParts.size > 1) messageParts[0] else mlRec.recommendationType.name
                                 val description = if (messageParts.size > 1) messageParts[1] else mlRec.message
 
-                                com.example.myapplication.data.model.HabitRecommendation(
+                                com.example.myapplication.core.data.model.HabitRecommendation(
                                     id = mlRec.id,
                                     habitId = mlRec.habitId,
                                     type = mlRec.recommendationType.ordinal,
@@ -677,9 +690,9 @@ fun NeuralInterfaceScreen(
                             )
 
                             // Reinforcement learning action
-                            // Convert from data.ml.ReinforcementAction to data.model.SimpleReinforcementAction
+                            // Convert from data.ml.ReinforcementAction to core.data.model.SimpleReinforcementAction
                             val modelAction = reinforcementAction?.let { mlAction ->
-                                com.example.myapplication.data.model.SimpleReinforcementAction(
+                                com.example.myapplication.core.data.model.SimpleReinforcementAction(
                                     actionId = mlAction.actionType.ordinal
                                 )
                             }
@@ -687,13 +700,7 @@ fun NeuralInterfaceScreen(
                             ReinforcementActionCard(
                                 action = modelAction,
                                 actionDescription = reinforcementAction?.let {
-                                    // Convert from data.ml.ReinforcementAction to data.model.ReinforcementAction
-                                    val action = com.example.myapplication.data.model.ReinforcementAction(
-                                        habitId = viewModel.currentHabitId.value ?: "",
-                                        actionType = com.example.myapplication.data.model.ActionType.values()[it.actionType.ordinal % com.example.myapplication.data.model.ActionType.values().size],
-                                        timestamp = it.timestamp
-                                    )
-                                    viewModel.getActionDescription(action)
+                                    viewModel.getActionDescription(it)
                                 } ?: "No recommendation available yet",
                                 onFeedback = { feedback ->
                                     viewModel.provideReinforcementFeedback(feedback)
@@ -868,7 +875,7 @@ fun NeuralInterfaceScreen(
                     val mood by viewModel.mood.collectAsState()
 
                     // Create BiometricData object
-                    val biometricData = com.example.myapplication.data.biometric.BiometricData(
+                    val biometricData = com.example.myapplication.core.network.biometric.BiometricData(
                         heartRate = heartRate,
                         heartRateConfidence = 0.8f, // Default confidence
                         stepCount = stepCount,

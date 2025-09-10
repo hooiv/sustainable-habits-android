@@ -1,41 +1,43 @@
 [versions]
 agp = "8.13.0"
-kotlin = "1.9.24" # Updated to match Compose Compiler requirements
-coreKtx = "1.10.1"
+kotlin = "2.2.10"
+coreKtx = "1.17.0"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
-material = "1.10.0"
-constraintlayout = "2.1.4"
-navigationFragmentKtx = "2.6.0"
-navigationUiKtx = "2.6.0"
-hilt = "2.51.1"
-hiltNavigationCompose = "1.2.0" # Added Hilt Navigation Compose version
-composeBom = "2024.02.02" # Downgraded for compatibility with Kotlin 1.9.24 and Compiler 1.5.14
-composeCompiler = "1.5.14" # Explicitly set Compose Compiler version
-activityCompose = "1.9.0" # Ensure this is compatible with new BOM, or let BOM manage it
-composeNavigation = "2.8.0-beta05" # Ensure this is compatible, or let BOM manage it
-room = "2.6.1"
-googleServices = "4.4.1" # Added Google Services version
-ksp = "1.9.24-1.0.20" # Ensure this KSP version is compatible with your Kotlin version
-coroutines = "1.8.0"
-lottie = "6.4.0"
-gson = "2.10.1"
-retrofit = "2.9.0"
-okhttp = "4.12.0"
-coil = "2.6.0"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+appcompat = "1.7.1"
+material = "1.13.0"
+constraintlayout = "2.2.1"
+navigationFragmentKtx = "2.9.3"
+navigationUiKtx = "2.9.3"
+hilt = "2.57.1"
+hiltNavigationCompose = "1.2.0"
+composeBom = "2025.08.01"
+activityCompose = "1.10.1"
+composeNavigation = "2.9.3"
+room = "2.7.2"
+googleServices = "4.4.3"
+ksp = "2.2.10-2.0.2"
+composeCompiler = "2.2.10"
+coroutines = "1.10.2"
+lottie = "6.6.7"
+gson = "2.13.1"
+retrofit = "3.0.0"
+okhttp = "5.1.0"
+coil = "2.7.0"
 mpandroidchart = "v3.1.0"
-firebaseBom = "32.8.1"
-playServicesAuth = "21.1.1"
-tensorflowLite = "2.16.1"
-workmanager = "2.9.0"
+firebaseBom = "34.2.0"
+playServicesAuth = "21.4.0"
+tensorflowLite = "2.17.0"
+workmanager = "2.10.3"
 hiltWork = "1.2.0"
-datastore = "1.1.1"
-biometric = "1.2.0-alpha05"
-camera = "1.3.3"
-lifecycle = "2.8.0"
-arcore = "1.41.0"
+datastore = "1.1.7"
+biometric = "1.1.0"
+camera = "1.4.2"
+lifecycle = "2.9.3"
+arcore = "1.5.0"
+testCore = "1.7.0"
+testRunner = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,7 +60,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
 # Activity Compose
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" } # Version managed by BOM
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" } 
 
 # Compose UI
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -73,20 +75,20 @@ androidx-compose-material-icons-core = { group = "androidx.compose.material", na
 
 
 # Compose Navigation
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" } # Corrected to use specific version
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" } 
 
 # Compose Animation
-androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" } # Version managed by BOM
-androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core" } # Version managed by BOM
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" } 
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core" } 
 
 # Compose Foundation
-androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" } # Version managed by BOM
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" } 
 
 # Compose Runtime Livedata
-androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" } # Version managed by BOM
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" } 
 
 # Compose Material Icons Extended
-androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" } # Version managed by BOM
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" } 
 
 # Compose Test
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -99,7 +101,7 @@ lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", versio
 # Room
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" } # For Coroutines support
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" } 
 
 # Gson
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
@@ -118,8 +120,8 @@ mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", versio
 
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 # TensorFlow Lite
@@ -152,13 +154,18 @@ lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-ru
 # ARCore
 arcore = { group = "com.google.ar", name = "core", version.ref = "arcore" }
 
-
 # Hilt Dependency for Navigation Compose
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
+# Test
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "testCore" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" } # Added Google Services plugin
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

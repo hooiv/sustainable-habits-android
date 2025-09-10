@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.data.repository.SpatialObjectType
+import com.example.myapplication.core.data.model.SpatialObjectType
 
 /**
  * A component for selecting spatial object types

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.ai
+package com.example.myapplication.features.ai.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.data.model.AIAssistantPersonalization
+import com.example.myapplication.core.data.model.AIAssistantPersonalization
+import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 
 /**
  * AI Assistant Settings Screen

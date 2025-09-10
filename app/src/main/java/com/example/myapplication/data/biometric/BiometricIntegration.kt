@@ -170,9 +170,9 @@ class BiometricIntegration @Inject constructor(
         // Start camera with flash
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
-            cameraProvider = cameraProviderFuture.get()
-
             try {
+                cameraProvider = cameraProviderFuture.get()
+
                 // Unbind any bound use cases
                 cameraProvider?.unbindAll()
 
