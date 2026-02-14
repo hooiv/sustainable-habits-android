@@ -1,0 +1,561 @@
+
+> Configure project :features:advanced
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/advanced/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:ai
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/ai/build.gradle.kts:23:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:analytics
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/analytics/build.gradle.kts:23:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:animation
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/animation/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:ar
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/ar/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:auth
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/auth/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:biometric
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/biometric/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:calendar
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/calendar/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:demo
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/demo/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:gamification
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/gamification/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:gestures
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/gestures/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:habits
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/habits/build.gradle.kts:23:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:ml
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/ml/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:neural
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/neural/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:onboarding
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/onboarding/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:personalization
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/personalization/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:quantum
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/quantum/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:settings
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/settings/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:social
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/social/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:spatial
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/spatial/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:splash
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/splash/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:stats
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/stats/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:threejs
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/threejs/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Configure project :features:voice
+w: file:///C:/Users/aditya/Desktop/sustainable-habits-android/features/voice/build.gradle.kts:30:9: 'jvmTarget: String' is deprecated. Please migrate to the compilerOptions DSL. More details are here: https://kotl.in/u1r8ln
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:data:preBuild UP-TO-DATE
+> Task :core:data:preDebugBuild UP-TO-DATE
+> Task :core:data:writeDebugAarMetadata UP-TO-DATE
+> Task :core:domain:preBuild UP-TO-DATE
+> Task :core:domain:preDebugBuild UP-TO-DATE
+> Task :core:domain:writeDebugAarMetadata UP-TO-DATE
+> Task :core:network:preBuild UP-TO-DATE
+> Task :core:network:preDebugBuild UP-TO-DATE
+> Task :core:network:writeDebugAarMetadata UP-TO-DATE
+> Task :core:ui:preBuild UP-TO-DATE
+> Task :core:ui:preDebugBuild UP-TO-DATE
+> Task :features:ai:preBuild UP-TO-DATE
+> Task :features:ai:preDebugBuild UP-TO-DATE
+> Task :features:ai:writeDebugAarMetadata UP-TO-DATE
+> Task :features:analytics:preBuild UP-TO-DATE
+> Task :features:analytics:preDebugBuild UP-TO-DATE
+> Task :features:analytics:writeDebugAarMetadata UP-TO-DATE
+> Task :features:habits:preBuild UP-TO-DATE
+> Task :features:habits:preDebugBuild UP-TO-DATE
+> Task :core:ui:writeDebugAarMetadata
+> Task :features:habits:writeDebugAarMetadata UP-TO-DATE
+> Task :core:data:processDebugNavigationResources UP-TO-DATE
+> Task :core:domain:processDebugNavigationResources UP-TO-DATE
+> Task :core:network:processDebugNavigationResources UP-TO-DATE
+> Task :core:ui:processDebugNavigationResources
+> Task :features:ai:processDebugNavigationResources UP-TO-DATE
+> Task :features:analytics:processDebugNavigationResources UP-TO-DATE
+> Task :features:habits:processDebugNavigationResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :core:data:generateDebugResValues UP-TO-DATE
+> Task :core:data:generateDebugResources UP-TO-DATE
+> Task :core:data:packageDebugResources UP-TO-DATE
+> Task :core:domain:generateDebugResValues UP-TO-DATE
+> Task :core:domain:generateDebugResources UP-TO-DATE
+> Task :core:domain:packageDebugResources UP-TO-DATE
+> Task :core:network:generateDebugResValues UP-TO-DATE
+> Task :core:network:generateDebugResources UP-TO-DATE
+> Task :core:network:packageDebugResources UP-TO-DATE
+> Task :core:ui:generateDebugResValues
+> Task :core:ui:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :core:ui:packageDebugResources
+> Task :features:ai:generateDebugResValues UP-TO-DATE
+> Task :features:ai:generateDebugResources UP-TO-DATE
+> Task :features:ai:packageDebugResources UP-TO-DATE
+> Task :features:analytics:generateDebugResValues UP-TO-DATE
+> Task :features:analytics:generateDebugResources UP-TO-DATE
+> Task :features:analytics:packageDebugResources UP-TO-DATE
+> Task :features:habits:generateDebugResValues UP-TO-DATE
+> Task :features:habits:generateDebugResources UP-TO-DATE
+> Task :features:habits:packageDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :core:data:extractDeepLinksDebug UP-TO-DATE
+> Task :core:data:processDebugManifest UP-TO-DATE
+> Task :core:domain:extractDeepLinksDebug UP-TO-DATE
+> Task :core:domain:processDebugManifest UP-TO-DATE
+> Task :core:network:extractDeepLinksDebug UP-TO-DATE
+> Task :core:network:processDebugManifest UP-TO-DATE
+> Task :core:ui:extractDeepLinksDebug
+> Task :features:ai:extractDeepLinksDebug UP-TO-DATE
+> Task :features:ai:processDebugManifest UP-TO-DATE
+> Task :features:analytics:extractDeepLinksDebug UP-TO-DATE
+> Task :features:analytics:processDebugManifest UP-TO-DATE
+> Task :features:habits:extractDeepLinksDebug UP-TO-DATE
+> Task :features:habits:processDebugManifest UP-TO-DATE
+> Task :core:data:compileDebugLibraryResources UP-TO-DATE
+> Task :core:data:parseDebugLocalResources UP-TO-DATE
+> Task :core:data:generateDebugRFile UP-TO-DATE
+> Task :core:domain:compileDebugLibraryResources UP-TO-DATE
+> Task :core:domain:parseDebugLocalResources UP-TO-DATE
+> Task :core:domain:generateDebugRFile UP-TO-DATE
+> Task :core:network:compileDebugLibraryResources UP-TO-DATE
+> Task :core:network:parseDebugLocalResources UP-TO-DATE
+> Task :core:network:generateDebugRFile UP-TO-DATE
+> Task :core:ui:processDebugManifest
+> Task :core:ui:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :features:ai:compileDebugLibraryResources UP-TO-DATE
+> Task :features:ai:parseDebugLocalResources UP-TO-DATE
+> Task :features:ai:generateDebugRFile UP-TO-DATE
+> Task :features:analytics:compileDebugLibraryResources UP-TO-DATE
+> Task :features:analytics:parseDebugLocalResources UP-TO-DATE
+> Task :features:analytics:generateDebugRFile UP-TO-DATE
+> Task :features:habits:compileDebugLibraryResources UP-TO-DATE
+> Task :features:habits:parseDebugLocalResources UP-TO-DATE
+> Task :features:habits:generateDebugRFile UP-TO-DATE
+> Task :core:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:parseDebugLocalResources
+> Task :core:data:javaPreCompileDebug UP-TO-DATE
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:generateDebugRFile
+> Task :core:domain:javaPreCompileDebug UP-TO-DATE
+> Task :core:network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:network:javaPreCompileDebug UP-TO-DATE
+> Task :core:ui:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:processDebugResources
+> Task :core:data:kspDebugKotlin
+> Task :features:ai:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:ai:javaPreCompileDebug UP-TO-DATE
+> Task :features:analytics:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:javaPreCompileDebug
+> Task :features:analytics:javaPreCompileDebug UP-TO-DATE
+> Task :features:habits:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:habits:javaPreCompileDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :core:data:mergeDebugShaders UP-TO-DATE
+> Task :core:data:compileDebugShaders NO-SOURCE
+> Task :core:data:generateDebugAssets UP-TO-DATE
+> Task :core:data:mergeDebugAssets UP-TO-DATE
+> Task :core:domain:mergeDebugShaders UP-TO-DATE
+> Task :core:domain:compileDebugShaders NO-SOURCE
+> Task :core:domain:generateDebugAssets UP-TO-DATE
+> Task :core:domain:mergeDebugAssets UP-TO-DATE
+> Task :core:network:mergeDebugShaders UP-TO-DATE
+> Task :core:network:compileDebugShaders NO-SOURCE
+> Task :core:network:generateDebugAssets UP-TO-DATE
+> Task :core:network:mergeDebugAssets UP-TO-DATE
+> Task :core:ui:mergeDebugShaders
+> Task :core:ui:compileDebugShaders NO-SOURCE
+> Task :core:ui:generateDebugAssets UP-TO-DATE
+> Task :core:ui:mergeDebugAssets
+> Task :features:ai:mergeDebugShaders UP-TO-DATE
+> Task :features:ai:compileDebugShaders NO-SOURCE
+> Task :features:ai:generateDebugAssets UP-TO-DATE
+> Task :features:ai:mergeDebugAssets UP-TO-DATE
+> Task :features:analytics:mergeDebugShaders UP-TO-DATE
+> Task :features:analytics:compileDebugShaders NO-SOURCE
+> Task :features:analytics:generateDebugAssets UP-TO-DATE
+> Task :features:analytics:mergeDebugAssets UP-TO-DATE
+> Task :features:habits:mergeDebugShaders UP-TO-DATE
+> Task :features:habits:compileDebugShaders NO-SOURCE
+> Task :features:habits:generateDebugAssets UP-TO-DATE
+> Task :features:habits:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:data:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:data:mergeDebugNativeLibs NO-SOURCE
+> Task :core:data:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:domain:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:domain:mergeDebugNativeLibs NO-SOURCE
+> Task :core:domain:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:network:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:network:mergeDebugNativeLibs NO-SOURCE
+> Task :core:network:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:ui:mergeDebugJniLibFolders
+> Task :core:ui:mergeDebugNativeLibs NO-SOURCE
+> Task :features:ai:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:ai:mergeDebugNativeLibs NO-SOURCE
+> Task :core:ui:copyDebugJniLibsProjectOnly
+> Task :features:ai:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:analytics:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:analytics:mergeDebugNativeLibs NO-SOURCE
+> Task :features:analytics:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:habits:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:habits:mergeDebugNativeLibs NO-SOURCE
+> Task :features:habits:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :core:data:checkDebugAarMetadata UP-TO-DATE
+> Task :core:data:stripDebugDebugSymbols NO-SOURCE
+> Task :core:data:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :core:data:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :core:data:prepareDebugArtProfile UP-TO-DATE
+> Task :core:data:prepareLintJarForPublish UP-TO-DATE
+> Task :core:domain:checkDebugAarMetadata UP-TO-DATE
+> Task :core:domain:stripDebugDebugSymbols NO-SOURCE
+> Task :core:domain:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :core:domain:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :core:domain:prepareDebugArtProfile UP-TO-DATE
+> Task :core:domain:prepareLintJarForPublish UP-TO-DATE
+> Task :core:network:checkDebugAarMetadata UP-TO-DATE
+> Task :core:network:stripDebugDebugSymbols NO-SOURCE
+> Task :core:network:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :core:network:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :core:network:prepareDebugArtProfile UP-TO-DATE
+> Task :core:network:prepareLintJarForPublish UP-TO-DATE
+> Task :core:ui:stripDebugDebugSymbols NO-SOURCE
+> Task :core:ui:copyDebugJniLibsProjectAndLocalJars
+> Task :core:ui:extractDeepLinksForAarDebug
+> Task :core:ui:prepareDebugArtProfile
+> Task :core:ui:checkDebugAarMetadata
+> Task :features:advanced:preBuild UP-TO-DATE
+> Task :features:advanced:preDebugBuild UP-TO-DATE
+> Task :core:ui:prepareLintJarForPublish
+> Task :features:advanced:mergeDebugJniLibFolders
+> Task :features:advanced:mergeDebugNativeLibs NO-SOURCE
+> Task :features:advanced:stripDebugDebugSymbols NO-SOURCE
+> Task :features:advanced:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:advanced:copyDebugJniLibsProjectAndLocalJars
+> Task :features:advanced:generateDebugResValues
+> Task :core:ui:compileDebugKotlin
+> Task :features:advanced:checkDebugAarMetadata FAILED
+> Task :features:advanced:generateDebugResources
+> Task :features:advanced:packageDebugResources
+> Task :core:data:compileDebugKotlin
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:4:19 Unresolved reference 'firebase'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:5:19 Unresolved reference 'firebase'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:6:19 Unresolved reference 'firebase'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:7:19 Unresolved reference 'firebase'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:10:27 Unresolved reference 'tasks'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:14:29 Unresolved reference 'FirebaseFirestore'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:15:24 Unresolved reference 'FirebaseAuth'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:17:27 Unresolved reference 'FirebaseUser'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:31:67 Unresolved reference 'Timestamp'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:32:30 Unresolved reference 'Timestamp'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:33:60 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:33:60 Not enough information to infer type argument for 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:33:66 Unresolved reference 'Timestamp'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:38:39 Unresolved reference 'Timestamp'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:57:14 Unresolved reference 'await'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:60:33 Method 'iterator()' is ambiguous for this expression. Applicable candidates:
+fun <T> Enumeration<T>.iterator(): Iterator<T>
+fun <T> Iterator<T>.iterator(): Iterator<T>
+fun <K, V> Map<out K, V>.iterator(): Iterator<Map.Entry<K, V>>
+fun <K, V> MutableMap<K, V>.iterator(): MutableIterator<MutableMap.MutableEntry<K, V>>
+fun CharSequence.iterator(): CharIterator
+fun BufferedInputStream.iterator(): ByteIterator
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:61:28 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:61:32 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:80:37 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:86:14 Unresolved reference 'addOnSuccessListener'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:86:37 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:88:41 Method 'iterator()' is ambiguous for this expression. Applicable candidates:
+fun <T> Enumeration<T>.iterator(): Iterator<T>
+fun <T> Iterator<T>.iterator(): Iterator<T>
+fun <K, V> Map<out K, V>.iterator(): Iterator<Map.Entry<K, V>>
+fun <K, V> MutableMap<K, V>.iterator(): MutableIterator<MutableMap.MutableEntry<K, V>>
+fun CharSequence.iterator(): CharIterator
+fun BufferedInputStream.iterator(): ByteIterator
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:88:41 Unresolved reference 'documents'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:89:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:89:40 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/data/src/main/java/com/example/myapplication/core/data/util/FirebaseUtil.kt:95:37 Cannot infer type for this parameter. Specify it explicitly.
+
+> Task :core:data:compileDebugKotlin FAILED
+
+> Task :core:ui:compileDebugKotlin
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/animation/AnimationManager.kt:15:14 Unresolved reference 'inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/animation/AnimationManager.kt:16:14 Unresolved reference 'inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/animation/AnimationManager.kt:22:2 Unresolved reference 'Singleton'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/animation/AnimationManager.kt:23:25 Unresolved reference 'Inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:15:17 Unresolved reference 'navigation'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:16:34 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:25:20 Unresolved reference 'NavController'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:35:41 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:36:41 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:44:41 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:49:54 Unresolved reference 'popBackStack'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppBar.kt:53:48 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppScaffold.kt:23:34 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppScaffold.kt:43:47 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppScaffold.kt:44:47 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppScaffold.kt:51:47 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/AppScaffold.kt:60:50 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:3:34 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:95:27 None of the following candidates is applicable:
+class R : Any
+class R : Any
+class R : Any
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:95:29 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:96:27 None of the following candidates is applicable:
+class R : Any
+class R : Any
+class R : Any
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:96:29 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:98:38 None of the following candidates is applicable:
+class R : Any
+class R : Any
+class R : Any
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/components/UIComponents.kt:98:40 Unresolved reference 'color'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/theme/Theme.kt:29:34 Unresolved reference 'util'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/theme/Theme.kt:116:22 Unresolved reference 'ThemePreferenceManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:4:17 Unresolved reference 'biometric'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:5:17 Unresolved reference 'biometric'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:7:17 Unresolved reference 'fragment'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:14:18 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:15:41 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:16:26 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:23:18 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:25:13 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:25:65 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:27:26 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:35:19 Unresolved reference 'FragmentActivity'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:38:8 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:40:33 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:41:13 'onAuthenticationSucceeded' overrides nothing.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:41:60 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:44:13 'onAuthenticationError' overrides nothing.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:47:13 'onAuthenticationFailed' overrides nothing.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:51:16 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:64:8 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:65:23 Unresolved reference 'BiometricPrompt'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:67:19 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:68:22 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:71:17 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:71:69 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/BiometricHelper.kt:74:46 Unresolved reference 'BiometricManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:12:34 Unresolved reference 'MainActivity'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:13:34 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:14:39 Unresolved reference 'data'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:15:34 Unresolved reference 'receivers'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:18:14 Unresolved reference 'inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:19:14 Unresolved reference 'inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:21:2 Unresolved reference 'Singleton'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:22:27 Unresolved reference 'Inject'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:52:38 Unresolved reference 'Habit'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:54:19 Unresolved reference 'reminderTime'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:54:50 Unresolved reference 'isEnabled'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:55:39 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:61:44 Unresolved reference 'reminderTime'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:42 Unresolved reference 'MainActivity'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:62 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:62 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+val <T> KClass<T>.java: Class<T>
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:68 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:68 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T> T.apply(block: T.() -> Unit): T
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:79:74 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:80:17 Unresolved reference 'flags'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:81:17 Unresolved reference 'putExtra'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:81:44 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:84:65 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:127:38 Unresolved reference 'MainActivity'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:127:58 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:127:58 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+val <T> KClass<T>.java: Class<T>
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:141:46 Unresolved reference 'Habit'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:38 Unresolved reference 'MainActivity'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:58 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:58 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+val <T> KClass<T>.java: Class<T>
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:64 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:64 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T> T.apply(block: T.() -> Unit): T
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:142:70 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:143:13 Unresolved reference 'flags'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:144:13 Unresolved reference 'putExtra'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:144:40 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:147:61 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:156:27 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:157:14 Unresolved reference 'setContentTitle'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:158:48 Unresolved reference 'name'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:44 Unresolved reference 'HabitActionReceiver'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:71 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:71 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+val <T> KClass<T>.java: Class<T>
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:77 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:77 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T> T.apply(block: T.() -> Unit): T
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:164:83 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:165:13 Unresolved reference 'action'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:166:13 Unresolved reference 'putExtra'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:166:40 Unresolved reference 'id'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationHelper.kt:174:27 Unresolved reference 'R'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:9:17 Unresolved reference 'work'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:25:27 Unresolved reference 'WorkManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:26:20 Unresolved reference 'Data'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:41:23 Unresolved reference 'PeriodicWorkRequestBuilder'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:47:13 Unresolved reference 'ExistingPeriodicWorkPolicy'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:53:9 Unresolved reference 'WorkManager'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:78:65 Unresolved reference 'WorkerParameters'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:79:9 Unresolved reference 'Worker'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:80:9 'doWork' overrides nothing.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:80:32 One type argument expected for class Result<out T> : Serializable.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:81:25 Unresolved reference 'inputData'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:82:24 Unresolved reference 'inputData'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:83:32 Unresolved reference 'inputData'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:84:34 Unresolved reference 'inputData'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:85:54 Unresolved reference 'applicationContext'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:92:54 Argument type mismatch: actual type is 'Any', but 'String!' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:99:49 Unresolved reference 'applicationContext'.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:102:27 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-habits-android/core/ui/src/main/java/com/example/myapplication/core/ui/util/NotificationUtil.kt:102:34 No value passed for parameter 'value'.
+
+> Task :core:ui:compileDebugKotlin FAILED
+
+FAILURE: Build completed with 3 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':features:advanced:checkDebugAarMetadata'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
+   > 2 issues were found when checking AAR metadata:
+     
+       1.  Dependency 'androidx.core:core:1.17.0' requires libraries and applications that
+           depend on it to compile against version 36 or later of the
+           Android APIs.
+     
+           :features:advanced is currently compiled against android-35.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 36, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+     
+       2.  Dependency 'androidx.core:core-ktx:1.17.0' requires libraries and applications that
+           depend on it to compile against version 36 or later of the
+           Android APIs.
+     
+           :features:advanced is currently compiled against android-35.
+     
+           Recommended action: Update this project to use a newer compileSdk
+           of at least 36, for example 36.
+     
+           Note that updating a library or application's compileSdk (which
+           allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed
+           on).
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':core:data:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+3: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':core:ui:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 2m 47s
+162 actionable tasks: 32 executed, 130 up-to-date

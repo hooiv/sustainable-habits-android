@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver android:name=".receivers.HabitActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="MARK_HABIT_COMPLETE" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

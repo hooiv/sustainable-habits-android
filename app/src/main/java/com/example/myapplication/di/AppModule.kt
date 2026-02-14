@@ -23,18 +23,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTextToSpeechService(@ApplicationContext context: Context): TextToSpeechService {
-        return TextToSpeechService(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideVoiceRecognitionService(@ApplicationContext context: Context): VoiceRecognitionService {
-        return VoiceRecognitionService(context)
-    }
-
-    @Provides
-    @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("ai_assistant_prefs", Context.MODE_PRIVATE)
     }

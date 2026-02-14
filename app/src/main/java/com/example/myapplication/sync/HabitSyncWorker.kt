@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
 import com.example.myapplication.core.data.repository.HabitRepository
-import com.example.myapplication.util.FirebaseUtil
+import com.example.myapplication.core.data.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.assisted.Assisted

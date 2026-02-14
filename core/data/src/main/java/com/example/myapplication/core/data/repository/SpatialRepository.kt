@@ -1,6 +1,10 @@
 package com.example.myapplication.core.data.repository
 
 import com.example.myapplication.core.data.model.Habit
+import com.example.myapplication.core.data.model.SpatialObject
+import com.example.myapplication.core.data.model.SpatialObjectType
+import com.example.myapplication.core.data.model.Offset3D
+import com.example.myapplication.core.data.model.Rotation3D
 // import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,50 +14,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.*
-
-/**
- * Represents a 3D object in spatial computing
- */
-data class SpatialObject(
-    val id: String = UUID.randomUUID().toString(),
-    val type: SpatialObjectType,
-    val position: Offset3D,
-    val rotation: Rotation3D,
-    val scale: Float,
-    val color: Int, // ARGB color value
-    val label: String,
-    val relatedHabitId: String? = null
-)
-
-/**
- * Types of spatial objects
- */
-enum class SpatialObjectType {
-    HABIT_SPHERE,
-    STREAK_TOWER,
-    GOAL_PYRAMID,
-    ACHIEVEMENT_STAR,
-    CATEGORY_CUBE,
-    REMINDER_CLOCK
-}
-
-/**
- * Represents a 3D position
- */
-data class Offset3D(
-    val x: Float,
-    val y: Float,
-    val z: Float
-)
-
-/**
- * Represents a 3D rotation in degrees
- */
-data class Rotation3D(
-    val x: Float,
-    val y: Float,
-    val z: Float
-)
 
 /**
  * Repository for spatial objects
@@ -123,7 +83,7 @@ class SpatialRepository @Inject constructor(
                 position = Offset3D(0f, 0f, 0f),
                 rotation = Rotation3D(0f, 0f, 0f),
                 scale = 1.0f,
-                color = 0xFF2196F3.toInt(), // Blue
+                color = 0xFF2196F3, // Blue
                 label = "Morning Meditation"
             ),
             SpatialObject(
@@ -131,7 +91,7 @@ class SpatialRepository @Inject constructor(
                 position = Offset3D(100f, 50f, 0f),
                 rotation = Rotation3D(0f, 0f, 0f),
                 scale = 1.2f,
-                color = 0xFFF44336.toInt(), // Red
+                color = 0xFFF44336, // Red
                 label = "Exercise"
             ),
             SpatialObject(
@@ -139,7 +99,7 @@ class SpatialRepository @Inject constructor(
                 position = Offset3D(-100f, -50f, 0f),
                 rotation = Rotation3D(0f, 0f, 0f),
                 scale = 0.8f,
-                color = 0xFF4CAF50.toInt(), // Green
+                color = 0xFF4CAF50, // Green
                 label = "Read Books"
             )
         )
@@ -170,12 +130,12 @@ class SpatialRepository @Inject constructor(
 
             // Determine color based on habit category
             val color = when (habit.category) {
-                "Health" -> 0xFF4CAF50.toInt() // Green
-                "Fitness" -> 0xFFF44336.toInt() // Red
-                "Learning" -> 0xFF2196F3.toInt() // Blue
-                "Productivity" -> 0xFFFF9800.toInt() // Orange
-                "Mindfulness" -> 0xFF9C27B0.toInt() // Purple
-                else -> 0xFF3F51B5.toInt() // Indigo
+                "Health" -> 0xFF4CAF50 // Green
+                "Fitness" -> 0xFFF44336 // Red
+                "Learning" -> 0xFF2196F3 // Blue
+                "Productivity" -> 0xFFFF9800 // Orange
+                "Mindfulness" -> 0xFF9C27B0 // Purple
+                else -> 0xFF3F51B5 // Indigo
             }
 
             SpatialObject(

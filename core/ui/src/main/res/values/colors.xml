@@ -1,0 +1,7 @@
+<resources>
+    <color name="brand_primary">#5A55AE</color>
+    <color name="brand_secondary">#55BEC9</color>
+    <color name="brand_gradient_start">#5A55AE</color>
+    <color name="brand_gradient_end">#55BEC9</color>
+    <color name="brand_accent">#F3BA2F</color>
+</resources>
