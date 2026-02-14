@@ -24,6 +24,7 @@ import com.example.myapplication.core.ui.components.LoadingIndicator
  * Screen for Three.js visualizations
  */
 @SuppressLint("SetJavaScriptEnabled")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreeJsVisualizationScreen(
     navController: NavController,

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.analytics.viewmodel
+package com.example.myapplication.features.analytics
 
 import android.content.Context
 import android.widget.Toast

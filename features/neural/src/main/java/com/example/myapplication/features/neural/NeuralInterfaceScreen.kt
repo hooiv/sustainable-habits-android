@@ -653,24 +653,8 @@ fun NeuralInterfaceScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // Personalized recommendations
-                            // Convert from data.ml.HabitRecommendation to core.data.model.HabitRecommendation
-                            val modelRecommendations = recommendations.map { mlRec ->
-                                // Extract title and description from the message
-                                val messageParts = mlRec.message.split(": ", limit = 2)
-                                val title = if (messageParts.size > 1) messageParts[0] else mlRec.recommendationType.name
-                                val description = if (messageParts.size > 1) messageParts[1] else mlRec.message
-
-                                com.example.myapplication.core.data.model.HabitRecommendation(
-                                    id = mlRec.id,
-                                    habitId = mlRec.habitId,
-                                    type = mlRec.recommendationType.ordinal,
-                                    title = title,
-                                    description = description,
-                                    confidence = mlRec.confidence,
-                                    timestamp = mlRec.timestamp,
-                                    isFollowed = mlRec.isFollowed
-                                )
-                            }
+                            // Use recommendations directly from ViewModel
+                            val modelRecommendations = recommendations
 
                             RecommendationsCard(
                                 recommendations = modelRecommendations,
@@ -875,7 +859,7 @@ fun NeuralInterfaceScreen(
                     val mood by viewModel.mood.collectAsState()
 
                     // Create BiometricData object
-                    val biometricData = com.example.myapplication.core.network.biometric.BiometricData(
+                    val biometricData = com.example.myapplication.features.biometric.BiometricData(
                         heartRate = heartRate,
                         heartRateConfidence = 0.8f, // Default confidence
                         stepCount = stepCount,

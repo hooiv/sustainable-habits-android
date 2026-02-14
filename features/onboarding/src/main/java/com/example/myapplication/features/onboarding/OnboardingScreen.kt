@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.ui.animation.*
+import com.example.myapplication.core.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

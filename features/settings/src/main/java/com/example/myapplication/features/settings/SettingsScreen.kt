@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
 import kotlinx.coroutines.launch
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.hilt.navigation.compose.hiltViewModel

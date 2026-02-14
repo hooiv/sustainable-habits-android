@@ -2,7 +2,7 @@ package com.example.myapplication.features.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.util.FirebaseUtil
+import com.example.myapplication.core.data.util.FirebaseUtil
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider

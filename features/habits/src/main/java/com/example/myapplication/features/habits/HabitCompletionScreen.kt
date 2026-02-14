@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.features.habits.HabitCompletionViewModel
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.ui.components.AppScaffold
 import java.text.SimpleDateFormat

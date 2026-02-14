@@ -22,6 +22,7 @@ import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 /**
  * AI Assistant Settings Screen
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AIAssistantSettingsScreen(
     onNavigateBack: () -> Unit,

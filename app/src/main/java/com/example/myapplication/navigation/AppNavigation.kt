@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,28 +22,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.myapplication.features.habits.ui.AddHabitScreen
-import com.example.myapplication.features.habits.ui.EditHabitScreen
-import com.example.myapplication.features.habits.ui.HabitListScreen
-import com.example.myapplication.features.neural.NeuralInterfaceScreen
-import com.example.myapplication.features.neural.NeuralInterfaceViewModel
-import com.example.myapplication.features.stats.StatsScreen
-import com.example.myapplication.features.settings.SettingsScreen
-import com.example.myapplication.features.auth.SignInScreen
-import com.example.myapplication.features.demo.AnimationDemoScreen
-import com.example.myapplication.features.animation.AnimeJsAnimationScreen
-import com.example.myapplication.features.animation.AnimationsScreen
-import com.example.myapplication.features.advanced.AdvancedFeaturesScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.R
 import java.time.LocalDate
 import kotlin.math.pow
+
+// Feature Navigation Graphs
+import com.example.myapplication.features.advanced.navigation.advancedGraph
+import com.example.myapplication.features.animation.navigation.animationGraph
+import com.example.myapplication.features.auth.navigation.authGraph
+import com.example.myapplication.features.demo.navigation.demoGraph
+import com.example.myapplication.features.habits.navigation.habitsGraph
+import com.example.myapplication.features.settings.navigation.settingsGraph
+import com.example.myapplication.features.stats.navigation.statsGraph
 
 @Composable
 fun MainBottomBar(
@@ -209,313 +201,13 @@ fun AppNavigationGraph(navController: NavHostController) {
             )
         }
     ) {
-        composable(route = NavRoutes.HABIT_LIST) {
-            Log.d("AppNavigation", "Setting up HabitListScreen")
-            HabitListScreen(navController = navController)
-        }
-
-        composable(route = NavRoutes.ADD_HABIT) {
-            Log.d("AppNavigation", "Setting up AddHabitScreen")
-            AddHabitScreen(navController = navController)
-        }
-
-        composable(
-            route = NavRoutes.EDIT_HABIT,
-            arguments = listOf(navArgument(NavRoutes.EDIT_HABIT_ARG_ID) {
-                type = NavType.StringType
-            })
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
-            Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
-            EditHabitScreen(navController = navController, habitId = habitId)
-        }
-
-        composable(route = NavRoutes.STATS) {
-            StatsScreen(navController)
-        }
-
-        composable(route = NavRoutes.SETTINGS) {
-            val context = LocalContext.current
-            SettingsScreen(navController = navController, context = context)
-        }
-
-        composable(route = NavRoutes.SIGN_IN) {
-            SignInScreen(
-                onSignInSuccess = {
-                    navController.navigate(NavRoutes.SETTINGS) {
-                        popUpTo(NavRoutes.SIGN_IN) { inclusive = true }
-                    }
-                },
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable(route = NavRoutes.ANIMATION_DEMO) {
-            AnimationDemoScreen(navController = navController)
-        }
-
-        // Main animations hub
-        composable(route = NavRoutes.ANIMATIONS) {
-            AnimationsScreen(navController = navController)
-        }
-
-        composable(
-            route = NavRoutes.NEURAL_INTERFACE,
-            arguments = listOf(navArgument(NavRoutes.NEURAL_INTERFACE_ARG_ID) {
-                type = NavType.StringType
-            })
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.NEURAL_INTERFACE_ARG_ID)
-            val viewModel: NeuralInterfaceViewModel = hiltViewModel()
-
-            habitId?.let { id ->
-                // Get the habit from the repository
-                val database = com.example.myapplication.core.data.database.AppDatabase.getInstance(LocalContext.current)
-                val habitRepository = com.example.myapplication.core.data.repository.HabitRepository(
-                    database.habitDao(),
-                    database.habitCompletionDao()
-                )
-
-                // For simplicity, we're creating a sample habit
-                // In a real app, you would get this from the repository
-                val habit = com.example.myapplication.core.data.model.Habit(
-                    id = id,
-                    name = "Sample Habit",
-                    description = "This is a sample habit for the neural interface demo",
-                    frequency = com.example.myapplication.core.data.model.HabitFrequency.DAILY,
-                    streak = 5,
-                    goal = 10,
-                    goalProgress = 7
-                )
-
-                NeuralInterfaceScreen(
-                    habit = habit,
-                    onBackClick = { navController.popBackStack() },
-                    viewModel = viewModel
-                )
-            }
-        }
-
-        composable(
-            route = NavRoutes.HABIT_COMPLETION,
-            arguments = listOf(
-                navArgument(NavRoutes.HABIT_COMPLETION_ARG_ID) {
-                    type = NavType.StringType
-                },
-                navArgument(NavRoutes.HABIT_COMPLETION_ARG_NAME) {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_ID) ?: ""
-            val habitName = backStackEntry.arguments?.getString(NavRoutes.HABIT_COMPLETION_ARG_NAME) ?: ""
-
-            com.example.myapplication.features.habits.ui.HabitCompletionScreen(
-                navController = navController,
-                habitId = habitId,
-                habitName = habitName
-            )
-        }
-
-        // AR screen with specific habit
-        composable(
-            route = NavRoutes.AR,
-            arguments = listOf(
-                navArgument(NavRoutes.AR_ARG_ID) {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.AR_ARG_ID) ?: ""
-
-            // Get the habit from the repository
-            val database = com.example.myapplication.core.data.database.AppDatabase.getInstance(LocalContext.current)
-            val habitRepository = com.example.myapplication.core.data.repository.HabitRepository(
-                database.habitDao(),
-                database.habitCompletionDao()
-            )
-
-            // For simplicity, we're creating a sample habit
-            // In a real app, you would get this from the repository
-            val habit = com.example.myapplication.core.data.model.Habit(
-                id = habitId,
-                name = "Sample Habit",
-                description = "This is a sample habit for AR visualization",
-                frequency = com.example.myapplication.core.data.model.HabitFrequency.DAILY,
-                streak = 5,
-                goal = 10,
-                goalProgress = 7
-            )
-
-            com.example.myapplication.features.ar.ARScreen(
-                navController = navController,
-                habit = habit,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Global AR screen without a specific habit
-        composable(route = NavRoutes.AR_GLOBAL) {
-            com.example.myapplication.features.ar.ARScreen(
-                navController = navController,
-                habit = null,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Quantum visualization with specific habit
-        composable(
-            route = NavRoutes.QUANTUM_VISUALIZATION,
-            arguments = listOf(navArgument(NavRoutes.QUANTUM_VISUALIZATION_ARG_ID) {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
-            })
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.QUANTUM_VISUALIZATION_ARG_ID)
-
-            com.example.myapplication.features.quantum.QuantumVisualizationScreen(
-                navController = navController,
-                habitId = habitId,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Global quantum visualization without a specific habit
-        composable(route = NavRoutes.QUANTUM_VISUALIZATION_GLOBAL) {
-            com.example.myapplication.features.quantum.QuantumVisualizationScreen(
-                navController = navController,
-                habitId = null,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Biometric integration with specific habit
-        composable(
-            route = NavRoutes.BIOMETRIC_INTEGRATION,
-            arguments = listOf(navArgument(NavRoutes.BIOMETRIC_INTEGRATION_ARG_ID) {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
-            })
-        ) { backStackEntry ->
-            val habitId = backStackEntry.arguments?.getString(NavRoutes.BIOMETRIC_INTEGRATION_ARG_ID)
-
-            com.example.myapplication.features.biometric.BiometricIntegrationScreen(
-                navController = navController,
-                habitId = habitId,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Global biometric integration without a specific habit
-        composable(route = NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL) {
-            com.example.myapplication.features.biometric.BiometricIntegrationScreen(
-                navController = navController,
-                habitId = null,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Voice integration screen
-        composable(route = NavRoutes.VOICE_INTEGRATION) {
-            com.example.myapplication.features.voice.VoiceIntegrationScreen(
-                navController = navController,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Spatial computing screen
-        composable(route = NavRoutes.SPATIAL_COMPUTING) {
-            com.example.myapplication.features.spatial.SpatialComputingScreen(
-                navController = navController,
-                habitId = null,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Three.js visualization screen
-        composable(route = NavRoutes.THREEJS_VISUALIZATION) {
-            com.example.myapplication.features.threejs.ThreeJsVisualizationScreen(
-                navController = navController,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Anime.js animation screen
-        composable(route = NavRoutes.ANIMEJS_ANIMATION) {
-            AnimeJsAnimationScreen(
-                navController = navController
-            )
-        }
-
-        // Advanced features screen
-        composable(route = NavRoutes.ADVANCED_FEATURES) {
-            AdvancedFeaturesScreen(
-                navController = navController
-            )
-        }
-
-        // Multi-modal learning screen
-        composable(route = NavRoutes.MULTI_MODAL_LEARNING) {
-            com.example.myapplication.features.ml.MultiModalLearningScreen(
-                navController = navController
-            )
-        }
-
-        // Meta-learning screen
-        composable(route = NavRoutes.META_LEARNING) {
-            com.example.myapplication.features.ml.MetaLearningScreen(
-                navController = navController
-            )
-        }
-
-        // Neural network screen
-        composable(route = NavRoutes.NEURAL_NETWORK) {
-            com.example.myapplication.features.neural.NeuralNetworkScreen(
-                navController = navController
-            )
-        }
-
-        // AI Assistant screen
-        composable(route = NavRoutes.AI_ASSISTANT) {
-            com.example.myapplication.features.ai.ui.AIAssistantScreen(
-                navController = navController,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        // Gesture Controls screen
-        composable(route = NavRoutes.GESTURE_CONTROLS) {
-            com.example.myapplication.features.gestures.GestureControlsScreen(
-                navController = navController
-            )
-        }
-
-        // Advanced Analytics screen
-        composable(route = NavRoutes.ADVANCED_ANALYTICS) {
-            com.example.myapplication.features.analytics.ui.AdvancedAnalyticsScreen(
-                navController = navController
-            )
-        }
-
-        // Predictive ML screen
-        composable(route = NavRoutes.PREDICTIVE_ML) {
-            com.example.myapplication.features.ml.PredictiveMLScreen(
-                navController = navController
-            )
-        }
-
-        // AI Assistant Settings screen
-        composable(route = NavRoutes.AI_ASSISTANT_SETTINGS) {
-            com.example.myapplication.features.ai.ui.AIAssistantSettingsScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-
+        habitsGraph(navController)
+        statsGraph(navController)
+        settingsGraph(navController)
+        authGraph(navController)
+        demoGraph(navController)
+        animationGraph(navController)
+        advancedGraph(navController)
     }
 }
 

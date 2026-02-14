@@ -763,7 +763,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                 _habitSuccessProbabilities.value = probabilities
 
                 // Calculate optimal schedule
-                val schedule = quantumVisualizer.getOptimalHabitSchedule(convertedHabits)
+                val schedule = quantumVisualizer.getOptimalHabitSchedule(habits)
                 // Convert back to core model for UI consumption
                 val coreSchedule = schedule.map { (dataHabit, score) ->
                     val coreHabit = habits.find { it.id == dataHabit.id }!!
@@ -793,40 +793,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                     val habitId = _currentHabitId.value
                     if (habitId != null) {
                         val dataVisualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
-                        // Convert from data.quantum to core.network.quantum
-                        val coreVisualization = dataVisualization?.let { dataViz ->
-                            com.example.myapplication.core.network.quantum.QuantumVisualization(
-                                habitId = habitId,
-                                amplitude = dataViz.amplitude,
-                                phase = dataViz.phase,
-                                energyLevel = dataViz.energyLevel,
-                                particles = dataViz.particles.map { dataParticle ->
-                                    com.example.myapplication.core.network.quantum.QuantumParticle(
-                                        id = dataParticle.id,
-                                        position = dataParticle.position,
-                                        velocity = dataParticle.velocity,
-                                        amplitude = dataParticle.amplitude,
-                                        phase = dataParticle.phase,
-                                        qubitIndex = dataParticle.qubitIndex,
-                                        habitId = dataParticle.habitId ?: "",
-                                        color = dataParticle.color,
-                                        size = dataParticle.size
-                                    )
-                                },
-                                entanglements = dataViz.entanglements.map { dataEntanglement ->
-                                    com.example.myapplication.core.network.quantum.QuantumEntanglement(
-                                        id = dataEntanglement.id,
-                                        qubit1Index = dataEntanglement.qubit1Index,
-                                        qubit2Index = dataEntanglement.qubit2Index,
-                                        habit1Id = dataEntanglement.habit1Id,
-                                        habit2Id = dataEntanglement.habit2Id,
-                                        strength = dataEntanglement.strength,
-                                        color = dataEntanglement.color
-                                    )
-                                }
-                            )
-                        }
-                        _quantumVisualization.value = coreVisualization
+                        _quantumVisualization.value = dataVisualization
                     }
 
                     // Delay before next update
@@ -845,9 +812,7 @@ class NeuralInterfaceViewModel @Inject constructor(
     fun predictHabitSuccess(habit: Habit): Double {
         return try {
             val completions = _habitCompletions.value.filter { it.habitId == habit.id }
-            val convertedHabit = convertHabitForSpatial(habit)
-            val convertedCompletions = convertHabitCompletionsForSpatial(completions)
-            quantumVisualizer.predictHabitSuccess(convertedHabit, convertedCompletions)
+            quantumVisualizer.predictHabitSuccess(habit, completions)
         } catch (e: Exception) {
             _errorMessage.value = "Failed to predict habit success: ${e.message}"
             0.0
@@ -867,40 +832,7 @@ class NeuralInterfaceViewModel @Inject constructor(
                 val habitId = _currentHabitId.value
                 if (habitId != null) {
                     val dataVisualization = quantumVisualizer.getQuantumVisualizationForHabit(habitId)
-                    // Convert from data.quantum to core.network.quantum
-                    val coreVisualization = dataVisualization?.let { dataViz ->
-                        com.example.myapplication.core.network.quantum.QuantumVisualization(
-                            habitId = habitId,
-                            amplitude = dataViz.amplitude,
-                            phase = dataViz.phase,
-                            energyLevel = dataViz.energyLevel,
-                            particles = dataViz.particles.map { dataParticle ->
-                                com.example.myapplication.core.network.quantum.QuantumParticle(
-                                    id = dataParticle.id,
-                                    position = dataParticle.position,
-                                    velocity = dataParticle.velocity,
-                                    amplitude = dataParticle.amplitude,
-                                    phase = dataParticle.phase,
-                                    qubitIndex = dataParticle.qubitIndex,
-                                    habitId = dataParticle.habitId ?: "",
-                                    color = dataParticle.color,
-                                    size = dataParticle.size
-                                )
-                            },
-                            entanglements = dataViz.entanglements.map { dataEntanglement ->
-                                com.example.myapplication.core.network.quantum.QuantumEntanglement(
-                                    id = dataEntanglement.id,
-                                    qubit1Index = dataEntanglement.qubit1Index,
-                                    qubit2Index = dataEntanglement.qubit2Index,
-                                    habit1Id = dataEntanglement.habit1Id,
-                                    habit2Id = dataEntanglement.habit2Id,
-                                    strength = dataEntanglement.strength,
-                                    color = dataEntanglement.color
-                                )
-                            }
-                        )
-                    }
-                    _quantumVisualization.value = coreVisualization
+                    _quantumVisualization.value = dataVisualization
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to update quantum visualization: ${e.message}"
@@ -1366,13 +1298,11 @@ class NeuralInterfaceViewModel @Inject constructor(
             try {
                 val habitId = _currentHabitId.value ?: return@launch
                 val habit = habitRepository.getHabitById(habitId).first() ?: return@launch
-                val convertedHabit = convertHabitForSpatial(habit)
-
-                spatialComputing.placeHabitInSpace(convertedHabit)
+                spatialComputing.placeHabitInSpace(habit)
 
                 // Also place streak visualization
                 if (habit.streak > 0) {
-                    spatialComputing.placeStreakVisualization(convertedHabit, habit.streak)
+                    spatialComputing.placeStreakVisualization(habit, habit.streak)
                 }
 
                 _errorMessage.value = "Placed habit in AR space"

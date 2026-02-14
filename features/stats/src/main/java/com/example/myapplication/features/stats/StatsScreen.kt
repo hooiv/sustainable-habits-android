@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
 // import com.example.myapplication.features.habits.HabitViewModel
@@ -63,10 +63,10 @@ import com.example.myapplication.features.stats.HabitTrendsLineChart
 import com.example.myapplication.core.ui.components.*
 import com.example.myapplication.core.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
-import com.example.myapplication.util.FirebaseUtil
+import com.example.myapplication.core.data.util.FirebaseUtil
 import com.google.firebase.Timestamp
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.charts.PieChart as MPPieChart
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.PercentFormatter
 import kotlinx.coroutines.delay
@@ -428,7 +428,9 @@ fun StatsScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            tabs.forEachIndexed { index, (title, icon) ->
+                            tabs.forEachIndexed { index, pair ->
+                                val title = pair.first
+                                val icon = pair.second
                                 val isSelected = selectedTab == index
                                 Box(
                                     modifier = Modifier
@@ -588,6 +590,7 @@ fun StatsScreen(navController: NavController) {
                                         modifier = Modifier.width(24.dp)
                                     )
                                 }
+
 
                                 Text(
                                     text = habit.name,
@@ -821,7 +824,7 @@ fun CompletionPieChart(
         }
     } else {
         AndroidView(
-            factory = { PieChart(context) },
+            factory = { MPPieChart(context) },
             modifier = modifier
                 .clip(MaterialTheme.shapes.medium)
                 .background(surfaceVariantAlpha02ComposeColor)

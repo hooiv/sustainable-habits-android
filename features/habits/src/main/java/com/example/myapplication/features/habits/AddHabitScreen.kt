@@ -1,6 +1,6 @@
 package com.example.myapplication.features.habits.ui
 
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 
 import android.content.Intent
 import android.speech.RecognizerIntent

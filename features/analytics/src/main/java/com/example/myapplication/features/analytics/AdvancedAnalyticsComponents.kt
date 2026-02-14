@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.ui.animation.AnimeEasing
+import com.example.myapplication.core.ui.animation.AnimeEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -162,7 +162,7 @@ fun HabitCorrelationMatrix(
                             correlation > 0.7f -> Color.Green.copy(alpha = 0.7f)
                             correlation > 0.3f -> Color.Yellow.copy(alpha = 0.7f)
                             correlation > -0.3f -> Color.Gray.copy(alpha = 0.3f)
-                            correlation > -0.7f -> com.example.myapplication.ui.theme.Orange.copy(alpha = 0.7f)
+                            correlation > -0.7f -> Orange.copy(alpha = 0.7f)
                             else -> Color.Red.copy(alpha = 0.7f)
                         }
 
@@ -383,7 +383,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(com.example.myapplication.ui.theme.Orange.copy(alpha = 0.7f))
+                        .background(Orange.copy(alpha = 0.7f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(

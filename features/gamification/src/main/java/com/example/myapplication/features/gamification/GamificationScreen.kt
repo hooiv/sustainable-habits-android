@@ -1,5 +1,7 @@
 package com.example.myapplication.features.gamification
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
@@ -30,6 +32,7 @@ import kotlinx.coroutines.launch
 /**
  * Screen for displaying gamification features
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GamificationScreen(
     viewModel: GamificationViewModel = hiltViewModel(),

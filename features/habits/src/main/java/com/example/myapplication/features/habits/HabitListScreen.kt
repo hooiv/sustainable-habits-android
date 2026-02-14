@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.ui.navigation.NavRoutes
 import com.example.myapplication.core.ui.animation.AnimeEasing

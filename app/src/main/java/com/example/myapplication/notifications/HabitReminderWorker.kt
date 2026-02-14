@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.myapplication.R
+import com.example.myapplication.core.ui.R
 
 class HabitReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 

@@ -88,8 +88,11 @@ fun SignInScreen(
                 CircularProgressIndicator()
             } else {
                 Button(onClick = {
+                    val webClientId = context.getString(
+                        context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
+                    )
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(context.getString(com.example.myapplication.R.string.default_web_client_id))
+                        .requestIdToken(webClientId)
                         .requestEmail()
                         .build()
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)

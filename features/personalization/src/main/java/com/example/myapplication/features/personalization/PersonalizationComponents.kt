@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.ui.animation.*
+import com.example.myapplication.core.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*

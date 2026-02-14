@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.features.animation.AnimeJsIntegration
+
 import com.example.myapplication.core.ui.animation.*
 import com.example.myapplication.core.ui.components.GradientButton
 import com.example.myapplication.core.ui.components.ThreeDCard

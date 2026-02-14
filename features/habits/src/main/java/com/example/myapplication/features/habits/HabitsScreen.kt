@@ -16,7 +16,6 @@ import androidx.navigation.NavController
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.features.habits.ui.HabitItem
-import com.example.myapplication.navigation.Screen
 import com.example.myapplication.core.ui.navigation.NavRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +63,7 @@ fun HabitsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddHabit.route) },
+                onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Icon(
@@ -116,7 +115,7 @@ fun HabitsScreen(
                         HabitItem(
                             habit = habit,
                             onItemClick = {
-                                navController.navigate("${Screen.EditHabit.route}/${habit.id}")
+                                navController.navigate(NavRoutes.editHabit(habit.id))
                             },
                             onCompletedClick = {
                                 viewModel.markHabitCompleted(habit.id)
