@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.*
@@ -74,7 +76,7 @@ fun AIAssistantScreen(
                 title = { Text("AI Assistant") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -90,7 +92,7 @@ fun AIAssistantScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = if (useVoice) Icons.Default.VolumeUp else Icons.Default.VolumeOff,
+                            imageVector = if (useVoice) Icons.AutoMirrored.Filled.VolumeUp else Icons.Default.VolumeOff,
                             contentDescription = if (useVoice) "Disable Voice" else "Enable Voice",
                             tint = if (useVoice) MaterialTheme.colorScheme.primary else Color.Gray
                         )
