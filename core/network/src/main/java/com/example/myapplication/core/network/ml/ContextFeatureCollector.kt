@@ -20,13 +20,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.sqrt
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Collects contextual features for neural network training
  * Uses only on-device sensors and free APIs
  */
 @Singleton
 class ContextFeatureCollector @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : SensorEventListener, LocationListener {
     companion object {
         private const val TAG = "ContextFeatures"

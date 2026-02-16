@@ -17,9 +17,11 @@ import javax.inject.Singleton
  * Manages A/B testing for neural network architectures
  * Implements on-device testing without requiring cloud services
  */
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 @Singleton
 class ABTestingManager @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     companion object {
         private const val TAG = "ABTesting"

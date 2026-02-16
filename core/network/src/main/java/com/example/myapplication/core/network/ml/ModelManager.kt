@@ -16,12 +16,14 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Manages neural network models, including transfer learning capabilities
  */
 @Singleton
 class ModelManager @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     companion object {
         private const val TAG = "ModelManager"

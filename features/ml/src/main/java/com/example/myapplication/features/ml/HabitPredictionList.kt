@@ -8,6 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingFlat
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -155,7 +158,7 @@ fun HabitPredictionCard(
 
             // Expanded content
             if (expanded) {
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                 Text(
                     text = "Confidence Interval: ${(prediction.confidenceInterval.first * 100).toInt()}% - ${(prediction.confidenceInterval.second * 100).toInt()}%",
@@ -181,9 +184,9 @@ fun HabitPredictionCard(
                         // Impact indicator
                         Icon(
                             imageVector = when {
-                                factor.impact > 0.3f -> Icons.Default.TrendingUp
-                                factor.impact < -0.3f -> Icons.Default.TrendingDown
-                                else -> Icons.Default.TrendingFlat
+                                factor.impact > 0.3f -> Icons.AutoMirrored.Filled.TrendingUp
+                                factor.impact < -0.3f -> Icons.AutoMirrored.Filled.TrendingDown
+                                else -> Icons.AutoMirrored.Filled.TrendingFlat
                             },
                             contentDescription = "Factor impact",
                             tint = when {

@@ -14,7 +14,9 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -66,7 +68,7 @@ fun NeuralInterfaceScreen(
                 modifier = Modifier.padding(end = 16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }
@@ -322,7 +324,7 @@ fun NeuralInterfaceScreen(
 
                                                 // Probability indicator
                                                 LinearProgressIndicator(
-                                                    progress = latestPrediction.probability,
+                                                    progress = { latestPrediction.probability },
                                                     modifier = Modifier
                                                         .fillMaxWidth()
                                                         .height(8.dp)

@@ -76,24 +76,13 @@ fun MainBottomBar(
                 label = { Text("Animations") }
             )
 
-            // Add Advanced Features tab
-            NavigationBarItem(
-                selected = currentRoute == NavRoutes.ADVANCED_FEATURES ||
-                          currentRoute == NavRoutes.NEURAL_INTERFACE ||
-                          currentRoute == NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL ||
-                          currentRoute == NavRoutes.VOICE_INTEGRATION ||
-                          currentRoute == NavRoutes.SPATIAL_COMPUTING ||
-                          currentRoute == NavRoutes.QUANTUM_VISUALIZATION_GLOBAL,
-                onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
-                icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
-                label = { Text("Advanced") }
-            )
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.STATS,
                 onClick = { onNavigate(NavRoutes.STATS) },
                 icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
                 label = { Text("Stats") }
             )
+            // Advanced Features tab
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.ADVANCED_FEATURES ||
                           currentRoute == NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL ||

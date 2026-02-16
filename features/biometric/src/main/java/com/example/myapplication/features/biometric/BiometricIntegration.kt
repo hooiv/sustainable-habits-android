@@ -29,12 +29,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Implements biometric integration using camera and sensors
  */
 @Singleton
 class BiometricIntegration @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : SensorEventListener {
     companion object {
         private const val TAG = "BiometricIntegration"

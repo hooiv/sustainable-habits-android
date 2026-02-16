@@ -22,13 +22,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.min
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Implements multi-modal learning for habit data
  * Processes text, images, and sensor data
  */
 @Singleton
 class MultiModalLearning @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     companion object {
         private const val TAG = "MultiModalLearning"

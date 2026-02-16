@@ -25,12 +25,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.*
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Implements spatial computing features for habit visualization in AR
  */
 @Singleton
 class SpatialComputing @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : SensorEventListener, LocationListener {
     companion object {
         private const val TAG = "SpatialComputing"

@@ -18,13 +18,15 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 /**
  * Manages federated learning without requiring cloud services
  * Uses peer-to-peer model sharing via local file exports/imports
  */
 @Singleton
 class FederatedLearningManager @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val modelManager: ModelManager
 ) {
     companion object {

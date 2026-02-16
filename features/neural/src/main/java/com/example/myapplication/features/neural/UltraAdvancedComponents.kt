@@ -109,7 +109,7 @@ fun ModelCompressionCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 LinearProgressIndicator(
-                    progress = compressionStats.percentSaved / 100f,
+                    progress = { compressionStats.percentSaved / 100f },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)
@@ -388,7 +388,7 @@ fun AnomalyDetectionCard(
                             onExplain = { onExplainAnomaly(anomaly) }
                         )
                         
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                         )
@@ -604,7 +604,7 @@ fun MetaLearningCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 LinearProgressIndicator(
-                    progress = metaLearningProgress,
+                    progress = { metaLearningProgress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)
@@ -622,7 +622,7 @@ fun MetaLearningCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 
                 LinearProgressIndicator(
-                    progress = adaptationProgress,
+                    progress = { adaptationProgress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)
@@ -719,7 +719,7 @@ fun HyperparameterRow(
         )
         
         LinearProgressIndicator(
-            progress = importance,
+            progress = { importance },
             modifier = Modifier
                 .width(60.dp)
                 .height(6.dp)
