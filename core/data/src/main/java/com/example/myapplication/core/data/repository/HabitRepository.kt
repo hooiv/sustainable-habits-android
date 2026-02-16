@@ -14,7 +14,8 @@ import javax.inject.Singleton
 @Singleton // Mark as a singleton so Hilt provides the same instance
 class HabitRepository @Inject constructor(
     private val habitDao: HabitDao,
-    private val habitCompletionDao: HabitCompletionDao
+    private val habitCompletionDao: HabitCompletionDao,
+    private val workManager: androidx.work.WorkManager
 ) {
 
     fun getAllHabits(): Flow<List<Habit>> {
@@ -26,15 +27,19 @@ class HabitRepository @Inject constructor(
     }
 
     suspend fun insertHabit(habit: Habit) {
-        habitDao.insertHabit(habit)
+        habitDao.insertHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
+        enqueueSync()
     }
 
     suspend fun updateHabit(habit: Habit) {
-        habitDao.updateHabit(habit)
+        habitDao.updateHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
+        enqueueSync()
     }
 
     suspend fun deleteHabit(habit: Habit) {
-        habitDao.deleteHabit(habit)
+        // Soft delete: Mark as deleted and unsynced
+        habitDao.softDeleteHabit(habit.id)
+        enqueueSync()
     }
 
     suspend fun insertOrReplaceHabits(habits: List<Habit>) {
@@ -366,5 +371,47 @@ class HabitRepository @Inject constructor(
      */
     suspend fun updateHabitCompletion(completion: HabitCompletion) {
         habitCompletionDao.updateCompletion(completion)
+    }
+
+    // --- Sync Logic ---
+
+    /**
+     * Triggers an immediate background sync.
+     * Uses KEEP policy to avoid replacing existing syncs if running.
+     */
+    fun enqueueSync() {
+        val syncRequest = androidx.work.OneTimeWorkRequestBuilder<com.example.myapplication.core.data.sync.HabitSyncWorker>()
+            .setConstraints(
+                androidx.work.Constraints.Builder()
+                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+        
+        workManager.enqueueUniqueWork(
+            "HabitSyncWork",
+            androidx.work.ExistingWorkPolicy.KEEP,
+            syncRequest
+        )
+    }
+
+    /**
+     * Forces a sync (REPLACE policy).
+     */
+    fun forceSync() {
+         val syncRequest = androidx.work.OneTimeWorkRequestBuilder<com.example.myapplication.core.data.sync.HabitSyncWorker>()
+            .setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setConstraints(
+                androidx.work.Constraints.Builder()
+                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+
+        workManager.enqueueUniqueWork(
+            "HabitSyncWork_Force",
+            androidx.work.ExistingWorkPolicy.REPLACE,
+            syncRequest
+        )
     }
 }

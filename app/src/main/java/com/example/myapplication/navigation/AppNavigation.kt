@@ -146,47 +146,45 @@ fun AppNavigationGraph(navController: NavHostController) {
         navController = navController,
         startDestination = NavRoutes.HABIT_LIST,
         enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMediumLow
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             ) + fadeIn(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
+                animationSpec = tween(400, easing = EaseOutQuint)
             )
         },
         exitTransition = {
             slideOutOfContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMediumLow
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             ) + fadeOut(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
+                animationSpec = tween(400, easing = EaseInQuint)
             )
         },
         popEnterTransition = {
             slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.End,
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMediumLow
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             ) + fadeIn(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
+                animationSpec = tween(400, easing = EaseOutQuint)
             )
         },
         popExitTransition = {
             slideOutOfContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.End,
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMediumLow
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             ) + fadeOut(
-                animationSpec = tween(300, easing = FastOutSlowInEasing)
+                animationSpec = tween(400, easing = EaseInQuint)
             )
         }
     ) {
@@ -200,5 +198,5 @@ fun AppNavigationGraph(navController: NavHostController) {
     }
 }
 
-private val EaseOutQuint = Easing { fraction -> (1f - (1f - fraction).pow(5)).toFloat() }
-private val EaseInQuint = Easing { fraction -> fraction.pow(5).toFloat() }
+private val EaseOutQuint = Easing { fraction -> 1f - (1f - fraction).pow(5) }
+private val EaseInQuint = Easing { fraction -> fraction.pow(5) }

@@ -22,6 +22,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "sustainable-habits-android"
 include(":app")
+include(":benchmark")
 include(":core:data")
 include(":core:domain")
 include(":core:network")

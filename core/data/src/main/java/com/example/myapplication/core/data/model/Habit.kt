@@ -56,7 +56,12 @@ data class Habit(
     var habitStrength: Float = 0f, // Calculated strength of the habit (0-1)
     var visualizationType: VisualizationType = VisualizationType.DEFAULT, // Preferred visualization type
     var customRewards: List<HabitReward> = emptyList(), // Custom rewards for achieving milestones
-    var skipDates: List<Date> = emptyList() // Dates when the habit is skipped (e.g., vacation)
+    var skipDates: List<Date> = emptyList(), // Dates when the habit is skipped (e.g., vacation)
+
+    // Sync Metadata
+    var isSynced: Boolean = false, // True if local matches remote
+    var lastSynced: Long = 0, // Timestamp of last successful sync
+    var isDeleted: Boolean = false // Soft delete flag
 )
 
 /**

@@ -54,7 +54,8 @@ class HabitCompletionFallbackWorker(
             val database = AppDatabase.getInstance(applicationContext)
             val habitDao = database.habitDao()
             val habitCompletionDao = database.habitCompletionDao()
-            val repository = HabitRepository(habitDao, habitCompletionDao)
+            val workManager = androidx.work.WorkManager.getInstance(applicationContext)
+            val repository = HabitRepository(habitDao, habitCompletionDao, workManager)
 
             repository.markHabitCompleted(habitId)
             return Result.success()

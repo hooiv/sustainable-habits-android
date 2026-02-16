@@ -11,11 +11,27 @@ import com.example.myapplication.features.habits.ui.AddHabitScreen
 import com.example.myapplication.features.habits.ui.EditHabitScreen
 import com.example.myapplication.features.habits.ui.HabitListScreen
 import com.example.myapplication.features.habits.ui.HabitCompletionScreen
+import com.example.myapplication.features.habits.HabitDetailsScreen
 
 fun NavGraphBuilder.habitsGraph(navController: NavController) {
     composable(route = NavRoutes.HABIT_LIST) {
-        Log.d("AppNavigation", "Setting up HabitListScreen")
-        HabitListScreen(navController = navController)
+        HabitListScreen(
+            navController = navController,
+            onNavigateToDetails = { habitId ->
+                navController.navigate(NavRoutes.habitDetails(habitId))
+            }
+        )
+    }
+
+    composable(
+        route = NavRoutes.HABIT_DETAILS,
+        arguments = listOf(navArgument("habitId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val habitId = backStackEntry.arguments?.getString("habitId") ?: return@composable
+        HabitDetailsScreen(
+            habitId = habitId,
+            onBackClick = { navController.popBackStack() }
+        )
     }
 
     composable(route = NavRoutes.ADD_HABIT) {

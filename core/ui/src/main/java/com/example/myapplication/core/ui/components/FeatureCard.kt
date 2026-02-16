@@ -43,7 +43,7 @@ fun FeatureCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
         ),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large, // Cyberpunk CutCornerShape
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
         )
@@ -58,7 +58,7 @@ fun FeatureCard(
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(MaterialTheme.shapes.medium) // Use theme shape (Rounded 8dp)
                     .background(gradient),
                 contentAlignment = Alignment.Center
             ) {
@@ -78,9 +78,8 @@ fun FeatureCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 18.sp // Slightly smaller than default titleLarge
                     )
                 )
 

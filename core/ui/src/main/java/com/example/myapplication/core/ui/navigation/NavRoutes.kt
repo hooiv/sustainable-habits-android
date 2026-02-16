@@ -2,6 +2,7 @@ package com.example.myapplication.core.ui.navigation
 
 object NavRoutes {
     const val HABIT_LIST = "habit_list"
+    const val HABIT_DETAILS = "habit_details/{habitId}"
     const val ADD_HABIT = "add_habit"
     const val EDIT_HABIT_ROUTE = "edit_habit" // Base route name
     const val EDIT_HABIT_ARG_ID = "habitId" // Argument name
@@ -73,6 +74,7 @@ object NavRoutes {
 
     // Helper function for parameterized routes
     fun editHabit(habitId: String) = "$EDIT_HABIT_ROUTE/$habitId"
+    fun habitDetails(habitId: String) = HABIT_DETAILS.replace("{habitId}", habitId)
     fun neuralInterface(habitId: String) = "$NEURAL_INTERFACE_ROUTE/$habitId"
     fun habitCompletion(habitId: String, habitName: String) = "$HABIT_COMPLETION_ROUTE/$habitId/$habitName"
     fun ar(habitId: String) = "$AR_ROUTE/$habitId"

@@ -5,7 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import com.example.myapplication.features.habits.HabitViewModel
@@ -47,7 +48,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun HabitListScreen(
     navController: NavController,
-    viewModel: HabitViewModel = hiltViewModel()
+    viewModel: HabitViewModel = hiltViewModel(),
+    onNavigateToDetails: (String) -> Unit = {}
 ) {
     val habits by viewModel.habits.collectAsState(initial = emptyList())
 
@@ -316,34 +318,48 @@ fun HabitListScreen(
                     // Habits list
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .testTag("habit_list"),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(
+                        itemsIndexed(
                             items = filteredHabits,
-                            key = { habit -> habit.id }
-                        ) { habit ->
-                            HabitItem(
-                                habit = habit,
-                                onItemClick = { navController.navigate(NavRoutes.editHabit(habit.id)) },
-                                onCompletedClick = { viewModel.markHabitCompleted(habit.id) },
-                                onDeleteClick = { viewModel.deleteHabit(habit) },
-                                onToggleEnabled = { viewModel.toggleHabitEnabled(habit) },
-                                onNeuralInterfaceClick = { navController.navigate(NavRoutes.neuralInterface(habit.id)) },
-                                onCompletionHistoryClick = {
-                                    navController.navigate(NavRoutes.habitCompletion(habit.id, habit.name))
-                                },
-                                onARVisualizationClick = {
-                                    navController.navigate(NavRoutes.ar(habit.id))
-                                },
-                                onBiometricIntegrationClick = {
-                                    navController.navigate(NavRoutes.biometricIntegration(habit.id))
-                                },
-                                onQuantumVisualizationClick = {
-                                    navController.navigate(NavRoutes.quantumVisualization(habit.id))
-                                }
-                            )
+                            key = { _, habit -> habit.id }
+                        ) { index, habit ->
+                            Box(
+                                modifier = Modifier.animeEntrance(
+                                    visible = !isLoading,
+                                    index = index,
+                                    baseDelay = 100, // Slightly longer delay than chips
+                                    duration = 600,
+                                    initialOffsetY = 50,
+                                    easing = AnimeEasing.EaseOutQuint
+                                )
+                            ) {
+                                HabitItem(
+                                    habit = habit,
+                                    onItemClick = { navController.navigate(NavRoutes.habitDetails(habit.id)) },
+                                    onCompletedClick = { viewModel.markHabitCompleted(habit.id) },
+                                    onDeleteClick = { viewModel.deleteHabit(habit) },
+                                    onToggleEnabled = { viewModel.toggleHabitEnabled(habit) },
+                                    onNeuralInterfaceClick = { navController.navigate(NavRoutes.neuralInterface(habit.id)) },
+                                    onCompletionHistoryClick = {
+                                        navController.navigate(NavRoutes.habitCompletion(habit.id, habit.name))
+                                    },
+                                    onARVisualizationClick = {
+                                        navController.navigate(NavRoutes.ar(habit.id))
+                                    },
+                                    onBiometricIntegrationClick = {
+                                        navController.navigate(NavRoutes.biometricIntegration(habit.id))
+                                    },
+                                    onQuantumVisualizationClick = {
+                                        navController.navigate(NavRoutes.quantumVisualization(habit.id))
+                                    }
+                                )
+                            }
                         }
                     }
                 }
