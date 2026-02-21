@@ -59,11 +59,6 @@ dependencies {
     // Lifecycle
     implementation(libs.lifecycle.runtime.ktx)
 
-    // Biometric
-    implementation(libs.biometric)
-
-    // TensorFlow Lite
-    implementation(libs.tensorflow.lite)
 
     // Testing
     testImplementation(libs.junit)

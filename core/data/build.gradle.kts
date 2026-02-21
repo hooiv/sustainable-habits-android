@@ -55,21 +55,12 @@ dependencies {
     // DataStore
     implementation(libs.datastore)
 
-    // TensorFlow Lite
-    implementation(libs.tensorflow.lite)
-
     // WorkManager
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
 
-    // Biometric
-    implementation(libs.biometric)
-
     // CameraX
     implementation(libs.camera.core)
-
-    // ARCore
-    implementation(libs.arcore)
 
     // Testing
     testImplementation(libs.junit)

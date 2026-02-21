@@ -41,6 +41,9 @@ testRunner = "1.7.0"
 guava = "31.1-android"
 benchmarkMacro = "1.3.3"
 uiautomator = "2.3.0"
+baselineprofile = "1.3.3"
+roborazzi = "1.26.0"
+robolectric = "4.13"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -129,8 +132,8 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
-# TensorFlow Lite
-tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
+# TensorFlow Lite (Removed)
+# tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
 
 # WorkManager
 workmanager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workmanager" }
@@ -140,10 +143,9 @@ hilt-work-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.
 # DataStore
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
-# Biometric
-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+# Biometric (Removed)
 
-# CameraX
+# CameraX (Preserved)
 camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camera" }
 camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camera" }
 camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camera" }
@@ -156,8 +158,8 @@ lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtim
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 
-# ARCore
-arcore = { group = "com.google.ar", name = "core", version.ref = "arcore" }
+# Start of heavy libs removal
+# Removed: tensorflow-lite, arcore, biometric
 
 # Hilt Dependency for Navigation Compose
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -167,6 +169,10 @@ androidx-test-core = { group = "androidx.test", name = "core", version.ref = "te
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
 benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacro" }
 uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-core = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -177,3 +183,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

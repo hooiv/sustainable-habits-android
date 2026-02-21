@@ -15,25 +15,21 @@ class StartupBenchmark {
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun startup() = benchmarkRule.measureRepeated(
+    fun startupCompilationNone() = startup(CompilationMode.None())
+
+    @Test
+    fun startupCompilationBaselineProfiles() = startup(CompilationMode.Partial())
+
+    fun startup(mode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = "com.example.myapplication",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
-        startupMode = StartupMode.COLD
+        startupMode = StartupMode.COLD,
+        compilationMode = mode
     ) {
         pressHome()
         startActivityAndWait()
     }
 
-    @Test
-    fun startupWithProfile() = benchmarkRule.measureRepeated(
-        packageName = "com.example.myapplication",
-        metrics = listOf(StartupTimingMetric()),
-        iterations = 5,
-        startupMode = StartupMode.COLD,
-        compilationMode = CompilationMode.Partial()
-    ) {
-        pressHome()
-        startActivityAndWait()
-    }
+
 }

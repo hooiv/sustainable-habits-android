@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.androidx.baselineprofile)
+}
+
+baselineProfile {
+    saveInSrc = true
 }
 
 android {
@@ -66,16 +71,7 @@ dependencies {
     implementation(project(":features:auth"))
     implementation(project(":features:demo"))
     implementation(project(":features:animation"))
-    implementation(project(":features:advanced"))
-    implementation(project(":features:spatial"))
-    implementation(project(":features:biometric"))
     implementation(project(":features:gamification"))
-    implementation(project(":features:voice"))
-    implementation(project(":features:ar"))
-    implementation(project(":features:gestures"))
-    implementation(project(":features:neural"))
-    implementation(project(":features:quantum"))
-    implementation(project(":features:threejs"))
     implementation(project(":features:ml"))
     implementation(project(":features:stats"))
     implementation(project(":features:calendar"))
@@ -154,9 +150,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.auth)
 
-    // TensorFlow Lite
-    implementation(libs.tensorflow.lite)
-
     // WorkManager
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
@@ -164,9 +157,6 @@ dependencies {
 
     // DataStore
     implementation(libs.datastore)
-
-    // Biometric
-    implementation(libs.biometric)
 
     // CameraX
     implementation(libs.camera.core)
@@ -178,9 +168,6 @@ dependencies {
     // Guava / Concurrent Futures (for ListenableFuture from CameraX)
     implementation("androidx.concurrent:concurrent-futures:1.2.0")
     implementation("com.google.guava:guava:33.2.0-android")
-
-    // ARCore
-    implementation(libs.arcore)
 
     // Testing
     testImplementation(libs.junit)

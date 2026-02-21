@@ -85,44 +85,7 @@ class Converters {
         return gson.fromJson(value, listType) ?: emptyList()
     }
 
-    // LocationReminder converters
-    @TypeConverter
-    fun fromLocationReminder(value: LocationReminder?): String? {
-        return value?.let { gson.toJson(it) }
-    }
-
-    @TypeConverter
-    fun toLocationReminder(value: String?): LocationReminder? {
-        return value?.let {
-            gson.fromJson(it, LocationReminder::class.java)
-        }
-    }
-
-    // Map converters
-    @TypeConverter
-    fun fromStringIntMap(value: Map<String, Int>?): String {
-        return gson.toJson(value)
-    }
-
-    @TypeConverter
-    fun toStringIntMap(value: String): Map<String, Int> {
-        val mapType = object : TypeToken<Map<String, Int>>() {}.type
-        return gson.fromJson(value, mapType) ?: emptyMap()
-    }
-
-    // HabitReward converters
-    @TypeConverter
-    fun fromHabitRewardList(value: List<HabitReward>?): String {
-        return gson.toJson(value)
-    }
-
-    @TypeConverter
-    fun toHabitRewardList(value: String): List<HabitReward> {
-        val listType = object : TypeToken<List<HabitReward>>() {}.type
-        return gson.fromJson(value, listType) ?: emptyList()
-    }
-
-    // Enum converters for HabitDifficulty, HabitPriority, VisualizationType
+    // Enum converters for HabitDifficulty, HabitPriority
     @TypeConverter
     fun fromHabitDifficulty(value: String?): HabitDifficulty? {
         return value?.let { HabitDifficulty.valueOf(it) }
@@ -141,46 +104,5 @@ class Converters {
     @TypeConverter
     fun habitPriorityToString(priority: HabitPriority?): String? {
         return priority?.name
-    }
-
-    @TypeConverter
-    fun fromVisualizationType(value: String?): VisualizationType? {
-        return value?.let { VisualizationType.valueOf(it) }
-    }
-
-    @TypeConverter
-    fun visualizationTypeToString(type: VisualizationType?): String? {
-        return type?.name
-    }
-
-    // Neural network type converters
-    @TypeConverter
-    fun fromNeuralNodeType(value: String?): NeuralNodeType? {
-        return value?.let { NeuralNodeType.valueOf(it) }
-    }
-
-    @TypeConverter
-    fun neuralNodeTypeToString(type: NeuralNodeType?): String? {
-        return type?.name
-    }
-
-    @TypeConverter
-    fun fromTrainingStatus(value: String?): TrainingStatus? {
-        return value?.let { TrainingStatus.valueOf(it) }
-    }
-
-    @TypeConverter
-    fun trainingStatusToString(status: TrainingStatus?): String? {
-        return status?.name
-    }
-
-    @TypeConverter
-    fun fromPredictionType(value: String?): PredictionType? {
-        return value?.let { PredictionType.valueOf(it) }
-    }
-
-    @TypeConverter
-    fun predictionTypeToString(type: PredictionType?): String? {
-        return type?.name
     }
 }

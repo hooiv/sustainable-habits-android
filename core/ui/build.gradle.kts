@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -27,6 +28,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -46,9 +54,6 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.compose)
 
-    // Biometric
-    implementation(libs.biometric)
-
     // WorkManager
     implementation(libs.workmanager)
     implementation(libs.hilt.work)
@@ -64,4 +69,13 @@ dependencies {
     // Room (required for AppDatabase access in workers)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+
+    // Roborazzi & Robolectric
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.core)
+    testImplementation(libs.roborazzi.junit.rule)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

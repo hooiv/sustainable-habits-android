@@ -30,7 +30,6 @@ import java.time.LocalDate
 import kotlin.math.pow
 
 // Feature Navigation Graphs
-import com.example.myapplication.features.advanced.navigation.advancedGraph
 import com.example.myapplication.features.animation.navigation.animationGraph
 import com.example.myapplication.features.auth.navigation.authGraph
 import com.example.myapplication.features.demo.navigation.demoGraph
@@ -66,15 +65,7 @@ fun MainBottomBar(
                 label = { Text("Habits") }
             )
 
-            // Add Animations tab
-            NavigationBarItem(
-                selected = currentRoute == NavRoutes.ANIMATIONS ||
-                          currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
-                          currentRoute == NavRoutes.THREEJS_VISUALIZATION,
-                onClick = { onNavigate(NavRoutes.ANIMATIONS) },
-                icon = { Icon(Icons.Default.Star, contentDescription = "Animations") },
-                label = { Text("Animations") }
-            )
+
 
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.STATS,
@@ -82,27 +73,7 @@ fun MainBottomBar(
                 icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
                 label = { Text("Stats") }
             )
-            // Advanced Features tab
-            NavigationBarItem(
-                selected = currentRoute == NavRoutes.ADVANCED_FEATURES ||
-                          currentRoute == NavRoutes.BIOMETRIC_INTEGRATION_GLOBAL ||
-                          currentRoute == NavRoutes.AR_GLOBAL ||
-                          currentRoute == NavRoutes.VOICE_INTEGRATION ||
-                          currentRoute == NavRoutes.QUANTUM_VISUALIZATION_GLOBAL ||
-                          currentRoute == NavRoutes.SPATIAL_COMPUTING ||
-                          currentRoute == NavRoutes.THREEJS_VISUALIZATION ||
-                          currentRoute == NavRoutes.ANIMEJS_ANIMATION ||
-                          currentRoute == NavRoutes.MULTI_MODAL_LEARNING ||
-                          currentRoute == NavRoutes.META_LEARNING ||
-                          currentRoute == NavRoutes.NEURAL_NETWORK ||
-                          currentRoute == NavRoutes.AI_ASSISTANT ||
-                          currentRoute == NavRoutes.GESTURE_CONTROLS ||
-                          currentRoute == NavRoutes.ADVANCED_ANALYTICS ||
-                          currentRoute == NavRoutes.PREDICTIVE_ML,
-                onClick = { onNavigate(NavRoutes.ADVANCED_FEATURES) },
-                icon = { Icon(Icons.Default.Star, contentDescription = "Advanced") },
-                label = { Text("Advanced") }
-            )
+
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.SETTINGS,
                 onClick = { onNavigate(NavRoutes.SETTINGS) },
@@ -194,7 +165,7 @@ fun AppNavigationGraph(navController: NavHostController) {
         authGraph(navController)
         demoGraph(navController)
         animationGraph(navController)
-        advancedGraph(navController)
+
     }
 }
 

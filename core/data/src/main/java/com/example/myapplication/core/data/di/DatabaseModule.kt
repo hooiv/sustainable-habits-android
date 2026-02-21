@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.example.myapplication.core.data.database.AppDatabase
 import com.example.myapplication.core.data.database.HabitDao
 import com.example.myapplication.core.data.database.HabitCompletionDao
-import com.example.myapplication.core.data.database.NeuralNetworkDao
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,9 +43,5 @@ object DatabaseModule {
         return appDatabase.habitCompletionDao()
     }
 
-    @Provides
-    @Singleton
-    fun provideNeuralNetworkDao(appDatabase: AppDatabase): NeuralNetworkDao {
-        return appDatabase.neuralNetworkDao()
-    }
+
 }
