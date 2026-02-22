@@ -150,21 +150,19 @@ fun AIAssistantScreen(
                 onSuggestionClick = { suggestion ->
                     coroutineScope.launch {
                         viewModel.processSuggestion(suggestion, useStreaming, useVoice)
-                        // Auto-scroll to bottom when processing starts
-                        coroutineScope.launch {
-                            delay(100)
-                            scrollState.animateScrollTo(scrollState.maxValue)
-                        }
+                    }
+                    coroutineScope.launch {
+                        delay(100)
+                        scrollState.animateScrollTo(scrollState.maxValue)
                     }
                 },
                 onAskQuestion = { question ->
                     coroutineScope.launch {
                         viewModel.askQuestion(question, useStreaming, useVoice)
-                        // Auto-scroll to bottom when processing starts
-                        coroutineScope.launch {
-                            delay(100)
-                            scrollState.animateScrollTo(scrollState.maxValue)
-                        }
+                    }
+                    coroutineScope.launch {
+                        delay(100)
+                        scrollState.animateScrollTo(scrollState.maxValue)
                     }
                 }
             )
