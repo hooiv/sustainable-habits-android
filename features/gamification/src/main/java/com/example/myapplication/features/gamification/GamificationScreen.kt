@@ -1,6 +1,5 @@
 package com.example.myapplication.features.gamification
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.core.ui.components.LoadingIndicator
-import kotlinx.coroutines.launch
 
 /**
  * Screen for displaying gamification features
@@ -48,8 +46,6 @@ fun GamificationScreen(
     val showBadgeUnlockAnimation by viewModel.showBadgeUnlockAnimation.collectAsState()
     val recentlyUnlockedBadge by viewModel.recentlyUnlockedBadge.collectAsState()
     val xpAwarded by viewModel.xpAwarded.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
 
     // Selected tab
     var selectedTab by remember { mutableStateOf(0) }
@@ -143,12 +139,7 @@ fun GamificationScreen(
                     1 -> RewardsTab(
                         rewards = availableRewards,
                         currentXp = currentXp,
-                        onRewardClaim = { reward ->
-                            // Handle reward claim
-                            coroutineScope.launch {
-                                // Claim reward logic would go here
-                            }
-                        }
+                        onRewardClaim = { /* Reward claim logic to be implemented */ }
                     )
                     2 -> StatsTab(
                         currentLevel = currentLevel,
