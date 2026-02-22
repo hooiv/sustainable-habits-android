@@ -73,28 +73,16 @@ class GamificationViewModel @Inject constructor(
     val xpAwarded: StateFlow<Int> = _xpAwarded.asStateFlow()
     
     init {
+        // Set up reactive observation of GamificationManager state (runs once for the VM lifetime)
+        observeGamificationManagerState()
         loadGamificationData()
     }
-    
-    /**
-     * Load gamification data and observe reactive state from GamificationManager.
-     */
-    fun loadGamificationData() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                // Initialize gamification system (suspends until badges/XP are seeded)
-                gamificationManager.initialize()
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to load gamification data: ${e.message}"
-                Log.e(TAG, "Error loading gamification data", e)
-            } finally {
-                _isLoading.value = false
-            }
-        }
 
-        // Reactively mirror GamificationManager state so the UI stays in sync
-        // even if initialize() triggers further updates.
+    /**
+     * Observe reactive state from GamificationManager in a single coroutine using combine.
+     * Called once from init to avoid duplicate collectors if loadGamificationData() is re-invoked.
+     */
+    private fun observeGamificationManagerState() {
         viewModelScope.launch {
             gamificationManager.currentXp.collect { _currentXp.value = it }
         }
@@ -112,6 +100,25 @@ class GamificationViewModel @Inject constructor(
         }
         viewModelScope.launch {
             gamificationManager.availableRewards.collect { _availableRewards.value = it }
+        }
+    }
+
+    /**
+     * Re-run gamification initialization (e.g., after a habit is completed).
+     * Reactive state is already observed; this only triggers a fresh initialize() pass.
+     */
+    fun loadGamificationData() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // Initialize gamification system (suspends until badges/XP are seeded)
+                gamificationManager.initialize()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to load gamification data: ${e.message}"
+                Log.e(TAG, "Error loading gamification data", e)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
     
