@@ -51,7 +51,7 @@ object AnimeEasing {
         val c1 = 1.70158f
         val c3 = c1 + 1f
 
-        1f + c3 * Math.pow((x - 1).toDouble(), 3.0).toFloat() + c1 * Math.pow((x - 1).toDouble(), 2.0).toFloat()
+        1f + c3 * (x - 1).toDouble().pow(3.0).toFloat() + c1 * (x - 1).toDouble().pow(2.0).toFloat()
     }
 
     val EaseInOutBack: Easing = Easing { x ->
@@ -59,47 +59,47 @@ object AnimeEasing {
         val c2 = c1 * 1.525f
 
         if (x < 0.5f) {
-            (Math.pow(2 * x.toDouble(), 2.0) * ((c2 + 1) * 2 * x - c2) / 2).toFloat()
+            ((2 * x.toDouble()).pow(2.0) * ((c2 + 1) * 2 * x - c2) / 2).toFloat()
         } else {
-            (Math.pow(2 * x - 2.toDouble(), 2.0) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2
+            ((2 * x - 2.0).pow(2.0) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2
         }.toFloat()
     }
 
     val EaseInElastic: Easing = Easing { x ->
-        val c4 = (2 * Math.PI) / 3
+        val c4 = (2 * PI) / 3
 
         if (x == 0f) {
             0f
         } else if (x == 1f) {
             1f
         } else {
-            (-Math.pow(2.0, 10.0 * x - 10.0) * Math.sin((x * 10.0 - 10.75) * c4)).toFloat()
+            (-2.0.pow(10.0 * x - 10.0) * sin((x * 10.0 - 10.75) * c4)).toFloat()
         }
     }
 
     val EaseOutElastic: Easing = Easing { x ->
-        val c4 = (2 * Math.PI) / 3
+        val c4 = (2 * PI) / 3
 
         if (x == 0f) {
             0f
         } else if (x == 1f) {
             1f
         } else {
-            (Math.pow(2.0, -10.0 * x) * Math.sin((x * 10.0 - 0.75) * c4) + 1).toFloat()
+            (2.0.pow(-10.0 * x) * sin((x * 10.0 - 0.75) * c4) + 1).toFloat()
         }
     }
 
     val EaseInOutElastic: Easing = Easing { x ->
-        val c5 = (2 * Math.PI) / 4.5
+        val c5 = (2 * PI) / 4.5
 
         if (x == 0f) {
             0f
         } else if (x == 1f) {
             1f
         } else if (x < 0.5f) {
-            (-(Math.pow(2.0, 20.0 * x - 10.0) * Math.sin((20.0 * x - 11.125) * c5)) / 2.0).toFloat()
+            (-(2.0.pow(20.0 * x - 10.0) * sin((20.0 * x - 11.125) * c5)) / 2.0).toFloat()
         } else {
-            (Math.pow(2.0, -20.0 * x + 10.0) * Math.sin((20.0 * x - 11.125) * c5) / 2.0 + 1.0).toFloat()
+            (2.0.pow(-20.0 * x + 10.0) * sin((20.0 * x - 11.125) * c5) / 2.0 + 1.0).toFloat()
         }
     }
 
