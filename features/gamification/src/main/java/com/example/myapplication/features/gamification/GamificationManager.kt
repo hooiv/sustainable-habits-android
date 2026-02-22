@@ -19,7 +19,9 @@ import javax.inject.Singleton
 class GamificationManager @Inject constructor(
     private val habitRepository: HabitRepository
 ) {
-    private val TAG = "GamificationManager"
+    companion object {
+        private const val TAG = "GamificationManager"
+    }
 
     // Experience points
     private val _currentXp = MutableStateFlow(0)

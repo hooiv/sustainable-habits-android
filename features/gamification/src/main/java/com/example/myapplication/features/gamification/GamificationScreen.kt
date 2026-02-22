@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -54,10 +55,10 @@ fun GamificationScreen(
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Badges", "Rewards", "Stats")
 
-    // Handle badge unlock animation
+    // Dismiss the badge unlock animation automatically after it fires
     LaunchedEffect(showBadgeUnlockAnimation) {
         if (showBadgeUnlockAnimation) {
-            // Animation will automatically dismiss itself
+            viewModel.dismissBadgeUnlockAnimation()
         }
     }
 
@@ -67,7 +68,7 @@ fun GamificationScreen(
                 title = { Text("Gamification") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -151,6 +152,8 @@ fun GamificationScreen(
                     )
                     2 -> StatsTab(
                         currentLevel = currentLevel,
+                        currentXp = currentXp,
+                        xpForNextLevel = xpForNextLevel,
                         totalXp = currentXp + (currentLevel - 1) * 100,
                         unlockedBadges = unlockedBadges.size,
                         totalBadges = allBadges.size
@@ -192,10 +195,7 @@ fun GamificationScreen(
                         badge = badge,
                         xpAwarded = xpAwarded,
                         onAnimationComplete = {
-                            // Reset animation state
-                            coroutineScope.launch {
-                                // viewModel.dismissBadgeUnlockAnimation()
-                            }
+                            viewModel.dismissBadgeUnlockAnimation()
                         }
                     )
                 }
@@ -336,6 +336,8 @@ fun RewardsTab(
 @Composable
 fun StatsTab(
     currentLevel: Int,
+    currentXp: Int,
+    xpForNextLevel: Int,
     totalXp: Int,
     unlockedBadges: Int,
     totalBadges: Int
@@ -418,8 +420,8 @@ fun StatsTab(
 
         ProgressItem(
             title = "Level Progress",
-            progress = 0.75f, // This would be calculated based on XP
-            progressText = "75%"
+            progress = if (xpForNextLevel > 0) (currentXp.toFloat() / xpForNextLevel).coerceIn(0f, 1f) else 0f,
+            progressText = "$currentXp / $xpForNextLevel XP"
         )
     }
 }

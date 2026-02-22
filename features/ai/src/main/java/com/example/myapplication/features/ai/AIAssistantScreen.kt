@@ -64,12 +64,9 @@ fun AIAssistantScreen(
 
     // Settings state
     var useStreaming by remember { mutableStateOf(personalizationSettings.useStreaming) }
-    var useVoice by remember { mutableStateOf(personalizationSettings.useVoice) }
-
     // Update settings when personalization changes
     LaunchedEffect(personalizationSettings) {
         useStreaming = personalizationSettings.useStreaming
-        useVoice = personalizationSettings.useVoice
     }
 
     Scaffold(
@@ -82,24 +79,6 @@ fun AIAssistantScreen(
                     }
                 },
                 actions = {
-                    // Voice toggle
-                    IconButton(
-                        onClick = {
-                            val newValue = !useVoice
-                            useVoice = newValue
-                            // Save the setting
-                            viewModel.savePersonalizationSettings(
-                                personalizationSettings.copy(useVoice = newValue)
-                            )
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (useVoice) Icons.AutoMirrored.Filled.VolumeUp else Icons.Default.VolumeOff,
-                            contentDescription = if (useVoice) "Disable Voice" else "Enable Voice",
-                            tint = if (useVoice) MaterialTheme.colorScheme.primary else Color.Gray
-                        )
-                    }
-
                     // Streaming toggle
                     Switch(
                         checked = useStreaming,
@@ -149,7 +128,7 @@ fun AIAssistantScreen(
                 suggestions = suggestions,
                 onSuggestionClick = { suggestion ->
                     coroutineScope.launch {
-                        viewModel.processSuggestion(suggestion, useStreaming, useVoice)
+                        viewModel.processSuggestion(suggestion, useStreaming)
                     }
                     coroutineScope.launch {
                         delay(100)
@@ -158,7 +137,7 @@ fun AIAssistantScreen(
                 },
                 onAskQuestion = { question ->
                     coroutineScope.launch {
-                        viewModel.askQuestion(question, useStreaming, useVoice)
+                        viewModel.askQuestion(question, useStreaming)
                     }
                     coroutineScope.launch {
                         delay(100)
@@ -331,7 +310,7 @@ fun AIAssistantScreen(
                             ResponseItem(
                                 question = response.first,
                                 answer = response.second,
-                                isSpeaking = isSpeaking && responses.last() == response && useVoice,
+                                isSpeaking = false,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)

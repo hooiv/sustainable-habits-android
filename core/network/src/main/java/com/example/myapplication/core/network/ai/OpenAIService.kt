@@ -35,10 +35,7 @@ class OpenAIService @Inject constructor(
 
             When providing suggestions, consider the user's:
             1. Current habits and their completion patterns
-            2. Mood data and emotional state
-            3. Location context and environmental factors
-            4. Time patterns and daily schedule
-            5. Personal preferences and settings
+            2. Personal preferences and settings
 
             Tailor your responses to be maximally helpful and personalized."""
     }
@@ -50,9 +47,6 @@ class OpenAIService @Inject constructor(
         question: String,
         userHabits: List<Habit>?,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         try {
@@ -69,35 +63,10 @@ class OpenAIService @Inject constructor(
             } else {
                 "No recent habit completions."
             }
-
-            // Add mood data context if available and enabled
-            val moodContext = if (moodData != null && moodData.isNotEmpty() && personalization.includeMoodData) {
-                "\n\n${formatMoodDataForPrompt(moodData)}"
-            } else {
-                ""
-            }
-
-            // Add location data context if available and enabled
-            val locationContext = if (locationData != null && locationData.isNotEmpty() && personalization.includeLocationData) {
-                "\n\n${formatLocationDataForPrompt(locationData)}"
-            } else {
-                ""
-            }
-
-            // Add time pattern context if available and enabled
-            val timePatternContext = if (timePatterns != null && timePatterns.isNotEmpty() && personalization.includeTimePatterns) {
-                "\n\n${formatTimePatternsForPrompt(timePatterns)}"
-            } else {
-                ""
-            }
-
             val messages = listOf(
                 Message("system", SYSTEM_PROMPT),
                 Message("system", habitContext),
                 Message("system", completionContext),
-                Message("system", moodContext),
-                Message("system", locationContext),
-                Message("system", timePatternContext),
                 Message("user", question)
             )
 
@@ -134,9 +103,6 @@ class OpenAIService @Inject constructor(
         question: String,
         userHabits: List<Habit>?,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): Flow<String> = flow {
         try {
@@ -153,35 +119,10 @@ class OpenAIService @Inject constructor(
             } else {
                 "No recent habit completions."
             }
-
-            // Add mood data context if available and enabled
-            val moodContext = if (moodData != null && moodData.isNotEmpty() && personalization.includeMoodData) {
-                "\n\n${formatMoodDataForPrompt(moodData)}"
-            } else {
-                ""
-            }
-
-            // Add location data context if available and enabled
-            val locationContext = if (locationData != null && locationData.isNotEmpty() && personalization.includeLocationData) {
-                "\n\n${formatLocationDataForPrompt(locationData)}"
-            } else {
-                ""
-            }
-
-            // Add time pattern context if available and enabled
-            val timePatternContext = if (timePatterns != null && timePatterns.isNotEmpty() && personalization.includeTimePatterns) {
-                "\n\n${formatTimePatternsForPrompt(timePatterns)}"
-            } else {
-                ""
-            }
-
             val messages = listOf(
                 Message("system", SYSTEM_PROMPT),
                 Message("system", habitContext),
                 Message("system", completionContext),
-                Message("system", moodContext),
-                Message("system", locationContext),
-                Message("system", timePatternContext),
                 Message("user", question)
             )
 
@@ -219,9 +160,6 @@ class OpenAIService @Inject constructor(
                     question,
                     userHabits,
                     habitCompletions,
-                    moodData,
-                    locationData,
-                    timePatterns,
                     personalization
                 )
 
@@ -289,9 +227,6 @@ class OpenAIService @Inject constructor(
         userHabits: List<Habit>,
         previousSuggestion: AISuggestion?,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): List<AISuggestion> = withContext(Dispatchers.IO) {
         try {
@@ -381,9 +316,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateNewHabitSuggestion(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -396,7 +328,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -405,9 +337,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateScheduleOptimization(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -420,7 +349,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -429,9 +358,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateMotivationTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -444,7 +370,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -453,9 +379,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateHabitImprovementTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -468,7 +391,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -477,9 +400,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateStreakProtectionTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -492,7 +412,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -501,9 +421,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateHabitChainSuggestions(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -516,7 +433,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -525,9 +442,6 @@ class OpenAIService @Inject constructor(
     override suspend fun generateInsightAnalysis(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>?,
-        moodData: List<MoodEntry>?,
-        locationData: List<LocationContext>?,
-        timePatterns: List<TimePattern>?,
         personalization: AIAssistantPersonalization
     ): String = withContext(Dispatchers.IO) {
         val prompt = """
@@ -540,7 +454,7 @@ class OpenAIService @Inject constructor(
               else ""}
         """.trimIndent()
 
-        return@withContext generateResponse(prompt, userHabits, habitCompletions, moodData, locationData, timePatterns, personalization)
+        return@withContext generateResponse(prompt, userHabits, habitCompletions, personalization)
     }
 
     /**
@@ -634,30 +548,6 @@ class OpenAIService @Inject constructor(
                 confidence = 0.85f
             )
         )
-    }
-
-    /**
-     * Format mood data for prompt
-     */
-    private fun formatMoodDataForPrompt(moodData: List<MoodEntry>?): String {
-        if (moodData.isNullOrEmpty()) return ""
-        return AIContextFormatter.formatMoodData(moodData)
-    }
-
-    /**
-     * Format location data for prompt
-     */
-    private fun formatLocationDataForPrompt(locationData: List<LocationContext>?): String {
-        if (locationData.isNullOrEmpty()) return ""
-        return AIContextFormatter.formatLocationData(locationData)
-    }
-
-    /**
-     * Format time pattern data for prompt
-     */
-    private fun formatTimePatternsForPrompt(timePatterns: List<TimePattern>?): String {
-        if (timePatterns.isNullOrEmpty()) return ""
-        return AIContextFormatter.formatTimePatternData(timePatterns)
     }
 
     /**

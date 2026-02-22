@@ -13,9 +13,6 @@ interface AIService {
      * @param question The user's question
      * @param userHabits Optional list of user habits for context
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated response
      */
@@ -23,9 +20,6 @@ interface AIService {
         question: String,
         userHabits: List<Habit>? = null,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -35,9 +29,6 @@ interface AIService {
      * @param question The user's question
      * @param userHabits Optional list of user habits for context
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return Flow of response chunks as they are generated
      */
@@ -45,9 +36,6 @@ interface AIService {
         question: String,
         userHabits: List<Habit>? = null,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): Flow<String>
 
@@ -57,9 +45,6 @@ interface AIService {
      * @param userHabits List of user's current habits
      * @param previousSuggestion Optional previous suggestion for context
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return List of AI-generated suggestions
      */
@@ -67,9 +52,6 @@ interface AIService {
         userHabits: List<Habit>,
         previousSuggestion: AISuggestion? = null,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): List<AISuggestion>
 
@@ -78,18 +60,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated habit suggestion
      */
     suspend fun generateNewHabitSuggestion(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -98,18 +74,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated schedule optimization advice
      */
     suspend fun generateScheduleOptimization(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -118,18 +88,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated motivation tips
      */
     suspend fun generateMotivationTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -138,18 +102,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated habit improvement tips
      */
     suspend fun generateHabitImprovementTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -158,18 +116,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated streak protection tips
      */
     suspend fun generateStreakProtectionTips(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -178,18 +130,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated habit chain suggestions
      */
     suspend fun generateHabitChainSuggestions(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 
@@ -198,18 +144,12 @@ interface AIService {
      *
      * @param userHabits List of user's current habits
      * @param habitCompletions Optional list of habit completions for additional context
-     * @param moodData Optional list of mood entries for emotional context
-     * @param locationData Optional list of location data for spatial context
-     * @param timePatterns Optional list of time patterns for temporal context
      * @param personalization Optional personalization settings
      * @return AI-generated insight analysis
      */
     suspend fun generateInsightAnalysis(
         userHabits: List<Habit>,
         habitCompletions: List<HabitCompletion>? = null,
-        moodData: List<MoodEntry>? = null,
-        locationData: List<LocationContext>? = null,
-        timePatterns: List<TimePattern>? = null,
         personalization: AIAssistantPersonalization = AIAssistantPersonalization()
     ): String
 

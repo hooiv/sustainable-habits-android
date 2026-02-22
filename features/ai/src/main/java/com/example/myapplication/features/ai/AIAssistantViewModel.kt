@@ -129,14 +129,14 @@ class AIAssistantViewModel @Inject constructor(
     /**
      * Process a suggestion selected by the user
      */
-    fun processSuggestion(suggestion: AISuggestion, useStreaming: Boolean = true, useVoice: Boolean = false) {
+    fun processSuggestion(suggestion: AISuggestion, useStreaming: Boolean = true) {
         viewModelScope.launch {
             _isProcessing.value = true
 
             try {
                 if (useStreaming) {
                     // Use streaming response
-                    processStreamingSuggestion(suggestion, useVoice)
+                    processStreamingSuggestion(suggestion)
                 } else {
                     // Generate response based on suggestion type
                     val response = when (suggestion.type) {
@@ -214,7 +214,7 @@ class AIAssistantViewModel @Inject constructor(
     /**
      * Process a suggestion with streaming response
      */
-    private suspend fun processStreamingSuggestion(suggestion: AISuggestion, useVoice: Boolean) {
+    private suspend fun processStreamingSuggestion(suggestion: AISuggestion) {
         try {
             _isStreaming.value = true
             _streamingResponse.value = ""
@@ -261,14 +261,14 @@ class AIAssistantViewModel @Inject constructor(
     /**
      * Process a custom question from the user
      */
-    fun askQuestion(question: String, useStreaming: Boolean = true, useVoice: Boolean = false) {
+    fun askQuestion(question: String, useStreaming: Boolean = true) {
         viewModelScope.launch {
             _isProcessing.value = true
 
             try {
                 if (useStreaming) {
                     // Use streaming response
-                    processStreamingQuestion(question, useVoice)
+                    processStreamingQuestion(question)
                 } else {
                     // Generate response using AI service
                     val response = aiService.generateResponse(
@@ -316,7 +316,7 @@ class AIAssistantViewModel @Inject constructor(
     /**
      * Process a question with streaming response
      */
-    private suspend fun processStreamingQuestion(question: String, useVoice: Boolean) {
+    private suspend fun processStreamingQuestion(question: String) {
         try {
             _isStreaming.value = true
             _streamingResponse.value = ""

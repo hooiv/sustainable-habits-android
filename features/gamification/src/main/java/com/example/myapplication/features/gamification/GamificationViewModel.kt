@@ -23,7 +23,10 @@ class GamificationViewModel @Inject constructor(
     private val habitRepository: HabitRepository,
     private val gamificationManager: GamificationManager
 ) : ViewModel() {
-    private val TAG = "GamificationViewModel"
+
+    companion object {
+        private const val TAG = "GamificationViewModel"
+    }
 
     // Current XP
     private val _currentXp = MutableStateFlow(0)
@@ -220,6 +223,14 @@ class GamificationViewModel @Inject constructor(
         }
     }
     
+    /**
+     * Dismiss the badge unlock animation
+     */
+    fun dismissBadgeUnlockAnimation() {
+        _showBadgeUnlockAnimation.value = false
+        _recentlyUnlockedBadge.value = null
+    }
+
     /**
      * Unlock a badge
      */

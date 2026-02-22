@@ -13,45 +13,45 @@ import javax.inject.Singleton
 @Singleton
 class LocalAIService @Inject constructor() : AIService {
 
-    override suspend fun generateResponse(question: String, userHabits: List<Habit>?, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateResponse(question: String, userHabits: List<Habit>?, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "This is a local response to the question: $question"
     }
 
-    override fun generateStreamingResponse(question: String, userHabits: List<Habit>?, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): Flow<String> {
+    override fun generateStreamingResponse(question: String, userHabits: List<Habit>?, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): Flow<String> {
         return flow {
             emit("This is a local streaming response to the question: $question")
         }
     }
 
-    override suspend fun generateSuggestions(userHabits: List<Habit>, previousSuggestion: AISuggestion?, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): List<AISuggestion> {
+    override suspend fun generateSuggestions(userHabits: List<Habit>, previousSuggestion: AISuggestion?, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): List<AISuggestion> {
         return emptyList()
     }
 
-    override suspend fun generateNewHabitSuggestion(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateNewHabitSuggestion(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "This is a new habit suggestion"
     }
 
-    override suspend fun generateScheduleOptimization(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateScheduleOptimization(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "This is a schedule optimization"
     }
 
-    override suspend fun generateMotivationTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateMotivationTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "These are motivation tips"
     }
 
-    override suspend fun generateHabitImprovementTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateHabitImprovementTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "These are habit improvement tips"
     }
 
-    override suspend fun generateStreakProtectionTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateStreakProtectionTips(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "These are streak protection tips"
     }
 
-    override suspend fun generateHabitChainSuggestions(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateHabitChainSuggestions(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "These are habit chain suggestions"
     }
 
-    override suspend fun generateInsightAnalysis(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
+    override suspend fun generateInsightAnalysis(userHabits: List<Habit>, habitCompletions: List<HabitCompletion>?, personalization: AIAssistantPersonalization): String {
         return "This is an insight analysis"
     }
 

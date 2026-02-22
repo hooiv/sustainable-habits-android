@@ -3,7 +3,7 @@ package com.example.myapplication.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
@@ -48,7 +48,7 @@ fun AppBar(
             if (showBackButton) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = colorResource(R.color.brand_accent)
                     )
