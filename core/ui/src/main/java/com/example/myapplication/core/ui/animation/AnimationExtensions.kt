@@ -13,8 +13,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.core.animateIntSizeAsState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -48,17 +46,6 @@ private fun Double.pow(power: Int): Double {
     var result = 1.0
     repeat(power) { result *= this }
     return result
-}
-
-/**
- * Animated content size modifier
- */
-@Composable
-fun Modifier.animateContentSizeCustom(
-    animationSpec: androidx.compose.animation.core.FiniteAnimationSpec<androidx.compose.ui.unit.IntSize> = tween(300, easing = FastOutSlowInEasing)
-): Modifier {
-    // Create a custom implementation using animateIntSizeAsState
-    return this
 }
 
 /**

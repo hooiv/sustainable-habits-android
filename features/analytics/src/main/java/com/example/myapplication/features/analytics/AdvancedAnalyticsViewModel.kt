@@ -1,7 +1,5 @@
 package com.example.myapplication.features.analytics
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.data.model.Habit
@@ -10,12 +8,11 @@ import com.example.myapplication.core.data.repository.HabitRepository
 import com.example.myapplication.features.analytics.ui.AnalyticsInsight
 import com.example.myapplication.features.analytics.ui.InsightType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -25,231 +22,202 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AdvancedAnalyticsViewModel @Inject constructor(
-    private val habitRepository: HabitRepository,
-    @ApplicationContext private val context: Context
+    private val habitRepository: HabitRepository
 ) : ViewModel() {
-    
+
     // State
     private val _habits = MutableStateFlow<List<Habit>>(emptyList())
     val habits: StateFlow<List<Habit>> = _habits.asStateFlow()
-    
+
     private val _completions = MutableStateFlow<List<HabitCompletion>>(emptyList())
     val completions: StateFlow<List<HabitCompletion>> = _completions.asStateFlow()
-    
+
     private val _insights = MutableStateFlow<List<AnalyticsInsight>>(emptyList())
     val insights: StateFlow<List<AnalyticsInsight>> = _insights.asStateFlow()
-    
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-    
+
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
-    
+
+    /** Emits a one-shot error message to display in the UI (null = no error). */
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
     init {
         loadData()
     }
-    
+
     /**
-     * Load habits and completions
+     * Load habits and completions using [combine] so both flows are collected
+     * concurrently in a single coroutine — avoids the nested-collect anti-pattern
+     * that would start a new completions collector on every habits emission.
      */
     private fun loadData() {
         viewModelScope.launch {
             _isLoading.value = true
-            
             try {
-                // Load habits
-                habitRepository.getAllHabits().collect { habitList ->
-                    _habits.value = habitList
-                    
-                    // After loading habits, load completions
-                    habitRepository.getAllCompletions().collect { completionList ->
+                combine(
+                    habitRepository.getAllHabits(),
+                    habitRepository.getAllCompletions()
+                ) { habitList, completionList -> habitList to completionList }
+                    .collect { (habitList, completionList) ->
+                        _habits.value = habitList
                         _completions.value = completionList
-                        
-                        // Generate initial insights
+
                         if (_insights.value.isEmpty() && habitList.isNotEmpty() && completionList.isNotEmpty()) {
                             generateInsights()
                         }
-                        
+
                         _isLoading.value = false
                     }
-                }
             } catch (e: Exception) {
                 _isLoading.value = false
-                showToast("Error loading data: ${e.message}")
+                _errorMessage.value = "Error loading data: ${e.message}"
             }
         }
     }
-    
-    /**
-     * Refresh data
-     */
+
+    /** Clears the current error so the UI can dismiss the message. */
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     fun refreshData() {
         loadData()
     }
-    
-    /**
-     * Set selected tab
-     */
+
     fun setSelectedTab(tab: Int) {
         _selectedTab.value = tab
     }
-    
-    /**
-     * Generate insights
-     */
+
     fun generateInsights() {
         viewModelScope.launch {
             _isLoading.value = true
-            
             try {
-                // Simulate API call delay
                 delay(1500)
-                
-                // Generate insights based on habits and completions
                 val habitList = _habits.value
                 val completionList = _completions.value
-                
-                if (habitList.isEmpty() || completionList.isEmpty()) {
-                    _insights.value = emptyList()
+                _insights.value = if (habitList.isEmpty() || completionList.isEmpty()) {
+                    emptyList()
                 } else {
-                    _insights.value = generateSampleInsights(habitList, completionList)
+                    buildInsights(habitList, completionList)
                 }
             } catch (e: Exception) {
-                showToast("Error generating insights: ${e.message}")
+                _errorMessage.value = "Error generating insights: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
         }
     }
-    
+
     /**
-     * Generate sample insights
+     * Derives real insights from [habits] and [completions].
+     * Habits are referenced by stable sorted order so results are deterministic.
      */
-    private fun generateSampleInsights(
+    private fun buildInsights(
         habits: List<Habit>,
         completions: List<HabitCompletion>
     ): List<AnalyticsInsight> {
+        val sorted = habits.sortedBy { it.id }
+        val byHabit = completions.groupBy { it.habitId }
         val insights = mutableListOf<AnalyticsInsight>()
-        
-        // Trend detection insight
-        if (habits.isNotEmpty()) {
-            val randomHabit = habits.random()
+
+        // Best-performing habit (highest completion count)
+        val bestHabit = sorted.maxByOrNull { byHabit[it.id]?.size ?: 0 }
+        if (bestHabit != null) {
+            val count = byHabit[bestHabit.id]?.size ?: 0
             insights.add(
                 AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Improving Trend",
-                    description = "Your consistency with '${randomHabit.name}' has improved by 23% over the past 30 days.",
+                    id = "trend_${bestHabit.id}",
+                    title = "Top Performing Habit",
+                    description = "'${bestHabit.name}' leads with $count total completions — keep it up!",
                     type = InsightType.TREND_DETECTION,
-                    confidence = 0.87f,
-                    relatedHabitIds = listOf(randomHabit.id),
+                    confidence = 1.0f,
+                    relatedHabitIds = listOf(bestHabit.id),
                     timestamp = System.currentTimeMillis()
                 )
             )
         }
-        
-        // Pattern recognition insight
-        if (habits.size >= 2) {
-            val randomHabits = habits.shuffled().take(2)
+
+        // Longest current streak
+        val streakHabit = sorted.maxByOrNull { it.streak }
+        if (streakHabit != null && streakHabit.streak > 0) {
             insights.add(
                 AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Weekly Pattern Detected",
-                    description = "You tend to complete '${randomHabits[0].name}' and '${randomHabits[1].name}' on the same days, typically on weekends.",
-                    type = InsightType.PATTERN_RECOGNITION,
-                    confidence = 0.78f,
-                    relatedHabitIds = randomHabits.map { it.id },
-                    timestamp = System.currentTimeMillis()
-                )
-            )
-        }
-        
-        // Correlation insight
-        if (habits.size >= 2) {
-            val randomHabits = habits.shuffled().take(2)
-            insights.add(
-                AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Strong Correlation",
-                    description = "When you complete '${randomHabits[0].name}', you're 75% more likely to also complete '${randomHabits[1].name}' on the same day.",
-                    type = InsightType.CORRELATION,
-                    confidence = 0.92f,
-                    relatedHabitIds = randomHabits.map { it.id },
-                    timestamp = System.currentTimeMillis()
-                )
-            )
-        }
-        
-        // Anomaly detection insight
-        if (habits.isNotEmpty()) {
-            val randomHabit = habits.random()
-            insights.add(
-                AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Unusual Pattern",
-                    description = "Your completion of '${randomHabit.name}' has been unusually inconsistent on Mondays compared to other days.",
-                    type = InsightType.ANOMALY_DETECTION,
-                    confidence = 0.81f,
-                    relatedHabitIds = listOf(randomHabit.id),
-                    timestamp = System.currentTimeMillis()
-                )
-            )
-        }
-        
-        // Prediction insight
-        if (habits.isNotEmpty()) {
-            val randomHabit = habits.random()
-            insights.add(
-                AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Streak Prediction",
-                    description = "Based on your current pattern, you're likely to achieve a 14-day streak with '${randomHabit.name}' by next week.",
-                    type = InsightType.PREDICTION,
-                    confidence = 0.76f,
-                    relatedHabitIds = listOf(randomHabit.id),
-                    timestamp = System.currentTimeMillis()
-                )
-            )
-        }
-        
-        // Recommendation insight
-        if (habits.isNotEmpty()) {
-            val randomHabit = habits.random()
-            insights.add(
-                AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Optimal Time Recommendation",
-                    description = "You're 40% more likely to complete '${randomHabit.name}' when you do it in the morning rather than evening.",
-                    type = InsightType.RECOMMENDATION,
-                    confidence = 0.85f,
-                    relatedHabitIds = listOf(randomHabit.id),
-                    timestamp = System.currentTimeMillis()
-                )
-            )
-        }
-        
-        // Achievement insight
-        if (habits.isNotEmpty() && completions.isNotEmpty()) {
-            val randomHabit = habits.random()
-            insights.add(
-                AnalyticsInsight(
-                    id = UUID.randomUUID().toString(),
-                    title = "Milestone Achieved",
-                    description = "Congratulations! You've completed '${randomHabit.name}' 30 times since you started tracking it.",
+                    id = "streak_${streakHabit.id}",
+                    title = "Longest Active Streak",
+                    description = "'${streakHabit.name}' has a current streak of ${streakHabit.streak} day(s). Don't break the chain!",
                     type = InsightType.ACHIEVEMENT,
                     confidence = 1.0f,
-                    relatedHabitIds = listOf(randomHabit.id),
+                    relatedHabitIds = listOf(streakHabit.id),
                     timestamp = System.currentTimeMillis()
                 )
             )
         }
-        
-        return insights.shuffled()
-    }
-    
-    /**
-     * Show a toast message
-     */
-    fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+        // Pair with highest co-completion on same calendar day
+        if (sorted.size >= 2) {
+            var bestCorrelation = -1f
+            var habitA = sorted[0]
+            var habitB = sorted[1]
+            for (i in sorted.indices) {
+                val daysA = byHabit[sorted[i].id]
+                    ?.map { java.util.Date(it.completionDate).let { d ->
+                        val c = java.util.Calendar.getInstance().also { c -> c.time = d }
+                        c.get(java.util.Calendar.YEAR) * 1000 + c.get(java.util.Calendar.DAY_OF_YEAR)
+                    } }?.toSet() ?: continue
+                for (j in i + 1 until sorted.size) {
+                    val daysB = byHabit[sorted[j].id]
+                        ?.map { java.util.Date(it.completionDate).let { d ->
+                            val c = java.util.Calendar.getInstance().also { c -> c.time = d }
+                            c.get(java.util.Calendar.YEAR) * 1000 + c.get(java.util.Calendar.DAY_OF_YEAR)
+                        } }?.toSet() ?: continue
+                    val intersection = (daysA intersect daysB).size
+                    val union = (daysA union daysB).size
+                    if (union > 0) {
+                        val jaccard = intersection.toFloat() / union
+                        if (jaccard > bestCorrelation) {
+                            bestCorrelation = jaccard
+                            habitA = sorted[i]
+                            habitB = sorted[j]
+                        }
+                    }
+                }
+            }
+            if (bestCorrelation >= 0f) {
+                val pct = (bestCorrelation * 100).toInt()
+                insights.add(
+                    AnalyticsInsight(
+                        id = "corr_${habitA.id}_${habitB.id}",
+                        title = "Habit Correlation",
+                        description = "'${habitA.name}' and '${habitB.name}' are completed together $pct% of the time.",
+                        type = InsightType.CORRELATION,
+                        confidence = bestCorrelation,
+                        relatedHabitIds = listOf(habitA.id, habitB.id),
+                        timestamp = System.currentTimeMillis()
+                    )
+                )
+            }
+        }
+
+        // Habit with zero completions (needs attention)
+        val neglectedHabit = sorted.firstOrNull { (byHabit[it.id]?.size ?: 0) == 0 }
+        if (neglectedHabit != null) {
+            insights.add(
+                AnalyticsInsight(
+                    id = "anomaly_${neglectedHabit.id}",
+                    title = "Habit Needs Attention",
+                    description = "'${neglectedHabit.name}' has no recorded completions yet. Try completing it today!",
+                    type = InsightType.ANOMALY_DETECTION,
+                    confidence = 1.0f,
+                    relatedHabitIds = listOf(neglectedHabit.id),
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+        }
+
+        return insights
     }
 }

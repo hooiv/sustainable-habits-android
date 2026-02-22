@@ -27,12 +27,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitCompletion
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
 /**
  * Screen for advanced analytics
@@ -43,8 +41,6 @@ fun AdvancedAnalyticsScreen(
     navController: NavController,
     viewModel: AdvancedAnalyticsViewModel = hiltViewModel()
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     // State
     val habits by viewModel.habits.collectAsState()
     val completions by viewModel.completions.collectAsState()
@@ -52,16 +48,39 @@ fun AdvancedAnalyticsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
 
-    // Sample correlation data
-    val correlationData = remember(habits) {
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Show error messages via Snackbar instead of Toast (MVVM-safe)
+    LaunchedEffect(errorMessage) {
+        val msg = errorMessage
+        if (!msg.isNullOrEmpty()) {
+            snackbarHostState.showSnackbar(msg)
+            viewModel.clearError()
+        }
+    }
+
+    // Deterministic correlation from real data: Jaccard similarity of completion days
+    val correlationData = remember(habits, completions) {
         if (habits.size < 2) {
             emptyMap()
         } else {
+            val byHabit = completions.groupBy { it.habitId }
+            fun dayKeys(habitId: String): Set<Int> =
+                byHabit[habitId]?.map {
+                    Calendar.getInstance().also { c -> c.time = Date(it.completionDate) }.let { c ->
+                        c.get(Calendar.YEAR) * 1000 + c.get(Calendar.DAY_OF_YEAR)
+                    }
+                }?.toSet() ?: emptySet()
+
             val result = mutableMapOf<Pair<String, String>, Float>()
             for (i in habits.indices) {
+                val daysA = dayKeys(habits[i].id)
                 for (j in i + 1 until habits.size) {
-                    // In a real app, this would be calculated based on actual data
-                    result[Pair(habits[i].id, habits[j].id)] = Random.nextDouble(-0.8, 0.8).toFloat()
+                    val daysB = dayKeys(habits[j].id)
+                    val union = (daysA union daysB).size
+                    val jaccard = if (union == 0) 0f else (daysA intersect daysB).size.toFloat() / union
+                    result[Pair(habits[i].id, habits[j].id)] = jaccard
                 }
             }
             result
@@ -69,6 +88,7 @@ fun AdvancedAnalyticsScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Advanced Analytics") },
@@ -194,10 +214,7 @@ fun InsightsTab(
     } else {
         AnalyticsInsightsPanel(
             insights = insights,
-            onInsightClick = { insight ->
-                // Handle insight click
-                viewModel.showToast("Insight: ${insight.title}")
-            }
+            onInsightClick = { /* insight title shown in the card itself */ }
         )
     }
 }

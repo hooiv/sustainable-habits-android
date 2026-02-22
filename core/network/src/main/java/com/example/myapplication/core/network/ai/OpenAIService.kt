@@ -116,7 +116,6 @@ class OpenAIService @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 val content = response.body()!!.choices.firstOrNull()?.message?.content ?:
                     "I'm sorry, I couldn't generate a response at this time."
-                Log.d(TAG, "Generated response: $content")
                 return@withContext content
             } else {
                 Log.e(TAG, "Error generating response: ${response.errorBody()?.string()}")
@@ -347,8 +346,6 @@ class OpenAIService @Inject constructor(
 
             if (response.isSuccessful && response.body() != null) {
                 val content = response.body()!!.choices.firstOrNull()?.message?.content ?: ""
-                Log.d(TAG, "Generated suggestions: $content")
-
                 // Extract JSON from the response
                 val jsonContent = extractJsonFromString(content)
 
