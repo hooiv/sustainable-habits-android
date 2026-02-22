@@ -67,8 +67,6 @@ class GamificationManager @Inject constructor(
 
             // Initialize rewards
             initializeRewards()
-
-            Log.d(TAG, "Gamification system initialized")
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing gamification system: ${e.message}")
         }
@@ -263,8 +261,6 @@ class GamificationManager @Inject constructor(
             _currentLevel.value = level
             _currentXp.value = currentXpInLevel
             _xpForNextLevel.value = xpForNextLevel
-
-            Log.d(TAG, "XP calculated: Level $level, XP $currentXpInLevel/$xpForNextLevel")
         } catch (e: Exception) {
             Log.e(TAG, "Error calculating XP and level: ${e.message}")
         }
