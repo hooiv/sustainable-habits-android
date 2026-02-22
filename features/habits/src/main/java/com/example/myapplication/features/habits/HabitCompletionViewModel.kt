@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,13 +30,18 @@ class HabitCompletionViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    /** The currently active completions-loading job; cancelled before a new one starts. */
+    private var loadJob: Job? = null
+
     /**
      * Load completions for a specific habit.
      * Room's Flow pushes every subsequent DB change automatically, so this only
      * needs to be called once per screen session (e.g. from LaunchedEffect).
+     * Cancels any previously-running collection to avoid duplicate subscribers.
      */
     fun loadCompletionsForHabit(habitId: String) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _isLoading.value = true
             try {
                 habitRepository.getHabitCompletions(habitId).collect { completionList ->
