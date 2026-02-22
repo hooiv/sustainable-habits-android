@@ -33,9 +33,6 @@ import com.example.myapplication.core.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.*
-import com.example.myapplication.features.gamification.Badge
-import com.example.myapplication.features.gamification.Reward
-import com.example.myapplication.features.gamification.BadgeType
 
 /**
  * Displays a user's level and experience progress with animations

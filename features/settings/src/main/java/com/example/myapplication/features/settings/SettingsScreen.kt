@@ -66,7 +66,6 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -238,6 +237,8 @@ fun SettingsScreen(
             // ─── Advanced ──────────────────────────────────────────────────
             SettingsSectionCard(title = "Advanced Features", icon = Icons.Default.AutoAwesome) {
                 SettingsNavRow(icon = Icons.Default.Face, label = "AI Assistant", onClick = { navController.navigate(NavRoutes.AI_ASSISTANT) })
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                SettingsNavRow(icon = Icons.Default.EmojiEvents, label = "Achievements & Badges", onClick = { navController.navigate(NavRoutes.GAMIFICATION) })
             }
 
             // ─── About ────────────────────────────────────────────────────

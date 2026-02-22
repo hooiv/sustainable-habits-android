@@ -77,26 +77,14 @@ class GamificationViewModel @Inject constructor(
     }
     
     /**
-     * Load gamification data
+     * Load gamification data and observe reactive state from GamificationManager.
      */
     fun loadGamificationData() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // Initialize gamification system
+                // Initialize gamification system (suspends until badges/XP are seeded)
                 gamificationManager.initialize()
-                
-                // Load XP and level
-                _currentXp.value = gamificationManager.currentXp.value
-                _currentLevel.value = gamificationManager.currentLevel.value
-                _xpForNextLevel.value = gamificationManager.xpForNextLevel.value
-                
-                // Load badges
-                _allBadges.value = gamificationManager.allBadges.value
-                _unlockedBadges.value = gamificationManager.allBadges.value.filter { it.isUnlocked }
-                
-                // Load rewards
-                _availableRewards.value = gamificationManager.availableRewards.value
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load gamification data: ${e.message}"
                 Log.e(TAG, "Error loading gamification data", e)
@@ -104,23 +92,39 @@ class GamificationViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+
+        // Reactively mirror GamificationManager state so the UI stays in sync
+        // even if initialize() triggers further updates.
+        viewModelScope.launch {
+            gamificationManager.currentXp.collect { _currentXp.value = it }
+        }
+        viewModelScope.launch {
+            gamificationManager.currentLevel.collect { _currentLevel.value = it }
+        }
+        viewModelScope.launch {
+            gamificationManager.xpForNextLevel.collect { _xpForNextLevel.value = it }
+        }
+        viewModelScope.launch {
+            gamificationManager.allBadges.collect { badges ->
+                _allBadges.value = badges
+                _unlockedBadges.value = badges.filter { it.isUnlocked }
+            }
+        }
+        viewModelScope.launch {
+            gamificationManager.availableRewards.collect { _availableRewards.value = it }
+        }
     }
     
     /**
-     * Check for badge unlocks when a habit is completed
+     * Check for badge unlocks when a habit is completed.
+     * Uses a single getAllCompletions() query instead of N+1 per-habit queries.
      */
     fun checkBadgeUnlocks(habit: Habit, completion: HabitCompletion) {
         viewModelScope.launch {
             try {
-                // Get all habits
+                // Single query for all habits and all completions
                 val habits = habitRepository.getAllHabits().first()
-                
-                // Get all completions
-                val allCompletions = mutableListOf<HabitCompletion>()
-                habits.forEach { h ->
-                    val completions = habitRepository.getHabitCompletions(h.id).first()
-                    allCompletions.addAll(completions)
-                }
+                val allCompletions = habitRepository.getAllCompletions().first()
                 
                 // Check for streak badges
                 if (habit.streak > 0) {

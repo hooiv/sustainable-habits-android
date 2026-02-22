@@ -27,10 +27,6 @@ object NavRoutes {
     // Gamification route
     const val GAMIFICATION = "gamification"
 
-    // Splash / Onboarding
-    const val SPLASH = "splash"
-    const val ONBOARDING = "onboarding"
-
     // Helper functions for parameterized routes
     fun editHabit(habitId: String) = "$EDIT_HABIT_ROUTE/$habitId"
     fun habitDetails(habitId: String) = HABIT_DETAILS.replace("{habitId}", habitId)

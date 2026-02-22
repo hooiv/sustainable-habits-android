@@ -194,12 +194,10 @@ fun SplashScreen() {
 
                     LaunchedEffect(showExperienceBar) {
                         delay(500)
-                        // Animate XP increase
-                        coroutineScope.launch {
-                            repeat(5) {
-                                currentXp += 20
-                                delay(300)
-                            }
+                        // Animate XP increase directly in the LaunchedEffect scope
+                        repeat(5) {
+                            currentXp += 20
+                            delay(300)
                         }
                     }
 

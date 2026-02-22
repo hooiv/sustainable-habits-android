@@ -29,6 +29,7 @@ import com.example.myapplication.features.ai.ui.AIAssistantScreen
 import com.example.myapplication.features.ai.ui.AIAssistantSettingsScreen
 import com.example.myapplication.features.analytics.ui.AdvancedAnalyticsScreen
 import com.example.myapplication.features.auth.navigation.authGraph
+import com.example.myapplication.features.gamification.GamificationScreen
 import com.example.myapplication.features.habits.navigation.habitsGraph
 import com.example.myapplication.features.settings.navigation.settingsGraph
 import com.example.myapplication.features.stats.navigation.statsGraph
@@ -177,6 +178,11 @@ fun AppNavigationGraph(navController: NavHostController) {
         }
         composable(route = NavRoutes.ADVANCED_ANALYTICS) {
             AdvancedAnalyticsScreen(navController = navController)
+        }
+        composable(route = NavRoutes.GAMIFICATION) {
+            GamificationScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
