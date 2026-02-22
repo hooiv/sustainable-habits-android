@@ -25,8 +25,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.ui.animation.AnimeEasing
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.*

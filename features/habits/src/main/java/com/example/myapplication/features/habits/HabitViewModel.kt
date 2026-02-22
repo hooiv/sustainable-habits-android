@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import com.example.myapplication.core.di.IoDispatcher
 
@@ -29,7 +28,7 @@ class HabitViewModel @Inject constructor(
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val markHabitCompletedUseCase: MarkHabitCompletedUseCase,
     private val insertOrReplaceHabitsUseCase: InsertOrReplaceHabitsUseCase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     val habits: StateFlow<List<Habit>> = getHabitsUseCase()

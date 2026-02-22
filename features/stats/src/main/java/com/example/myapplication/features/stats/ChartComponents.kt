@@ -25,6 +25,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import java.util.Calendar
 
 @Composable
 fun HabitCategoryBarChart(
@@ -269,14 +270,25 @@ fun HabitTrendsLineChart(
                 setPinchZoom(true)
             }
 
+            // Count completions per day-of-week from real completion history
+            // Calendar.DAY_OF_WEEK: Sun=1, Mon=2, ..., Sat=7 → map to Mon=0..Sun=6
+            val cal = Calendar.getInstance()
+            val dailyCompletionCounts = IntArray(7) { 0 }
+            habits.forEach { habit ->
+                habit.completionHistory.forEach { date ->
+                    cal.time = date
+                    val dayIndex = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7
+                    dailyCompletionCounts[dayIndex]++
+                }
+            }
             val completionEntries = (0..6).map { day ->
-                val value = (habits.size * (0.3f + (day % 3) * 0.2f)).toFloat() // Dummy data
-                Entry(day.toFloat(), value)
+                Entry(day.toFloat(), dailyCompletionCounts[day].toFloat())
             }
 
+            // Avg. streak across all habits (flat line — reflects real data)
+            val avgStreak = habits.sumOf { it.streak }.toFloat() / habits.size.coerceAtLeast(1)
             val streakEntries = (0..6).map { day ->
-                val value = habits.sumOf { it.streak }.toFloat() / habits.size.coerceAtLeast(1) // Dummy data
-                Entry(day.toFloat(), value * (1 + day % 2) * 0.2f)
+                Entry(day.toFloat(), avgStreak)
             }
 
             val completionDataSet = LineDataSet(completionEntries, "Daily Completions").apply {
