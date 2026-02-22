@@ -37,7 +37,6 @@ import com.example.myapplication.core.ui.animation.AnimeEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale

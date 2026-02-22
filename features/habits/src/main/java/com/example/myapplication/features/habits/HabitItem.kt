@@ -51,7 +51,6 @@ import com.example.myapplication.core.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
