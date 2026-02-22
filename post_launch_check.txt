@@ -1,3 +1,0 @@
---------- beginning of system
-02-21 18:18:14.080   705   832 E WindowManager: Display reconfigured outside of a transition: Display{#0 state=ON size=1080x2424 ROTATION_0}
-02-21 18:18:18.064   705  1724 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
