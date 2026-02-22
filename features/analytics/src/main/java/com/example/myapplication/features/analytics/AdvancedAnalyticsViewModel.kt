@@ -8,7 +8,6 @@ import com.example.myapplication.core.data.repository.HabitRepository
 import com.example.myapplication.features.analytics.ui.AnalyticsInsight
 import com.example.myapplication.features.analytics.ui.InsightType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -96,7 +95,6 @@ class AdvancedAnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                delay(1500)
                 val habitList = _habits.value
                 val completionList = _completions.value
                 _insights.value = if (habitList.isEmpty() || completionList.isEmpty()) {
