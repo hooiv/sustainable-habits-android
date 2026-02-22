@@ -4,8 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
-import com.example.myapplication.core.data.model.HabitRecommendation
-import com.example.myapplication.core.data.model.ReinforcementAction
 import com.example.myapplication.core.network.ml.TestResult
 import com.example.myapplication.core.network.ml.CompressionStats
 import com.example.myapplication.core.network.ml.Hyperparameters
@@ -14,11 +12,8 @@ import com.example.myapplication.features.quantum.QuantumVisualizer
 import com.example.myapplication.features.quantum.QuantumVisualization
 import com.example.myapplication.core.network.ml.TrialResult
 import com.example.myapplication.core.network.ml.HabitAnomaly
-import com.example.myapplication.core.data.model.HabitCompletion
-import com.example.myapplication.core.data.model.HabitCategory
 import com.example.myapplication.core.network.ml.*
 import com.example.myapplication.core.data.model.*
-import com.example.myapplication.core.data.model.NeuralNodeType
 import java.nio.ByteBuffer
 import com.example.myapplication.core.data.repository.HabitRepository
 import com.example.myapplication.core.data.repository.NeuralNetworkRepository
