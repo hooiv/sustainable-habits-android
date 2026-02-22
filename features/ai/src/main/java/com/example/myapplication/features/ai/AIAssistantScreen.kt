@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
+import com.example.myapplication.core.ui.navigation.NavRoutes
 import android.content.Context
 import android.os.PowerManager
 import androidx.compose.ui.graphics.graphicsLayer
@@ -85,7 +86,7 @@ fun AIAssistantScreen(
                     // Settings button
                     IconButton(
                         onClick = {
-                            navController.navigate(com.example.myapplication.core.ui.navigation.NavRoutes.AI_ASSISTANT_SETTINGS)
+                            navController.navigate(NavRoutes.AI_ASSISTANT_SETTINGS)
                         }
                     ) {
                         Icon(

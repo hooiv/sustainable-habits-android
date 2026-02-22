@@ -36,7 +36,6 @@ import com.example.myapplication.core.ui.navigation.NavRoutes
 import com.example.myapplication.core.ui.animation.AnimeEasing
 import com.example.myapplication.core.ui.animation.ParticleWave
 import com.example.myapplication.core.ui.animation.animeEntrance
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,16 +48,11 @@ fun HabitListScreen(
 
     // List state for scroll animations
     val listState = rememberLazyStaggeredGridState()
-    // Data loads reactively — no artificial delay needed
+    // isLoading flips to false as soon as the first habits emission arrives
+    // (which happens immediately with the stateIn initialValue = emptyList())
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(habits) {
-        isLoading = false
-    }
-
-    // Also handle the initial case where habits is empty on first load
-    LaunchedEffect(Unit) {
-        delay(600) // Short grace period for initial DB query
         isLoading = false
     }
 

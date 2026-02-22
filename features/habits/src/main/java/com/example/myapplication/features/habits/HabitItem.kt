@@ -135,7 +135,7 @@ fun HabitItem(
     onDeleteClick: () -> Unit,
     onToggleEnabled: () -> Unit,
     onCompletionHistoryClick: () -> Unit = {},
-    index: Int = 0 // Added index parameter for staggered animations
+    index: Int = 0
 ) {
     // Get current date for comparison and formatting
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
@@ -154,8 +154,6 @@ fun HabitItem(
     // Animation states
     var rotationX by remember { mutableStateOf(0f) }
     var rotationY by remember { mutableStateOf(0f) }
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
 
     // Use Native Compose animations for advanced effects
     var useAdvancedAnimations by remember { mutableStateOf(true) }
@@ -182,7 +180,6 @@ fun HabitItem(
         label = "backgroundColor"
     )
 
-    // Use only one MaterialTheme.elevation property - we'll define this in Theme.kt later
     val cardElevation by animateFloatAsState(
         targetValue = if (habit.isEnabled) 8f else 2f,
         label = "elevation"

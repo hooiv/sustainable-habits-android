@@ -1,8 +1,12 @@
 package com.example.myapplication.core.ui.animation
 
 import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,5 +79,32 @@ fun Modifier.animeEntrance(
         this.scaleX = scale
         this.scaleY = scale
     }
+}
+
+/**
+ * Returns the delay in milliseconds for a staggered list item animation.
+ * The returned value is capped at [maxDelayMs] so deeply nested items don't wait forever.
+ */
+fun staggeredDelay(index: Int, baseDelayMs: Int, maxDelayMs: Int): Int =
+    (index * baseDelayMs).coerceAtMost(maxDelayMs)
+
+/**
+ * Applies a subtle vertical bounce/pulse animation, typically used on loading placeholder items.
+ * When [enabled] is false the modifier is a no-op.
+ */
+@Composable
+fun Modifier.loadingBounceEffect(enabled: Boolean = true): Modifier {
+    if (!enabled) return this
+    val infiniteTransition = rememberInfiniteTransition(label = "loadingBounce")
+    val translationY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "bounceY"
+    )
+    return this.graphicsLayer { this.translationY = translationY }
 }
 
