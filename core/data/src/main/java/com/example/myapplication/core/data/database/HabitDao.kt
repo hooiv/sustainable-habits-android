@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.myapplication.core.data.model.Habit
+import java.util.Date
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,7 +32,7 @@ interface HabitDao {
     fun getHabitById(habitId: String): Flow<Habit?>
 
     @Query("UPDATE habits SET isDeleted = 1, isSynced = 0, lastUpdatedTimestamp = :timestamp WHERE id = :habitId")
-    suspend fun softDeleteHabit(habitId: String, timestamp: java.util.Date = java.util.Date())
+    suspend fun softDeleteHabit(habitId: String, timestamp: Date = Date())
 
     @Query("SELECT * FROM habits WHERE isDeleted = 0 ORDER BY createdDate DESC")
     fun getAllHabits(): Flow<List<Habit>>

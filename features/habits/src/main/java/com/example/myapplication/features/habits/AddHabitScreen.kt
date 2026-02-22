@@ -9,7 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -236,7 +239,7 @@ fun AddHabitScreen(
                         "Health", "Fitness", "Work", "Mindfulness",
                         "Learning", "Social", "Creativity", "Finance"
                     )
-                    androidx.compose.foundation.lazy.LazyRow(
+                    LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -247,7 +250,7 @@ fun AddHabitScreen(
                                     habitCategory = if (habitCategory == cat) "" else cat
                                 },
                                 label = { Text(cat) },
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+                                shape = RoundedCornerShape(20.dp)
                             )
                         }
                     }
@@ -333,8 +336,8 @@ fun AddHabitScreen(
                             easing = AnimeEasing.EaseOutBack
                         ),
                     singleLine = true,
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
                     )
                 )
 
@@ -423,7 +426,7 @@ fun AddHabitScreen(
                             initialOffsetY = 50,
                             easing = AnimeEasing.EaseOutElastic
                         ),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
                         Icons.Default.Done,
@@ -433,7 +436,7 @@ fun AddHabitScreen(
                     Text(
                         "Save Habit",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
