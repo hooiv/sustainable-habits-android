@@ -1,0 +1,18 @@
+package com.hooiv.habitflow.core.domain.usecase
+
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.repository.HabitRepository
+import javax.inject.Inject
+
+/**
+ * Use case for bulk inserting or replacing habits.
+ * Used when restoring habits from cloud backup — preserves original IDs.
+ * Atomicity is guaranteed by Room, which wraps List @Insert operations in a transaction.
+ */
+class InsertOrReplaceHabitsUseCase @Inject constructor(
+    private val repository: HabitRepository
+) {
+    suspend operator fun invoke(habits: List<Habit>) {
+        repository.insertOrReplaceHabits(habits)
+    }
+}

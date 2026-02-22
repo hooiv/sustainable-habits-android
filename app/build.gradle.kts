@@ -12,11 +12,11 @@ baselineProfile {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.hooiv.habitflow"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.hooiv.habitflow"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -27,7 +27,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -69,13 +70,9 @@ dependencies {
     implementation(project(":features:habits"))
     implementation(project(":features:settings"))
     implementation(project(":features:auth"))
-    implementation(project(":features:demo"))
-    implementation(project(":features:animation"))
     implementation(project(":features:gamification"))
     implementation(project(":features:stats"))
-    implementation(project(":features:calendar"))
     implementation(project(":features:onboarding"))
-    implementation(project(":features:social"))
     implementation(project(":features:splash"))
 
     implementation(libs.androidx.core.ktx)

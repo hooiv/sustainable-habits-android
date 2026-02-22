@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.features.settings"
+    namespace = "com.hooiv.habitflow.features.settings"
     compileSdk = 36
 
     defaultConfig {

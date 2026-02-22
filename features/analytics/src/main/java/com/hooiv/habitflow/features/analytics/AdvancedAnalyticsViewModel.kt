@@ -1,0 +1,220 @@
+package com.hooiv.habitflow.features.analytics
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.repository.HabitRepository
+import com.hooiv.habitflow.features.analytics.ui.AnalyticsInsight
+import com.hooiv.habitflow.features.analytics.ui.InsightType
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import java.util.Calendar
+import javax.inject.Inject
+
+/**
+ * ViewModel for the Advanced Analytics screen
+ */
+@HiltViewModel
+class AdvancedAnalyticsViewModel @Inject constructor(
+    private val habitRepository: HabitRepository
+) : ViewModel() {
+
+    // State
+    private val _habits = MutableStateFlow<List<Habit>>(emptyList())
+    val habits: StateFlow<List<Habit>> = _habits.asStateFlow()
+
+    private val _completions = MutableStateFlow<List<HabitCompletion>>(emptyList())
+    val completions: StateFlow<List<HabitCompletion>> = _completions.asStateFlow()
+
+    private val _insights = MutableStateFlow<List<AnalyticsInsight>>(emptyList())
+    val insights: StateFlow<List<AnalyticsInsight>> = _insights.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _selectedTab = MutableStateFlow(0)
+    val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
+
+    /** Emits a one-shot error message to display in the UI (null = no error). */
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    /** The currently active data-loading job; cancelled before a new one starts. */
+    private var loadDataJob: Job? = null
+
+    init {
+        loadData()
+    }
+
+    /**
+     * Load habits and completions using [combine] so both flows are collected
+     * concurrently in a single coroutine — avoids the nested-collect anti-pattern
+     * that would start a new completions collector on every habits emission.
+     * Cancels any previously-running collection to avoid duplicate subscribers.
+     */
+    private fun loadData() {
+        loadDataJob?.cancel()
+        loadDataJob = viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                combine(
+                    habitRepository.getAllHabits(),
+                    habitRepository.getAllCompletions()
+                ) { habitList, completionList -> habitList to completionList }
+                    .collect { (habitList, completionList) ->
+                        _habits.value = habitList
+                        _completions.value = completionList
+
+                        if (_insights.value.isEmpty() && habitList.isNotEmpty() && completionList.isNotEmpty()) {
+                            generateInsights()
+                        }
+
+                        _isLoading.value = false
+                    }
+            } catch (e: Exception) {
+                _isLoading.value = false
+                _errorMessage.value = "Error loading data: ${e.message}"
+            }
+        }
+    }
+
+    /** Clears the current error so the UI can dismiss the message. */
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
+    fun refreshData() {
+        loadData()
+    }
+
+    fun setSelectedTab(tab: Int) {
+        _selectedTab.value = tab
+    }
+
+    fun generateInsights() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val habitList = _habits.value
+                val completionList = _completions.value
+                _insights.value = if (habitList.isEmpty() || completionList.isEmpty()) {
+                    emptyList()
+                } else {
+                    buildInsights(habitList, completionList)
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error generating insights: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Derives real insights from [habits] and [completions].
+     * Habits are referenced by stable sorted order so results are deterministic.
+     */
+    private fun buildInsights(
+        habits: List<Habit>,
+        completions: List<HabitCompletion>
+    ): List<AnalyticsInsight> {
+        val sorted = habits.sortedBy { it.id }
+        val byHabit = completions.groupBy { it.habitId }
+
+        return buildList {
+            // Best-performing habit
+            sorted.maxByOrNull { byHabit[it.id]?.size ?: 0 }?.let { best ->
+                add(AnalyticsInsight(
+                    id = "trend_${sanitizeId(best.id)}",
+                    title = "Top Performing Habit",
+                    description = "'${best.name}' leads with ${byHabit[best.id]?.size ?: 0} total completions — keep it up!",
+                    type = InsightType.TREND_DETECTION,
+                    confidence = 1.0f,
+                    relatedHabitIds = listOf(best.id),
+                    timestamp = System.currentTimeMillis()
+                ))
+            }
+
+            // Longest current streak
+            sorted.maxByOrNull { it.streak }?.takeIf { it.streak > 0 }?.let { sh ->
+                add(AnalyticsInsight(
+                    id = "streak_${sanitizeId(sh.id)}",
+                    title = "Longest Active Streak",
+                    description = "'${sh.name}' has a current streak of ${sh.streak} day(s). Don't break the chain!",
+                    type = InsightType.ACHIEVEMENT,
+                    confidence = 1.0f,
+                    relatedHabitIds = listOf(sh.id),
+                    timestamp = System.currentTimeMillis()
+                ))
+            }
+
+            // Pair with highest co-completion (Jaccard similarity)
+            if (sorted.size >= 2) {
+                var bestCorrelation = -1f
+                var habitA = sorted[0]; var habitB = sorted[1]
+                for (i in sorted.indices) {
+                    val daysA = completionDayKeys(byHabit[sorted[i].id]) ?: continue
+                    for (j in i + 1 until sorted.size) {
+                        val daysB = completionDayKeys(byHabit[sorted[j].id]) ?: continue
+                        val inter = (daysA intersect daysB).size
+                        val union = daysA.size + daysB.size - inter
+                        if (union > 0) {
+                            val jaccard = inter.toFloat() / union
+                            if (jaccard > bestCorrelation) { bestCorrelation = jaccard; habitA = sorted[i]; habitB = sorted[j] }
+                        }
+                    }
+                }
+                if (bestCorrelation >= 0f) {
+                    add(AnalyticsInsight(
+                        id = "corr_${sanitizeId(habitA.id)}_${sanitizeId(habitB.id)}",
+                        title = "Habit Correlation",
+                        description = "'${habitA.name}' and '${habitB.name}' are completed together ${(bestCorrelation * 100).toInt()}% of the time.",
+                        type = InsightType.CORRELATION,
+                        confidence = bestCorrelation,
+                        relatedHabitIds = listOf(habitA.id, habitB.id),
+                        timestamp = System.currentTimeMillis()
+                    ))
+                }
+            }
+
+            // Habit with zero completions (needs attention)
+            sorted.firstOrNull { (byHabit[it.id]?.size ?: 0) == 0 }?.let { neglected ->
+                add(AnalyticsInsight(
+                    id = "anomaly_${sanitizeId(neglected.id)}",
+                    title = "Habit Needs Attention",
+                    description = "'${neglected.name}' has no recorded completions yet. Try completing it today!",
+                    type = InsightType.ANOMALY_DETECTION,
+                    confidence = 1.0f,
+                    relatedHabitIds = listOf(neglected.id),
+                    timestamp = System.currentTimeMillis()
+                ))
+            }
+        }
+    }
+
+    /** Converts completion records to a set of calendar-day keys (Long) for overlap comparison. */
+    private fun completionDayKeys(completions: List<HabitCompletion>?): Set<Long>? {
+        if (completions.isNullOrEmpty()) return null
+        return completions.map { dayKeyOf(it.completionDate) }.toSet()
+    }
+}
+
+/**
+ * Returns a Long key representing the calendar day of [epochMillis].
+ * Uses `year * 10000L + dayOfYear` to avoid integer overflow and ensure uniqueness.
+ * Each call creates its own Calendar instance, so this function is thread-safe.
+ */
+internal fun dayKeyOf(epochMillis: Long): Long {
+    val c = Calendar.getInstance()
+    c.timeInMillis = epochMillis
+    return c.get(Calendar.YEAR) * 10000L + c.get(Calendar.DAY_OF_YEAR)
+}
+
+/** Sanitizes a raw habit ID for use as an insight ID key. */
+private fun sanitizeId(raw: String): String = raw.replace(Regex("[^a-zA-Z0-9_-]"), "_")

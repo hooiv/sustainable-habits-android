@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.features.analytics"
+    namespace = "com.hooiv.habitflow.features.analytics"
     compileSdk = 36
 
     defaultConfig {

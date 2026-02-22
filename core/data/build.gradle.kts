@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.core.data"
+    namespace = "com.hooiv.habitflow.core.data"
     compileSdk = 36
 
     defaultConfig {

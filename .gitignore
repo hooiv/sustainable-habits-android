@@ -73,3 +73,31 @@ google-services.json
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Build output / debug logs dropped at repo root
+build_out*.txt
+build_output*.txt
+build_errors*.txt
+build_log*.txt
+build_final*.txt
+build_advanced*.txt
+advanced_build_log*.txt
+spatial_build_log*.txt
+crash_log*.txt
+crash_final*.txt
+crash_new*.txt
+crash_post_fix*.txt
+log_crash*.txt
+gradle_errors*.txt
+onboard_errors*.txt
+post_launch_check*.txt
+verify_phase*.txt
+black_screen*.txt
+window_dump.xml
+
+# Node.js artefacts (not used by the Android build)
+node_modules/
+package-lock.json
+
+# Screenshots / screen captures captured during testing
+screenshots/

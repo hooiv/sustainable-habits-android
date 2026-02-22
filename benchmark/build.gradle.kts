@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.benchmark"
+    namespace = "com.hooiv.habitflow.benchmark"
     compileSdk = 36
 
     defaultConfig {

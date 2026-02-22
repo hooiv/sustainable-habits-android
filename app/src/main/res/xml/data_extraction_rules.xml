@@ -1,19 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Data extraction rules for Android 12+.
+    Encrypted SharedPreferences files holding session tokens and onboarding state
+    are excluded from both cloud backup and device-to-device transfer to prevent
+    credential leaks.
+    See: https://developer.android.com/about/versions/12/backup-restore
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude domain="sharedpref" path="onboarding.xml" />
+        <exclude domain="sharedpref" path="user_session.xml" />
+        <!-- Room database is excluded — user re-syncs from Firebase on login -->
+        <exclude domain="database" path="habit_database" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="sharedpref" path="onboarding.xml" />
+        <exclude domain="sharedpref" path="user_session.xml" />
     </device-transfer>
-    -->
 </data-extraction-rules>

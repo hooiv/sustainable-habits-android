@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.features.splash"
+    namespace = "com.hooiv.habitflow.features.splash"
     compileSdk = 36
 
     defaultConfig {

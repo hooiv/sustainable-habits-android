@@ -1,28 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Existing colors -->
     <color name="white">#FFFFFF</color>
 
-    <!-- Material 3 color tokens for light theme -->
-    <color name="md_theme_light_primary">#6750A4</color>
+    <!-- HabitFlow brand — must stay in sync with Color.kt -->
+    <color name="brand_primary">#3D3A8C</color>
+    <color name="brand_secondary">#00796B</color>
+    <color name="brand_gradient_start">#3D3A8C</color>
+    <color name="brand_gradient_end">#00796B</color>
+    <color name="brand_accent">#B45309</color>
+
+    <!-- Material 3 light theme tokens -->
+    <color name="md_theme_light_primary">#3D3A8C</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">#EADDFF</color>
-    <color name="md_theme_light_onPrimaryContainer">#21005D</color>
-    <color name="md_theme_light_secondary">#625B71</color>
+    <color name="md_theme_light_primaryContainer">#E6E4FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#0A0657</color>
+    <color name="md_theme_light_secondary">#00796B</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#E8DEF8</color>
-    <color name="md_theme_light_onSecondaryContainer">#1D192B</color>
-    <color name="md_theme_light_background">#FFFBFE</color>
-    <color name="md_theme_light_onBackground">#1C1B1F</color>
-    <color name="md_theme_light_surface">#FFFBFE</color>
-    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_secondaryContainer">#B2DFDB</color>
+    <color name="md_theme_light_onSecondaryContainer">#003D36</color>
+    <color name="md_theme_light_background">#FAFAFF</color>
+    <color name="md_theme_light_onBackground">#1C1B2B</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#1C1B2B</color>
     <color name="md_theme_light_error">#B3261E</color>
     <color name="md_theme_light_onError">#FFFFFF</color>
-
-    <!--  inspired brand palette -->
-    <color name="brand_primary">#5A55AE</color>
-    <color name="brand_secondary">#55BEC9</color>
-    <color name="brand_gradient_start">#5A55AE</color>
-    <color name="brand_gradient_end">#55BEC9</color>
-    <color name="brand_accent">#F3BA2F</color>
-    <!-- End brand palette -->
 </resources>

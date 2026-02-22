@@ -149,5 +149,5 @@
 -dontwarn androidx.**
 
 # Keep custom model classes (add your specific model packages here)
--keep class com.example.myapplication.core.data.model.** { *; }
--keep class com.example.myapplication.features.**.model.** { *; }
+-keep class com.hooiv.habitflow.core.data.model.** { *; }
+-keep class com.hooiv.habitflow.features.**.model.** { *; }

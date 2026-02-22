@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.features.gamification"
+    namespace = "com.hooiv.habitflow.features.gamification"
     compileSdk = 36
 
     defaultConfig {
