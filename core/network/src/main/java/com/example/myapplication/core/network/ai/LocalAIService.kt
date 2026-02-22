@@ -1,6 +1,5 @@
 package com.example.myapplication.core.network.ai
 
-import android.util.Log
 import com.example.myapplication.core.data.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

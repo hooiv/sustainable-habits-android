@@ -1,6 +1,5 @@
 package com.example.myapplication.navigation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
@@ -25,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlin.math.pow
 
 // Feature Navigation Graphs
+import com.example.myapplication.features.advanced.navigation.advancedGraph
 import com.example.myapplication.features.animation.navigation.animationGraph
 import com.example.myapplication.features.auth.navigation.authGraph
 import com.example.myapplication.features.demo.navigation.demoGraph
@@ -91,10 +91,6 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-
-    navController.addOnDestinationChangedListener { _, destination, arguments ->
-        Log.d("Navigation", "Navigating to: ${destination.route}, arguments: $arguments")
-    }
 
     Scaffold(
         bottomBar = {
@@ -169,8 +165,7 @@ fun AppNavigationGraph(navController: NavHostController) {
         authGraph(navController)
         demoGraph(navController)
         animationGraph(navController)
-
-    }
+        advancedGraph(navController)
 }
 
 private val EaseOutQuint = Easing { fraction -> 1f - (1f - fraction).pow(5) }
