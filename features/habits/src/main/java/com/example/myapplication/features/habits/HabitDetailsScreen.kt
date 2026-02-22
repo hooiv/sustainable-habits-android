@@ -19,22 +19,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.core.ui.components.HabitStrengthGraph
-import java.util.UUID
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitDetailsScreen(
     habitId: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: HabitCompletionViewModel = hiltViewModel()
 ) {
-    // Mock Data for the graph (Demonstration)
-    // In a real app, this would come from a ViewModel based on habitId
-    val mockData = List(10) { Random.nextFloat() }.sorted()
+    LaunchedEffect(habitId) {
+        viewModel.loadCompletionsForHabit(habitId)
+    }
+
+    val completions by viewModel.completions.collectAsState()
+
+    // Derive normalised data points (0..1) from completion timestamps.
+    // Each completion date maps to a fraction within the observed date range.
+    val dataPoints: List<Float> = run {
+        val timestamps = completions.map { it.completionDate }.sorted()
+        when {
+            timestamps.isEmpty() -> listOf(0.5f)
+            timestamps.size == 1 -> listOf(1.0f)
+            else -> {
+                val minTs = timestamps.first()
+                val maxTs = timestamps.last()
+                val range = (maxTs - minTs).toFloat()
+                if (range == 0f) {
+                    // All completions at the exact same timestamp
+                    List(timestamps.size) { 1.0f }
+                } else {
+                    timestamps.map { ((it - minTs) / range).toFloat() }
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -77,7 +103,7 @@ fun HabitDetailsScreen(
                     )
             ) {
                 HabitStrengthGraph(
-                    dataPoints = mockData,
+                    dataPoints = dataPoints,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -89,7 +115,10 @@ fun HabitDetailsScreen(
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "Your consistency score is calculated using a Bezier curve interpolation of your last 10 completion events.",
+                text = if (completions.isEmpty())
+                    "Complete this habit to start building your consistency graph."
+                else
+                    "Based on ${completions.size} recorded completion(s). The curve shows how your completion frequency has evolved over time.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

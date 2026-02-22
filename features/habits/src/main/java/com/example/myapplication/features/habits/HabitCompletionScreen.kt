@@ -11,16 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.features.habits.HabitCompletionViewModel
-import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.ui.components.AppScaffold
 import java.text.SimpleDateFormat

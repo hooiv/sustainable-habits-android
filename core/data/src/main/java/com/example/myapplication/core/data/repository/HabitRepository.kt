@@ -181,57 +181,6 @@ class HabitRepository @Inject constructor(
         }
     }
 
-    private fun calculateStreakAndProgress(habit: Habit, completionDate: Date): Pair<Int, Int> {
-        var currentStreak = habit.streak
-        var currentGoalProgress = habit.goalProgress
-
-        if (habit.lastCompletedDate == null) {
-            currentStreak = if (currentGoalProgress >= habit.goal) 1 else 0
-        } else {
-            // Simplify streak calculation logic by directly calling the helper methods
-            if (currentGoalProgress >= habit.goal) {
-                when (habit.frequency) {
-                    HabitFrequency.DAILY -> {
-                        if (isConsecutiveDay(habit.lastCompletedDate, completionDate)) {
-                            currentStreak++
-                        } else if (!isSameDay(habit.lastCompletedDate, completionDate)) {
-                            currentStreak = 1
-                        }
-                    }
-                    HabitFrequency.WEEKLY -> {
-                        if (isConsecutiveWeek(habit.lastCompletedDate, completionDate)) {
-                            currentStreak++
-                        } else if (!isSameWeek(habit.lastCompletedDate, completionDate)) {
-                            currentStreak = 1
-                        }
-                    }
-                    HabitFrequency.MONTHLY -> {
-                        if (isConsecutiveMonth(habit.lastCompletedDate, completionDate)) {
-                            currentStreak++
-                        } else if (!isSameMonth(habit.lastCompletedDate, completionDate)) {
-                            currentStreak = 1
-                        }
-                    }
-                    HabitFrequency.CUSTOM -> {
-                        // For custom frequency, simplified logic
-                        currentStreak++
-                    }
-                }
-                currentGoalProgress = 0
-            } else {
-                if (!isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency)) {
-                    currentStreak = 0
-                }
-            }
-        }
-
-        if (currentGoalProgress >= habit.goal && habit.lastCompletedDate == null) {
-            currentStreak = 1
-        }
-
-        return Pair(currentStreak, currentGoalProgress)
-    }
-
     private fun isSameDay(date1: Date?, date2: Date): Boolean {
         if (date1 == null) return false
         val cal1 = Calendar.getInstance().apply { time = date1 }

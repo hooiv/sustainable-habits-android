@@ -16,16 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.core.ui.navigation.NavRoutes
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.myapplication.R
-import java.time.LocalDate
 import kotlin.math.pow
 
 // Feature Navigation Graphs
