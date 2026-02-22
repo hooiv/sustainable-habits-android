@@ -1,7 +1,6 @@
 package com.example.myapplication.features.gamification
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn

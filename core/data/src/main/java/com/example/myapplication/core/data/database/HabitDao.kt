@@ -24,10 +24,6 @@ interface HabitDao {
     @Delete
     suspend fun deleteHabit(habit: Habit)
 
-    // Example: Query to get habits by frequency
-    @Query("SELECT * FROM habits WHERE frequency = :frequency AND isDeleted = 0 ORDER BY createdDate DESC")
-    fun getHabitsByFrequency(frequency: String): Flow<List<Habit>>
-
     // Query to get today's habits
     @Query("SELECT * FROM habits WHERE date(createdDate) = date('now') AND isDeleted = 0")
     fun getTodayHabits(): Flow<List<Habit>>
@@ -53,6 +49,4 @@ interface HabitDao {
     // Update getAllHabits to exclude soft-deleted items
     @Query("SELECT * FROM habits WHERE isDeleted = 0 ORDER BY createdDate DESC")
     fun getAllHabits(): Flow<List<Habit>>
-
-    // You can add more specific queries as needed, e.g., for searching by name, etc.
 }

@@ -17,8 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.data.model.VoiceCommand
-import com.example.myapplication.core.data.model.VoiceIntent
 import kotlinx.coroutines.launch
 
 /**

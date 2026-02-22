@@ -8,11 +8,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,10 +46,6 @@ import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.core.ui.animation.*
-import com.example.myapplication.core.ui.animation.ThreeJSScene
-import com.example.myapplication.core.ui.animation.ParticleWave
-import com.example.myapplication.core.ui.animation.ParticleExplosion
-import com.example.myapplication.core.ui.animation.AnimeEasing
 import com.example.myapplication.features.stats.HabitCategoryBarChart
 import com.example.myapplication.features.stats.HabitTrendsLineChart
 import com.example.myapplication.core.ui.components.*

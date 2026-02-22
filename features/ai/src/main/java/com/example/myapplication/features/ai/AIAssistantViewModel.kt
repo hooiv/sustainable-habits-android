@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -456,13 +455,6 @@ class AIAssistantViewModel @Inject constructor(
             _isStreaming.value = false
             _isProcessing.value = false
         }
-    }
-
-    /**
-     * Clean up resources
-     */
-    override fun onCleared() {
-        super.onCleared()
     }
 
     /**
