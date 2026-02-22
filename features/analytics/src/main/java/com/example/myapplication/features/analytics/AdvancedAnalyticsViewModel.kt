@@ -8,6 +8,7 @@ import com.example.myapplication.core.data.repository.HabitRepository
 import com.example.myapplication.features.analytics.ui.AnalyticsInsight
 import com.example.myapplication.features.analytics.ui.InsightType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,9 @@ class AdvancedAnalyticsViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    /** The currently active data-loading job; cancelled before a new one starts. */
+    private var loadDataJob: Job? = null
+
     init {
         loadData()
     }
@@ -52,9 +56,11 @@ class AdvancedAnalyticsViewModel @Inject constructor(
      * Load habits and completions using [combine] so both flows are collected
      * concurrently in a single coroutine — avoids the nested-collect anti-pattern
      * that would start a new completions collector on every habits emission.
+     * Cancels any previously-running collection to avoid duplicate subscribers.
      */
     private fun loadData() {
-        viewModelScope.launch {
+        loadDataJob?.cancel()
+        loadDataJob = viewModelScope.launch {
             _isLoading.value = true
             try {
                 combine(
