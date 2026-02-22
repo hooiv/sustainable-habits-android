@@ -1,10 +1,7 @@
 package com.example.myapplication.features.habits.ui
 
-import com.example.myapplication.core.ui.R
-
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +28,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +40,6 @@ import com.example.myapplication.core.ui.animation.AnimeEasing
 import com.example.myapplication.core.ui.animation.ParticleWave
 import com.example.myapplication.core.ui.animation.animeEntrance
 import com.example.myapplication.core.ui.theme.MyApplicationTheme
-import com.example.myapplication.core.ui.components.JupiterGradientButton
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
