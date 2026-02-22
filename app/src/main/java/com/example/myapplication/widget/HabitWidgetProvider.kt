@@ -10,7 +10,6 @@ import com.example.myapplication.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.database.AppDatabase
 import com.example.myapplication.core.data.repository.HabitRepository
-import androidx.work.WorkManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -18,11 +17,9 @@ class HabitWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         val database = AppDatabase.getInstance(context)
-        val workManager = WorkManager.getInstance(context)
         val repository = HabitRepository(
             database.habitDao(),
-            database.habitCompletionDao(),
-            workManager
+            database.habitCompletionDao()
         )
 
         // Use runBlocking to get the list synchronously for the widget
@@ -71,11 +68,9 @@ class HabitWidgetProvider : AppWidgetProvider() {
             val habitId = intent.getStringExtra("habitId")
             if (habitId != null) {
                 val database = AppDatabase.getInstance(context)
-                val workManager = WorkManager.getInstance(context)
                 val repository = HabitRepository(
                     database.habitDao(),
-                    database.habitCompletionDao(),
-                    workManager
+                    database.habitCompletionDao()
                 )
 
                 // Use runBlocking for simplicity in widget provider

@@ -292,9 +292,10 @@ enum class ParticleShape { CIRCLE, SQUARE, TRIANGLE, STAR }
 enum class ParticleEffect { FLOAT, WAVE, VORTEX, PULSE }
 
 /**
- * Renders an ambient particle background. Delegates rendering to [ParticleWave];
- * [particleShape] and [particleEffect] are accepted for API compatibility but
- * the visual is a simple wave that fits all use-cases in this app.
+ * Renders an ambient particle background. Delegates rendering to [ParticleWave].
+ * [particleShape], [particleEffect], [glowEffect], and [colorVariation] are accepted
+ * for call-site compatibility; the current implementation uses a wave pattern
+ * that visually covers the FLOAT/WAVE use-cases.
  */
 @Composable
 fun ParticleSystem(
@@ -320,6 +321,8 @@ fun ParticleSystem(
 /**
  * Lightweight 3D-scene container that wraps [content] with a subtle graphicsLayer
  * rotation. Replaces the deleted WebView-based ThreeJS integration.
+ * [enableParallax] and [enableShadows] are accepted for call-site compatibility
+ * but are not implemented in this pure-Compose stub.
  */
 @Composable
 fun ThreeJSScene(
@@ -333,7 +336,7 @@ fun ThreeJSScene(
     content: @Composable (Modifier) -> Unit
 ) {
     val density = LocalDensity.current
-    Box(modifier = modifier) {
+    Box(modifier = modifier.background(backgroundColor)) {
         content(
             Modifier.graphicsLayer {
                 this.rotationY = if (rotationEnabled) initialRotationY else 0f

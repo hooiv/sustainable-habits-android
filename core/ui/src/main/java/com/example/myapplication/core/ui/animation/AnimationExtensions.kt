@@ -5,7 +5,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -14,6 +16,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.animateIntSizeAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
@@ -80,6 +83,50 @@ fun Modifier.threeDCard(
 fun Modifier.flipCard(rotationY: Float): Modifier = this.graphicsLayer {
     this.rotationY = rotationY
     this.cameraDistance = 12f * density
+}
+
+/**
+ * Applies a staggered entrance animation.
+ *
+ * When [visible] transitions to `true` the composable animates from [initialOffsetY]/
+ * [initialAlpha]/[initialScale] to its natural position. The delay is determined by
+ * [delayMillis] when non-zero, otherwise by [index] × [baseDelay].
+ */
+@Composable
+fun Modifier.animeEntrance(
+    visible: Boolean = true,
+    index: Int = 0,
+    baseDelay: Int = 100,
+    delayMillis: Int = 0,
+    duration: Int = 600,
+    initialOffsetY: Int = 100,
+    initialAlpha: Float = 0f,
+    initialScale: Float = 1f,
+    easing: Easing = AnimeEasing.EaseOutBack
+): Modifier {
+    val actualDelay = if (delayMillis != 0) delayMillis else index * baseDelay
+    val spec: FiniteAnimationSpec<Float> = tween(duration, actualDelay, easing)
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1f else initialAlpha,
+        animationSpec = spec,
+        label = "animeAlpha"
+    )
+    val offsetY by animateFloatAsState(
+        targetValue = if (visible) 0f else initialOffsetY.toFloat(),
+        animationSpec = spec,
+        label = "animeOffsetY"
+    )
+    val scale by animateFloatAsState(
+        targetValue = if (visible) 1f else initialScale,
+        animationSpec = spec,
+        label = "animeScale"
+    )
+    return this.graphicsLayer {
+        this.alpha = alpha
+        this.translationY = offsetY
+        this.scaleX = scale
+        this.scaleY = scale
+    }
 }
 
 /**
