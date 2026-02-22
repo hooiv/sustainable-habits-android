@@ -31,10 +31,6 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE id = :habitId")
     fun getHabitById(habitId: String): Flow<Habit?>
 
-    // Mark a habit as complete
-    @Query("UPDATE habits SET goalProgress = goalProgress + 1, lastUpdatedTimestamp = :timestamp, isSynced = 0 WHERE id = :habitId")
-    suspend fun markHabitComplete(habitId: String, timestamp: java.util.Date = java.util.Date())
-
     // --- Sync Methods ---
 
     @Query("SELECT * FROM habits WHERE isSynced = 0")

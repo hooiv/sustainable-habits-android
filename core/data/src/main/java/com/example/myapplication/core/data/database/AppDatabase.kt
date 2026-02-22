@@ -27,6 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
     abstract fun habitCompletionDao(): HabitCompletionDao
+    abstract fun neuralNetworkDao(): NeuralNetworkDao
 
 
     companion object {

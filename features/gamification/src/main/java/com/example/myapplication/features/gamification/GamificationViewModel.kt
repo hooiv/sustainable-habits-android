@@ -24,7 +24,7 @@ class GamificationViewModel @Inject constructor(
     private val gamificationManager: GamificationManager
 ) : ViewModel() {
     private val TAG = "GamificationViewModel"
-    
+
     // Current XP
     private val _currentXp = MutableStateFlow(0)
     val currentXp: StateFlow<Int> = _currentXp.asStateFlow()
@@ -94,8 +94,6 @@ class GamificationViewModel @Inject constructor(
                 
                 // Load rewards
                 _availableRewards.value = gamificationManager.availableRewards.value
-                
-                Log.d(TAG, "Gamification data loaded: Level ${_currentLevel.value}, XP ${_currentXp.value}/${_xpForNextLevel.value}")
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load gamification data: ${e.message}"
                 Log.e(TAG, "Error loading gamification data", e)
@@ -250,8 +248,6 @@ class GamificationViewModel @Inject constructor(
                 // Show badge unlock animation
                 _recentlyUnlockedBadge.value = badge
                 _showBadgeUnlockAnimation.value = true
-                
-                Log.d(TAG, "Badge unlocked: ${badge.title}, XP awarded: $xpAwarded")
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to unlock badge: ${e.message}"
                 Log.e(TAG, "Error unlocking badge", e)
