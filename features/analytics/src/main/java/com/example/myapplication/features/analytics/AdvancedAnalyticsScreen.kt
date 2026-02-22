@@ -29,7 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitCompletion
-import java.util.*
+import java.util.Calendar
 import kotlin.math.cos
 import kotlin.math.sin
 

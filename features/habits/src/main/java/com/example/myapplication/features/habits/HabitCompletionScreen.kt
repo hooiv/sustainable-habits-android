@@ -21,7 +21,9 @@ import com.example.myapplication.features.habits.HabitCompletionViewModel
 import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.ui.components.AppScaffold
 import java.text.SimpleDateFormat
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Screen for displaying and managing habit completions

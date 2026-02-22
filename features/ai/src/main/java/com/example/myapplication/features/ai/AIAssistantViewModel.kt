@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineDispatcher
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import com.example.myapplication.core.di.IoDispatcher
 

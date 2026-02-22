@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import okio.Buffer
 import okio.BufferedSource
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -486,8 +489,8 @@ class OpenAIService @Inject constructor(
 
         return recentCompletions.joinToString("\n") { completion ->
             val habitName = habitMap[completion.habitId]?.name ?: "Unknown habit"
-            val date = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
-                .format(java.util.Date(completion.completionDate))
+            val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                .format(Date(completion.completionDate))
             val mood = completion.mood?.let { "Mood: $it/5" } ?: ""
             val note = completion.note?.let { "Note: \"$it\"" } ?: ""
 

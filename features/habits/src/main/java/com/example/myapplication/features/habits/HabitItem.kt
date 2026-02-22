@@ -51,7 +51,9 @@ import com.example.myapplication.core.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Composable for native Compose animations within habit items replacing Anime.js

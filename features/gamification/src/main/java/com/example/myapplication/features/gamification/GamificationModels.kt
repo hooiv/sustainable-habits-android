@@ -1,6 +1,7 @@
 package com.example.myapplication.features.gamification
 
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 /**
  * Badge types
