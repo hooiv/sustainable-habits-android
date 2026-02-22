@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +25,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -54,63 +52,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
-@Composable
-fun SimpleParallaxBackground(
-    scrollOffset: Float,
-    modifier: Modifier = Modifier
-) {
-    // Simulate 3 parallax layers with different speeds
-    val colors = listOf(
-        listOf(Color(0xFFB3E5FC), Color(0xFFE1F5FE)), // Layer 1
-        listOf(Color(0xFF81D4FA), Color(0xFFB3E5FC)), // Layer 2
-        listOf(Color(0xFF0288D1), Color(0xFF81D4FA))  // Layer 3
-    )
-    val speeds = listOf(0.2f, 0.5f, 1.0f)
-    Box(modifier = modifier) {
-        colors.forEachIndexed { i, colorList ->
-            Canvas(modifier = Modifier
-                .matchParentSize()
-                .graphicsLayer {
-                    translationY = scrollOffset * speeds[i]
-                }
-            ) {
-                drawRect(
-                    brush = Brush.verticalGradient(colorList),
-                    size = size
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun FloatingIconsAnimation(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "floatingIcons")
-    val yOffsets = List(3) { i ->
-        infiniteTransition.animateFloat(
-            initialValue = 0f,
-            targetValue = 20f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000 + i * 500, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            ), label = "iconY$i"
-        )
-    }
-    val xOffsets = listOf(30.dp, 120.dp, 220.dp)
-    val iconColors = listOf(Color(0xFFFFF176), Color(0xFF80DEEA), Color(0xFFFF8A65))
-    Box(modifier = modifier.fillMaxSize()) {
-        xOffsets.forEachIndexed { i, x ->
-            Box(
-                modifier = Modifier
-                    .offset(x, 10.dp + yOffsets[i].value.dp)
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(iconColors[i].copy(alpha = 0.5f))
-            )
-        }
-    }
-}
 
 /**
  * Composable for native Compose animations within habit items replacing Anime.js

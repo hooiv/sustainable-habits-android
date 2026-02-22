@@ -32,13 +32,11 @@ import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
 import com.example.myapplication.core.data.util.FirebaseUtil
 import com.example.myapplication.core.data.util.ThemePreferenceManager
-import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.ui.navigation.NavRoutes
 import com.example.myapplication.core.ui.util.NotificationUtil
 import com.example.myapplication.features.auth.AuthViewModel
 import com.example.myapplication.features.habits.HabitViewModel
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.util.Date
 

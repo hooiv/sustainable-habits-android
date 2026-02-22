@@ -46,6 +46,7 @@ fun HabitDetailsScreen(
     val dataPoints: List<Float> = run {
         val timestamps = completions.map { it.completionDate }.sorted()
         when {
+            // No history yet — render a single mid-height placeholder point
             timestamps.isEmpty() -> listOf(0.5f)
             timestamps.size == 1 -> listOf(1.0f)
             else -> {
@@ -61,6 +62,11 @@ fun HabitDetailsScreen(
             }
         }
     }
+
+    val analysisText = if (completions.isEmpty())
+        "Complete this habit to start building your consistency graph."
+    else
+        "Based on ${completions.size} recorded completion(s). The curve shows how your completion frequency has evolved over time."
 
     Scaffold(
         topBar = {
@@ -115,10 +121,7 @@ fun HabitDetailsScreen(
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = if (completions.isEmpty())
-                    "Complete this habit to start building your consistency graph."
-                else
-                    "Based on ${completions.size} recorded completion(s). The curve shows how your completion frequency has evolved over time.",
+                text = analysisText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
