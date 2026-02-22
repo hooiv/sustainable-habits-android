@@ -10,11 +10,9 @@ import java.util.Date
 
 object FirebaseUtil {
     private val firestore = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance() // Add FirebaseAuth instance
+    private val auth = FirebaseAuth.getInstance()
 
-    fun getCurrentUser(): FirebaseUser? { // Function to get current user
-        return auth.currentUser
-    }
+    fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
     // Helper function to convert Habit object to Map for Firestore
     private fun habitToMap(habit: Habit): Map<String, Any?> {
@@ -33,23 +31,23 @@ object FirebaseUtil {
             "reminderTime" to habit.reminderTime,
             "unlockedBadges" to habit.unlockedBadges,
             "category" to habit.category,
-            "lastUpdatedTimestamp" to Timestamp(habit.lastUpdatedTimestamp) // Add lastUpdatedTimestamp
+            "lastUpdatedTimestamp" to Timestamp(habit.lastUpdatedTimestamp)
         )
     }
 
-    suspend fun backupHabitDataSuspend(userId: String, habits: List<Habit>) { // Renamed and made suspend
+    suspend fun backupHabitDataSuspend(userId: String, habits: List<Habit>) {
         val userHabitsCollection = firestore.collection("users").document(userId).collection("habits")
         val batch = firestore.batch()
 
         for (habit in habits) {
-            val habitMap = habitToMap(habit.copy(lastUpdatedTimestamp = Date())) // Update timestamp before backup
+        val habitMap = habitToMap(habit.copy(lastUpdatedTimestamp = Date()))
             val docRef = userHabitsCollection.document(habit.id)
             batch.set(docRef, habitMap)
         }
         batch.commit().await() // Use await()
     }
 
-    suspend fun fetchHabitDataSuspend(userId: String): Map<String, Map<String, Any>> { // Renamed and made suspend
+    suspend fun fetchHabitDataSuspend(userId: String): Map<String, Map<String, Any>> {
         val result = firestore.collection("users").document(userId).collection("habits")
             .get()
             .await() // Use await()
@@ -61,35 +59,5 @@ object FirebaseUtil {
             }
         }
         return habitsMap
-    }
-
-    fun backupHabitData(userId: String, habits: List<Habit>, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val userHabitsCollection = firestore.collection("users").document(userId).collection("habits")
-        val batch = firestore.batch()
-
-        for (habit in habits) {
-            val habitMap = habitToMap(habit)
-            val docRef = userHabitsCollection.document(habit.id)
-            batch.set(docRef, habitMap)
-        }
-
-        batch.commit()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onFailure(exception) }
-    }
-
-    fun fetchHabitData(userId: String, onSuccess: (Map<String, Map<String, Any>>) -> Unit, onFailure: (Exception) -> Unit) {
-        firestore.collection("users").document(userId).collection("habits")
-            .get()
-            .addOnSuccessListener { result ->
-                val habitsMap = mutableMapOf<String, Map<String, Any>>()
-                for (document in result.documents) {
-                    document.data?.let {
-                        habitsMap[document.id] = it
-                    }
-                }
-                onSuccess(habitsMap)
-            }
-            .addOnFailureListener { exception -> onFailure(exception) }
     }
 }

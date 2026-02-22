@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 object NotificationUtil {
@@ -29,13 +30,13 @@ object NotificationUtil {
             .putBoolean("soundEnabled", soundEnabled)
             .putString("customSoundUri", customSoundUri)
             .build()
-        val now = java.util.Calendar.getInstance()
-        val target = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, hour)
-            set(java.util.Calendar.MINUTE, minute)
-            set(java.util.Calendar.SECOND, 0)
-            set(java.util.Calendar.MILLISECOND, 0)
-            if (before(now)) add(java.util.Calendar.DATE, 1)
+        val now = Calendar.getInstance()
+        val target = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            if (before(now)) add(Calendar.DATE, 1)
         }
         val initialDelay = target.timeInMillis - now.timeInMillis
         val request = PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)

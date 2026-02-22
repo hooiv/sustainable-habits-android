@@ -46,8 +46,6 @@ import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.core.ui.animation.*
-import com.example.myapplication.features.stats.HabitCategoryBarChart
-import com.example.myapplication.features.stats.HabitTrendsLineChart
 import com.example.myapplication.core.ui.components.*
 import com.example.myapplication.core.ui.theme.*
 import com.github.mikephil.charting.animation.Easing

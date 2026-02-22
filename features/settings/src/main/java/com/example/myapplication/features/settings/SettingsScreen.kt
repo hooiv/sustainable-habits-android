@@ -182,10 +182,14 @@ fun SettingsScreen(
                             Toast.makeText(context, "No habits to back up.", Toast.LENGTH_SHORT).show()
                             return@SettingsActionRow
                         }
-                        FirebaseUtil.backupHabitData(userId, habits,
-                            onSuccess = { Toast.makeText(context, "Backed up ${habits.size} habit(s) ✓", Toast.LENGTH_SHORT).show() },
-                            onFailure = { Toast.makeText(context, "Backup failed: ${it.message}", Toast.LENGTH_SHORT).show() }
-                        )
+                        coroutineScope.launch {
+                            try {
+                                FirebaseUtil.backupHabitDataSuspend(userId, habits)
+                                Toast.makeText(context, "Backed up ${habits.size} habit(s) ✓", Toast.LENGTH_SHORT).show()
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Backup failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
