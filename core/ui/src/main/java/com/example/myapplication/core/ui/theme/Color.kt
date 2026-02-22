@@ -21,11 +21,11 @@ val LightBlue = Color(0xFFADD6FF)
 val Teal = Color(0xFF00B8A9)
 val Mint = Color(0xFF80CBC4)
 
-// Neon colors for accents - define only once to avoid conflicts
-val NeonPink = Color(0xFFFF00E4)
-val NeonGreen = Color(0xFF39FF14)
-val NeonBlue = Color(0xFF00BFFF)
-val NeonPurple = Color(0xFFB347EA)
+// Elegant soft colors for Modern Glassmorphism
+val SoftTeal = Color(0xFF4DB6AC)
+val SoftSky = Color(0xFF64B5F6)
+val SoftPurple = Color(0xFF9575CD)
+val SoftPink = Color(0xFFF06292)
 
 // Surface colors
 val DarkSurface = Color(0xFF121212)

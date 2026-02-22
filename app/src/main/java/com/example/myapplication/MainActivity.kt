@@ -18,7 +18,12 @@ import com.example.myapplication.features.splash.SplashScreen
 import com.example.myapplication.navigation.AppNavigation
 import com.example.myapplication.core.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import android.util.Log
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 /**
  * Sealed class representing the possible start destinations for the app.
@@ -56,6 +61,7 @@ sealed class StartDestination {
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_MyApplication)
         super.onCreate(savedInstanceState)
@@ -75,8 +81,21 @@ class MainActivity : ComponentActivity() {
 
                     LaunchedEffect(Unit) {
                         delay(1500) // Splash duration
-                        val prefs = context.getSharedPreferences("onboarding", MODE_PRIVATE)
-                        val completed = prefs.getBoolean("completed", false)
+
+                        val completed = withContext(Dispatchers.IO) {
+                            val masterKey = MasterKey.Builder(context)
+                                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                .build()
+
+                            val prefs = EncryptedSharedPreferences.create(
+                                context,
+                                "onboarding",
+                                masterKey,
+                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                            )
+                            prefs.getBoolean("completed", false)
+                        }
                         startDestination = if (completed) StartDestination.Main else StartDestination.Onboarding
                     }
 
@@ -85,8 +104,17 @@ class MainActivity : ComponentActivity() {
                             StartDestination.Splash -> SplashScreen()
                             StartDestination.Onboarding -> OnboardingScreen(
                                 onFinish = {
-                                    context.getSharedPreferences("onboarding", MODE_PRIVATE)
-                                        .edit().putBoolean("completed", true).apply()
+                                    val masterKey = MasterKey.Builder(context)
+                                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                        .build()
+                                        
+                                    EncryptedSharedPreferences.create(
+                                        context,
+                                        "onboarding",
+                                        masterKey,
+                                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                                    ).edit().putBoolean("completed", true).apply()
                                     startDestination = StartDestination.Main
                                 }
                             )

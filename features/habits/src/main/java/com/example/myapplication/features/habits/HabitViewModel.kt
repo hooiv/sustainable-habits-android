@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
+import com.example.myapplication.core.di.IoDispatcher
 
 /**
  * ViewModel for habit management screens.
@@ -25,13 +29,15 @@ class HabitViewModel @Inject constructor(
     private val getHabitByIdUseCase: GetHabitByIdUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val markHabitCompletedUseCase: MarkHabitCompletedUseCase,
-    private val resetHabitProgressUseCase: ResetHabitProgressUseCase
+    private val resetHabitProgressUseCase: ResetHabitProgressUseCase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     val habits: StateFlow<List<Habit>> = getHabitsUseCase()
+        .flowOn(ioDispatcher)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000), // Drop upstream after 5s background
             initialValue = emptyList()
         )
 

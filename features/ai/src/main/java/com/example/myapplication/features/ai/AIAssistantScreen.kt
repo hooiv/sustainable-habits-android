@@ -30,6 +30,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import android.content.Context
+import android.os.PowerManager
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.features.ai.ui.AISuggestion
 import com.example.myapplication.features.ai.ui.SuggestionType
 import kotlinx.coroutines.delay
@@ -132,26 +136,6 @@ fun AIAssistantScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            if (useVoice) {
-                VoiceInputButton(
-                    isListening = isListening,
-                    voiceAmplitude = voiceAmplitude,
-                    voiceInputText = voiceInputText,
-                    continuous = false, // Set to true for continuous listening
-                    useWakeWord = false, // Set to true to use wake words
-                    onStartListening = {
-                        viewModel.startVoiceInput(
-                            continuous = false,
-                            useWakeWord = false
-                        )
-                    },
-                    onStopListening = {
-                        viewModel.stopVoiceInput()
-                    }
-                )
-            }
         }
     ) { paddingValues ->
         Column(
@@ -258,7 +242,7 @@ fun AIAssistantScreen(
                                             modifier = Modifier
                                                 .padding(horizontal = 2.dp)
                                                 .size(6.dp)
-                                                .alpha(alpha)
+                                                .graphicsLayer { this.alpha = alpha }
                                                 .background(
                                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                                     shape = CircleShape
@@ -500,11 +484,15 @@ fun VoiceInputButton(
         0f
     }
 
+    val context = LocalContext.current
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
+
     // Background ripple animation
     val infiniteTransition = rememberInfiniteTransition(label = "ripple")
     val backgroundRippleSize by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 1f,
+        targetValue = if (isPowerSaveMode) 0f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1500, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Restart
@@ -535,11 +523,11 @@ fun VoiceInputButton(
             contentAlignment = Alignment.Center
         ) {
             // Background ripple effect when listening
-            if (isListening) {
+            if (isListening && !isPowerSaveMode) {
                 Canvas(
                     modifier = Modifier
                         .size(animatedSize * 2.5f)
-                        .alpha((1f - backgroundRippleSize) * 0.2f)
+                        .graphicsLayer { this.alpha = (1f - backgroundRippleSize) * 0.2f }
                 ) {
                     drawCircle(
                         color = animatedColor,
@@ -632,10 +620,14 @@ fun VoiceInputButton(
  */
 @Composable
 fun BlinkingCursor() {
+    val context = LocalContext.current
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
+
     val infiniteTransition = rememberInfiniteTransition(label = "cursor")
     val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
+        initialValue = 1f,
+        targetValue = if (isPowerSaveMode) 1f else 0f,
         animationSpec = infiniteRepeatable(
             animation = tween(500),
             repeatMode = RepeatMode.Reverse
@@ -646,8 +638,10 @@ fun BlinkingCursor() {
     Text(
         text = "▌",
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.primary.copy(alpha = alpha),
-        modifier = Modifier.padding(start = 2.dp)
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .padding(start = 2.dp)
+            .graphicsLayer { this.alpha = alpha }
     )
 }
 
@@ -696,7 +690,7 @@ fun SpeakingIndicator() {
                 Canvas(
                     modifier = Modifier
                         .size(24.dp)
-                        .alpha(alpha)
+                        .graphicsLayer { this.alpha = alpha }
                 ) {
                     drawCircle(
                         color = primaryColor,
@@ -735,7 +729,10 @@ fun SpeakingIndicator() {
                 Box(
                     modifier = Modifier
                         .size(5.dp)
-                        .scale(scale)
+                        .graphicsLayer { 
+                            scaleX = scale
+                            scaleY = scale 
+                        }
                         .background(
                             color = MaterialTheme.colorScheme.primary,
                             shape = CircleShape

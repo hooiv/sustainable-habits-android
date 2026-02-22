@@ -72,11 +72,9 @@ dependencies {
     implementation(project(":features:demo"))
     implementation(project(":features:animation"))
     implementation(project(":features:gamification"))
-    implementation(project(":features:ml"))
     implementation(project(":features:stats"))
     implementation(project(":features:calendar"))
     implementation(project(":features:onboarding"))
-    implementation(project(":features:personalization"))
     implementation(project(":features:social"))
     implementation(project(":features:splash"))
 
@@ -179,4 +177,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
+    // Security & Diagnostics
+    implementation(libs.security.crypto)
+    debugImplementation(libs.leakcanary.android)
 }

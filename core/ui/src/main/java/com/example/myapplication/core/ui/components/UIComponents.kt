@@ -13,6 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import android.content.Context
+import android.os.PowerManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -36,11 +40,15 @@ fun GradientButton(
     ),
     contentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
+    val context = LocalContext.current
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
+
     // Add animation to the gradient
     val infiniteTransition = rememberInfiniteTransition(label = "buttonGradient")
     val offset by infiniteTransition.animateFloat(
         initialValue = -1000f,
-        targetValue = 1000f,
+        targetValue = if (isPowerSaveMode) -1000f else 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 10000,
@@ -51,21 +59,21 @@ fun GradientButton(
         label = "gradientAnimate"
     )
     
-    // Create an animated brush
-    val animatedBrush = Brush.linearGradient(
-        colors = gradientColors,
-        start = Offset(offset, 0f),
-        end = Offset(offset + 1000, 1000f)
-    )
-    
     // Apply the button styling
     Box(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
-            .background(
-                brush = animatedBrush,
-                alpha = if (enabled) 1f else 0.5f
-            )
+            .drawBehind {
+                val animatedBrush = Brush.linearGradient(
+                    colors = gradientColors,
+                    start = Offset(offset, 0f),
+                    end = Offset(offset + 1000, 1000f)
+                )
+                drawRect(
+                    brush = animatedBrush,
+                    alpha = if (enabled) 1f else 0.5f
+                )
+            }
             .clickable(enabled = enabled) { onClick() }
             .padding(16.dp),
         contentAlignment = Alignment.Center
@@ -112,10 +120,14 @@ fun ShimmerItem(
         MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     )
     
+    val context = LocalContext.current
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
+
     val transition = rememberInfiniteTransition(label = "shimmer")
     val translateAnimation = transition.animateFloat(
         initialValue = 0f,
-        targetValue = 1000f,
+        targetValue = if (isPowerSaveMode) 0f else 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 1200,
@@ -126,12 +138,6 @@ fun ShimmerItem(
         label = "shimmerTranslate"
     )
     
-    val brush = Brush.linearGradient(
-        colors = shimmerColors,
-        start = Offset(translateAnimation.value - 1000f, 0f),
-        end = Offset(translateAnimation.value, 1000f)
-    )
-    
     Column(modifier = modifier) {
         // Simulate a card with content
         Spacer(
@@ -139,7 +145,14 @@ fun ShimmerItem(
                 .fillMaxWidth()
                 .height(120.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(brush)
+                .drawBehind {
+                    val brush = Brush.linearGradient(
+                        colors = shimmerColors,
+                        start = Offset(translateAnimation.value - 1000f, 0f),
+                        end = Offset(translateAnimation.value, 1000f)
+                    )
+                    drawRect(brush = brush)
+                }
         )
     }
 }

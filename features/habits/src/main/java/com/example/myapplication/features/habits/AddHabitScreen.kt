@@ -18,7 +18,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -100,20 +102,9 @@ fun AddHabitScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                colorResource(R.color.brand_gradient_start),
-                                colorResource(R.color.brand_gradient_end)
-                            )
-                        )
-                    ),
                 title = {
                     Text(
                         "Add New Habit",
-                        color = colorResource(R.color.brand_accent),
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                     )
                 },
@@ -121,13 +112,12 @@ fun AddHabitScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = colorResource(R.color.brand_accent)
+                            contentDescription = "Back"
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -242,14 +232,10 @@ fun AddHabitScreen(
                     minLines = 3
                 )
 
-                OutlinedTextField(
-                    value = habitCategory,
-                    onValueChange = { habitCategory = it },
-                    label = { Text("Category") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                // Category chips
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
                         .animeEntrance(
                             visible = true,
                             index = 2,
@@ -258,7 +244,51 @@ fun AddHabitScreen(
                             initialOffsetY = 50,
                             easing = AnimeEasing.EaseOutBack
                         )
-                )
+                ) {
+                    Text(
+                        "Category",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    val presetCategories = listOf(
+                        "Health", "Fitness", "Work", "Mindfulness",
+                        "Learning", "Social", "Creativity", "Finance"
+                    )
+                    androidx.compose.foundation.lazy.LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(presetCategories) { cat ->
+                            FilterChip(
+                                selected = habitCategory == cat,
+                                onClick = {
+                                    habitCategory = if (habitCategory == cat) "" else cat
+                                },
+                                label = { Text(cat) },
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+                            )
+                        }
+                    }
+                    // Custom category fallback
+                    if (habitCategory.isNotEmpty() && presetCategories.none { it == habitCategory }) {
+                        Text(
+                            "Custom: $habitCategory",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    OutlinedTextField(
+                        value = if (presetCategories.contains(habitCategory)) "" else habitCategory,
+                        onValueChange = { habitCategory = it },
+                        label = { Text("Custom category (optional)") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
 
                 // Frequency Dropdown with animation
                 ExposedDropdownMenuBox(
@@ -383,8 +413,7 @@ fun AddHabitScreen(
 
                 Spacer(modifier = Modifier.weight(1f)) // Pushes button to the bottom
 
-                JupiterGradientButton(
-                    text = "Save Habit",
+                Button(
                     onClick = {
                         if (habitName.isNotBlank()) {
                             Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
@@ -400,11 +429,13 @@ fun AddHabitScreen(
                                 goal = goalValue,
                                 reminderTime = reminderTimeString
                             )
-                            navController.popBackStack() // Go back after saving
+                            navController.popBackStack()
                         }
                     },
+                    enabled = habitName.isNotBlank(),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(56.dp)
                         .animeEntrance(
                             visible = true,
                             index = 6,
@@ -412,12 +443,20 @@ fun AddHabitScreen(
                             duration = 800,
                             initialOffsetY = 50,
                             easing = AnimeEasing.EaseOutElastic
-                        )
-                        .graphicsLayer {
-                            scaleX = if (habitName.isNotBlank()) scale else 0.95f
-                            scaleY = if (habitName.isNotBlank()) scale else 0.95f
-                        }
-                )
+                        ),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        "Save Habit",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                    )
+                }
             }
         }
     }

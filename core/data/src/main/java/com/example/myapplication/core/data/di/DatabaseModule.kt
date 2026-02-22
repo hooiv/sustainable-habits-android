@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.myapplication.core.data.database.AppDatabase
 import com.example.myapplication.core.data.database.HabitDao
 import com.example.myapplication.core.data.database.HabitCompletionDao
+import androidx.work.WorkManager
 
 import dagger.Module
 import dagger.Provides
@@ -28,7 +29,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "habit_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
@@ -43,5 +44,9 @@ object DatabaseModule {
         return appDatabase.habitCompletionDao()
     }
 
-
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
 }

@@ -1,0 +1,6 @@
+--------- beginning of main
+02-21 17:31:33.495  9444  9444 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+--------- beginning of system
+02-21 17:31:33.591   705   832 E WindowManager: Display reconfigured outside of a transition: Display{#0 state=ON size=1080x2424 ROTATION_0}
+02-21 17:31:33.832   705   832 E WindowManager: Display reconfigured outside of a transition: Display{#0 state=ON size=1080x2424 ROTATION_0}
+02-21 17:31:38.749   705   741 E BLASTSyncEngine: WM sent Transaction (#50, Transition-OPEN, tx=3027951944941) to organizer, but never received commit callback. Application ANR likely to follow.

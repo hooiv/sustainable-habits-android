@@ -1,14 +1,177 @@
-﻿e: file:///C:/Users/aditya/Desk
+﻿Configuration on demand is an incubating feature.
+Calculating task graph as no cached configuration is available for tasks: :features:habits:compileDebugKotlin :features:stats:compileDebugKotlin
+
+> Configure project :features:habits
+w: Deprecated Gradle Property 'kotlin.incremental.useClasspathSnapshot' Used
+The `kotlin.incremental.useClasspathSnapshot` deprecated property is used in your build.
+Solutions:
+ ΓÇó It is unsupported, please stop using it.
+ ΓÇó History based incremental compilation approach for JVM platform is removed. Kotlin Gradle plugin is now using a more efficient approach based on ABI snapshots.
+
+
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:stats:preBuild UP-TO-DATE
+> Task :features:stats:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:data:preBuild UP-TO-DATE
+> Task :features:habits:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:preBuild UP-TO-DATE
+> Task :core:domain:preBuild UP-TO-DATE
+> Task :features:habits:preBuild UP-TO-DATE
+> Task :features:habits:preDebugBuild UP-TO-DATE
+> Task :core:domain:preDebugBuild UP-TO-DATE
+> Task :features:stats:preDebugBuild UP-TO-DATE
+> Task :core:data:preDebugBuild UP-TO-DATE
+> Task :core:ui:preDebugBuild UP-TO-DATE
+> Task :features:habits:processDebugNavigationResources UP-TO-DATE
+> Task :core:domain:generateDebugResources UP-TO-DATE
+> Task :core:data:javaPreCompileDebug UP-TO-DATE
+> Task :core:domain:processDebugNavigationResources UP-TO-DATE
+> Task :core:data:processDebugNavigationResources UP-TO-DATE
+> Task :core:ui:javaPreCompileDebug UP-TO-DATE
+> Task :core:ui:generateDebugResources UP-TO-DATE
+> Task :core:domain:javaPreCompileDebug UP-TO-DATE
+> Task :features:habits:generateDebugResources UP-TO-DATE
+> Task :features:stats:generateDebugResources UP-TO-DATE
+> Task :core:data:generateDebugResources UP-TO-DATE
+> Task :core:ui:processDebugNavigationResources UP-TO-DATE
+> Task :features:stats:processDebugNavigationResources UP-TO-DATE
+> Task :features:habits:packageDebugResources UP-TO-DATE
+> Task :features:stats:packageDebugResources UP-TO-DATE
+> Task :core:domain:packageDebugResources UP-TO-DATE
+> Task :core:data:packageDebugResources UP-TO-DATE
+> Task :core:ui:packageDebugResources UP-TO-DATE
+> Task :core:domain:parseDebugLocalResources UP-TO-DATE
+> Task :core:ui:parseDebugLocalResources UP-TO-DATE
+> Task :features:stats:parseDebugLocalResources UP-TO-DATE
+> Task :core:data:parseDebugLocalResources UP-TO-DATE
+> Task :features:habits:parseDebugLocalResources UP-TO-DATE
+> Task :features:habits:generateDebugRFile UP-TO-DATE
+> Task :features:stats:generateDebugRFile UP-TO-DATE
+> Task :core:ui:generateDebugRFile UP-TO-DATE
+> Task :core:data:generateDebugRFile UP-TO-DATE
+> Task :core:domain:generateDebugRFile UP-TO-DATE
+> Task :core:data:kspDebugKotlin UP-TO-DATE
+> Task :core:data:compileDebugKotlin UP-TO-DATE
+> Task :core:data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:data:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:domain:kspDebugKotlin UP-TO-DATE
+> Task :core:ui:kspDebugKotlin UP-TO-DATE
+> Task :core:domain:compileDebugKotlin UP-TO-DATE
+> Task :core:domain:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:domain:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:ui:compileDebugKotlin UP-TO-DATE
+> Task :core:ui:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:ui:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:ui:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:stats:kspDebugKotlin UP-TO-DATE
+> Task :features:habits:kspDebugKotlin UP-TO-DATE
+
+> Task :features:stats:compileDebugKotlin
+.\gradlew : e: file:///C:/Users/aditya/Desktop/
+sustainable-habits-android/features/stats/src/m
+ain/java/com/example/myapplication/features/sta
+ts/StatsScreen.kt:55:43 Unresolved reference 
+'habits'.
+At line:1 char:48
++ ... va\jdk-21"; .\gradlew 
+:features:habits:compileDebugKotlin 
+:features:s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e 
+   : file:///C:/U...rence 'habits'.:String) [  
+  ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErr 
+   or
+ 
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/stats/src/main/java/com
+/example/myapplication/features/stats/StatsScre
+en.kt:150:20 Unresolved reference 
+'HabitViewModel'.
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/stats/src/main/java/com
+/example/myapplication/features/stats/StatsScre
+en.kt:150:37 Cannot infer type for this 
+parameter. Specify it explicitly.
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/stats/src/main/java/com
+/example/myapplication/features/stats/StatsScre
+en.kt:151:42 Unresolved reference 'habits'.
+
+> Task :features:stats:compileDebugKotlin FAILED
+
+> Task :features:habits:compileDebugKotlin FAILED
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/habits/src/main/java/co
+m/example/myapplication/features/habits/AddHabi
+tScreen.kt:449:71 Unresolved reference 'Check'.
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/habits/src/main/java/co
+m/example/myapplication/features/habits/EditHab
+itScreen.kt:82:65 Unresolved reference 
+'currentHour'.
 e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/habits/src/main/java/co
+m/example/myapplication/features/habits/EditHab
+itScreen.kt:82:94 Unresolved reference 
+'currentMinute'.
 e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
-e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/habits/src/main/java/co
+m/example/myapplication/features/habits/HabitLi
+stScreen.kt:65:9 Unresolved reference 'delay'.
+
+[Incubating] Problems report is available at: file:///C:/Users/aditya/Desktop/sustainable-habits-android/build/reports/problems/problems-report.html
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task 
+':features:stats:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+===============================================
+===============================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task 
+':features:habits:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+===============================================
+===============================
+
+BUILD FAILED in 26s
+48 actionable tasks: 2 executed, 46 up-to-date
+Configuration cache entry stored.

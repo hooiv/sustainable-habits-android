@@ -1,6 +1,7 @@
 package com.example.myapplication.features.habits.ui
 
-import android.webkit.WebView
+import android.content.Context
+import android.os.PowerManager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
@@ -43,7 +44,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
 
@@ -116,72 +120,74 @@ fun FloatingIconsAnimation(modifier: Modifier = Modifier) {
 }
 
 /**
- * Composable for Anime.js animations within habit items
+ * Composable for native Compose animations within habit items replacing Anime.js
  */
 @Composable
-fun HabitItemAnimeJs(
-    habit: Habit,
+fun HabitItemNativeAnimation(
     modifier: Modifier = Modifier,
     animationType: String = "pulse"
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
 
-    // Create a WebView for Anime.js animations (simplified version)
-    Box(modifier = modifier.height(60.dp)) {
-        AndroidView(
-            factory = { ctx ->
-                WebView(ctx).apply {
-                    settings.javaScriptEnabled = true
-                    // Load a simple HTML with anime.js animation based on type
-                    val html = """
-                        <html>
-                        <head>
-                            <script src="https://animejs.com/lib/anime.min.js"></script>
-                        </head>
-                        <body>
-                            <div id="habit-animation" style="width: 100%; height: 100%; background: transparent;">
-                                <div id="habit-element" style="width: 50px; height: 50px; background: #6200EE; margin: auto; border-radius: 50%;"></div>
-                            </div>
-                            <script>
-                                function animateElement() {
-                                    const type = '$animationType';
-                                    const element = document.getElementById('habit-element');
-                                    
-                                    if (type === 'pulse') {
-                                        anime({
-                                            targets: element,
-                                            scale: [1, 1.3, 1],
-                                            duration: 1000,
-                                            easing: 'easeInOutQuad',
-                                            loop: true
-                                        });
-                                    } else if (type === 'rotate') {
-                                        anime({
-                                            targets: element,
-                                            rotate: '1turn',
-                                            duration: 2000,
-                                            easing: 'easeInOutQuad',
-                                            loop: true
-                                        });
-                                    } else if (type === 'fade') {
-                                        anime({
-                                            targets: element,
-                                            opacity: [1, 0.3, 1],
-                                            duration: 1500,
-                                            easing: 'easeInOutQuad',
-                                            loop: true
-                                        });
-                                    }
-                                }
-                                animateElement();
-                            </script>
-                        </body>
-                        </html>
-                    """.trimIndent()
-                    loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+    if (isPowerSaveMode) return
+
+    val infiniteTransition = rememberInfiniteTransition(label = "habit_anim")
+    
+    val scale = if (animationType == "pulse") {
+        infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.3f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "pulse"
+        ).value
+    } else 1f
+
+    val rotation = if (animationType == "rotate") {
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "rotate"
+        ).value
+    } else 0f
+
+    val alpha = if (animationType == "fade") {
+        infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 0.3f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "fade"
+        ).value
+    } else 1f
+
+    Box(
+        modifier = modifier.height(60.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .graphicsLayer {
+                    this.scaleX = scale
+                    this.scaleY = scale
+                    this.rotationZ = rotation
+                    this.alpha = alpha
                 }
-            }
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                    shape = CircleShape
+                )
         )
     }
 }
@@ -220,8 +226,8 @@ fun HabitItem(
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
 
-    // Use Anime.js for advanced animations
-    var useAnimeJs by remember { mutableStateOf(true) }
+    // Use Native Compose animations for advanced effects
+    var useAdvancedAnimations by remember { mutableStateOf(true) }
 
     // Calculate progress percentage
     val progress = if (habit.goal > 0) {
@@ -330,10 +336,9 @@ fun HabitItem(
                 initialScale = 0.9f
             )
     ) {
-        // Anime.js animation when habit is completed
-        if (isCompletedToday && useAnimeJs) {
-            HabitItemAnimeJs(
-                habit = habit,
+        // Native animation when habit is completed
+        if (isCompletedToday && useAdvancedAnimations) {
+            HabitItemNativeAnimation(
                 modifier = Modifier.matchParentSize(),
                 animationType = if (habit.streak > 5) "rotate" else "pulse"
             )
@@ -391,7 +396,24 @@ fun HabitItem(
                         rotationY = -(touchX / cardSize.width.coerceAtLeast(1)) * 10f
                     }
                 }
-                .clickable { onItemClick() },
+                .semantics(mergeDescendants = true) {
+                    stateDescription = if (isCompletedToday) "Completed today" else "Not completed"
+                    customActions = listOf(
+                        CustomAccessibilityAction(if (habit.isEnabled) "Pause habit" else "Resume habit") {
+                            onToggleEnabled()
+                            true
+                        },
+                        CustomAccessibilityAction("Delete") {
+                            onDeleteClick()
+                            true
+                        },
+                        CustomAccessibilityAction("Completion History") {
+                            onCompletionHistoryClick()
+                            true
+                        }
+                    )
+                }
+                .clickable(onClickLabel = "Toggle expand ${habit.name}") { onItemClick() },
             onClick = {
                 isExpanded = !isExpanded
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -655,23 +677,9 @@ fun HabitItem(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
-                            // Basic options section
-                            DropdownMenuItem(
-                                text = { Text("Basic Options", fontWeight = FontWeight.Bold) },
-                                onClick = { }, // Empty onClick since it's disabled
-                                enabled = false,
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Settings,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            )
-
                             // Delete option
                             DropdownMenuItem(
-                                text = { Text("Delete") },
+                                text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
                                 onClick = {
                                     expanded = false
                                     onDeleteClick()
@@ -701,133 +709,67 @@ fun HabitItem(
                                 }
                             )
 
-                            // Toggle Anime.js animations
+                            // Toggle advanced animations
                             DropdownMenuItem(
-                                text = { Text(if (useAnimeJs) "Disable Animations" else "Enable Animations") },
+                                text = { Text(if (useAdvancedAnimations) "Disable Animations" else "Enable Animations") },
                                 onClick = {
                                     expanded = false
-                                    useAnimeJs = !useAnimeJs
+                                    useAdvancedAnimations = !useAdvancedAnimations
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = if (useAnimeJs) Icons.Default.Animation else Icons.Default.Info,
-                                        contentDescription = if (useAnimeJs) "Disable animations" else "Enable animations",
-                                        tint = if (useAnimeJs) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                    )
-                                }
-                            )
-
-                            // Advanced features section
-                            DropdownMenuItem(
-                                text = { Text("Advanced Features", fontWeight = FontWeight.Bold) },
-                                enabled = false,
-                                onClick = { }, // Empty onClick since it's disabled
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Psychology,
+                                        imageVector = if (useAdvancedAnimations) Icons.Default.Animation else Icons.Default.Info,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.tertiary
-                                    )
-                                }
-                            )
-
-                            // Neural Interface option
-                            DropdownMenuItem(
-                                text = { Text("Neural Interface") },
-                                onClick = {
-                                    expanded = false
-                                    onNeuralInterfaceClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Psychology,
-                                        contentDescription = "Neural Interface",
-                                        tint = MaterialTheme.colorScheme.tertiary
-                                    )
-                                }
-                            )
-
-                            // AR Visualization option
-                            DropdownMenuItem(
-                                text = { Text("AR Visualization") },
-                                onClick = {
-                                    expanded = false
-                                    onARVisualizationClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = "AR Visualization",
-                                        tint = MaterialTheme.colorScheme.secondary
-                                    )
-                                }
-                            )
-
-                            // Biometric Integration option
-                            DropdownMenuItem(
-                                text = { Text("Biometric Data") },
-                                onClick = {
-                                    expanded = false
-                                    onBiometricIntegrationClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = "Biometric Data",
                                         tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            )
-
-                            // Quantum Visualization option
-                            DropdownMenuItem(
-                                text = { Text("Quantum View") },
-                                onClick = {
-                                    expanded = false
-                                    onQuantumVisualizationClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = "Quantum Visualization",
-                                        tint = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
                             )
                         }
                     }
 
-                    // Complete button with gradient and animation
-                    GradientButton(
-                        text = if (isCompletedToday) "Completed" else "Complete",
-                        onClick = {
-                            if (!isCompletedToday && habit.isEnabled) {
-                                onCompletedClick()
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(42.dp),
-                        gradientColors = when {
-                            isCompletedToday -> listOf(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                MaterialTheme.colorScheme.surfaceVariant
+                    // Complete button
+                    if (isCompletedToday) {
+                        FilledTonalButton(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(42.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp).padding(end = 4.dp)
                             )
-                            habit.isEnabled -> listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary
+                            Text("Completed")
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                if (habit.isEnabled) {
+                                    onCompletedClick()
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
+                            },
+                            enabled = habit.isEnabled,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(42.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
-                            else -> listOf(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                MaterialTheme.colorScheme.surfaceVariant
+                        ) {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp).padding(end = 4.dp)
                             )
-                        },
-                        contentColor = if (isCompletedToday || !habit.isEnabled)
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        else
-                            MaterialTheme.colorScheme.onPrimary
-                    )
+                            Text("Complete")
+                        }
+                    }
                 }
             }
         }

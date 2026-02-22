@@ -10,17 +10,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.Brush
 import com.example.myapplication.core.ui.navigation.NavRoutes
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.background
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -42,43 +41,50 @@ fun MainBottomBar(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        colorResource(R.color.brand_gradient_start),
-                        colorResource(R.color.brand_gradient_end)
-                    )
-                )
-            )
-    ) {
+    Column {
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+            thickness = 0.5.dp
+        )
         NavigationBar(
-            containerColor = Color.Transparent,
-            contentColor = colorResource(R.color.brand_accent)
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            tonalElevation = 0.dp
         ) {
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.HABIT_LIST,
                 onClick = { onNavigate(NavRoutes.HABIT_LIST) },
                 icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Habits") },
-                label = { Text("Habits") }
+                label = { Text("Habits") },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
-
-
 
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.STATS,
                 onClick = { onNavigate(NavRoutes.STATS) },
                 icon = { Icon(Icons.Default.BarChart, contentDescription = "Stats") },
-                label = { Text("Stats") }
+                label = { Text("Stats") },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
 
             NavigationBarItem(
                 selected = currentRoute == NavRoutes.SETTINGS,
                 onClick = { onNavigate(NavRoutes.SETTINGS) },
                 icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                label = { Text("Settings") }
+                label = { Text("Settings") },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
         }
     }
@@ -117,6 +123,8 @@ fun AppNavigationGraph(navController: NavHostController) {
         navController = navController,
         startDestination = NavRoutes.HABIT_LIST,
         enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Start,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow

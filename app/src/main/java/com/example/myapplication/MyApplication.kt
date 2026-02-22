@@ -12,6 +12,11 @@ class MyApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
     
+    override fun onCreate() {
+        super.onCreate()
+        com.google.firebase.FirebaseApp.initializeApp(this)
+    }
+    
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)

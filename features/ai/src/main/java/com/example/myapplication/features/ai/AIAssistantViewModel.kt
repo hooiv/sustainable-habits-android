@@ -5,19 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.network.ai.AIService
 import com.example.myapplication.core.data.model.*
-import com.example.myapplication.core.data.repository.AIContextRepository
 import com.example.myapplication.core.data.repository.HabitRepository
-import com.example.myapplication.features.voice.TextToSpeechService
-import com.example.myapplication.features.voice.VoiceRecognitionService
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import java.util.*
 import javax.inject.Inject
+import com.example.myapplication.core.di.IoDispatcher
 
 /**
  * ViewModel for the AI Assistant screen
@@ -26,9 +29,7 @@ import javax.inject.Inject
 class AIAssistantViewModel @Inject constructor(
     private val habitRepository: HabitRepository,
     private val aiService: AIService,
-    private val textToSpeechService: TextToSpeechService,
-    private val voiceRecognitionService: VoiceRecognitionService,
-    private val aiContextRepository: AIContextRepository
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     // Suggestions for the user
@@ -84,8 +85,6 @@ class AIAssistantViewModel @Inject constructor(
     val personalizationSettings: StateFlow<AIAssistantPersonalization> = _personalizationSettings.asStateFlow()
 
     init {
-        // Initialize text-to-speech
-        textToSpeechService.initialize()
 
         // Load user habits and completions
         loadUserData()
@@ -111,7 +110,7 @@ class AIAssistantViewModel @Inject constructor(
      * Load user habits and completions for context
      */
     private fun loadUserData() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             try {
                 // Load habits
                 habitRepository.getAllHabits().collect { habits ->
@@ -136,7 +135,7 @@ class AIAssistantViewModel @Inject constructor(
      * Load habit completions for additional context
      */
     private fun loadHabitCompletions() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             try {
                 // Load all completions
                 habitRepository.getAllCompletions().collect { completions ->
@@ -153,16 +152,8 @@ class AIAssistantViewModel @Inject constructor(
      * Load mood data for emotional context
      */
     private fun loadMoodData() {
-        viewModelScope.launch {
-            try {
-                // Load mood data
-                aiContextRepository.getMoodEntriesFlow().collect { moodEntries ->
-                    _moodData.value = moodEntries
-                }
-            } catch (e: Exception) {
-                // If we can't load mood data, just use an empty list
-                _moodData.value = emptyList()
-            }
+        viewModelScope.launch(ioDispatcher) {
+            _moodData.value = emptyList()
         }
     }
 
@@ -170,16 +161,8 @@ class AIAssistantViewModel @Inject constructor(
      * Load location data for spatial context
      */
     private fun loadLocationData() {
-        viewModelScope.launch {
-            try {
-                // Load location data
-                aiContextRepository.getLocationContextsFlow().collect { locationContexts ->
-                    _locationData.value = locationContexts
-                }
-            } catch (e: Exception) {
-                // If we can't load location data, just use an empty list
-                _locationData.value = emptyList()
-            }
+        viewModelScope.launch(ioDispatcher) {
+            _locationData.value = emptyList()
         }
     }
 
@@ -187,16 +170,8 @@ class AIAssistantViewModel @Inject constructor(
      * Load time patterns for temporal context
      */
     private fun loadTimePatterns() {
-        viewModelScope.launch {
-            try {
-                // Load time patterns
-                aiContextRepository.getTimePatternsFlow().collect { timePatterns ->
-                    _timePatterns.value = timePatterns
-                }
-            } catch (e: Exception) {
-                // If we can't load time patterns, just use an empty list
-                _timePatterns.value = emptyList()
-            }
+        viewModelScope.launch(ioDispatcher) {
+            _timePatterns.value = emptyList()
         }
     }
 
@@ -204,20 +179,8 @@ class AIAssistantViewModel @Inject constructor(
      * Load personalization settings
      */
     private fun loadPersonalizationSettings() {
-        viewModelScope.launch {
-            try {
-                // Load personalization settings
-                aiContextRepository.getPersonalizationSettingsFlow().collect { settings ->
-                    _personalizationSettings.value = settings
-
-                    // Update text-to-speech settings
-                    textToSpeechService.speak(settings.voiceSpeed.toString())
-                    textToSpeechService.speak(settings.voicePitch.toString())
-                }
-            } catch (e: Exception) {
-                // If we can't load settings, use defaults
-                _personalizationSettings.value = AIAssistantPersonalization()
-            }
+        viewModelScope.launch(ioDispatcher) {
+            _personalizationSettings.value = AIAssistantPersonalization()
         }
     }
 
@@ -314,19 +277,14 @@ class AIAssistantViewModel @Inject constructor(
                         _personalizationSettings.value
                     )
 
-                    // Speak the response if voice is enabled
-                    if (useVoice) {
-                        speakResponse(response)
-                    }
+                    // Responses and UI are updated but voice feature is removed
                 }
             } catch (e: Exception) {
                 // Handle errors gracefully
                 val errorMessage = "I'm sorry, I encountered an error while processing your request. Please try again later."
                 _responses.value = _responses.value + Pair(suggestion.title, errorMessage)
 
-                if (useVoice) {
-                    speakResponse(errorMessage)
-                }
+                // Error handled without voice
             } finally {
                 if (!useStreaming) {
                     _isProcessing.value = false
@@ -363,7 +321,7 @@ class AIAssistantViewModel @Inject constructor(
                 _locationData.value,
                 _timePatterns.value,
                 _personalizationSettings.value
-            ).collect { chunk ->
+            ).flowOn(ioDispatcher).collect { chunk ->
                 // Append chunk to streaming response
                 _streamingResponse.value += chunk
             }
@@ -382,10 +340,7 @@ class AIAssistantViewModel @Inject constructor(
                 _personalizationSettings.value
             )
 
-            // Speak the response if voice is enabled
-            if (useVoice) {
-                speakResponse(_streamingResponse.value)
-            }
+            // Feature removed
         } finally {
             _isStreaming.value = false
             _isProcessing.value = false
@@ -437,19 +392,14 @@ class AIAssistantViewModel @Inject constructor(
                         _personalizationSettings.value
                     )
 
-                    // Speak the response if voice is enabled
-                    if (useVoice) {
-                        speakResponse(response)
-                    }
+                    // Removed voice feature
                 }
             } catch (e: Exception) {
                 // Handle errors gracefully
                 val errorMessage = "I'm sorry, I encountered an error while processing your request. Please try again later."
                 _responses.value = _responses.value + Pair(question, errorMessage)
 
-                if (useVoice) {
-                    speakResponse(errorMessage)
-                }
+                // Error handling without voice
             } finally {
                 if (!useStreaming) {
                     _isProcessing.value = false
@@ -475,7 +425,7 @@ class AIAssistantViewModel @Inject constructor(
                 _locationData.value,
                 _timePatterns.value,
                 _personalizationSettings.value
-            ).collect { chunk ->
+            ).flowOn(ioDispatcher).collect { chunk ->
                 // Append chunk to streaming response
                 _streamingResponse.value += chunk
             }
@@ -502,10 +452,7 @@ class AIAssistantViewModel @Inject constructor(
                 _personalizationSettings.value
             )
 
-            // Speak the response if voice is enabled
-            if (useVoice) {
-                speakResponse(_streamingResponse.value)
-            }
+            // Feature removed
         } finally {
             _isStreaming.value = false
             _isProcessing.value = false
@@ -513,118 +460,10 @@ class AIAssistantViewModel @Inject constructor(
     }
 
     /**
-     * Start voice input
-     * @param continuous Whether to continuously listen for commands
-     * @param useWakeWord Whether to require a wake word to process commands
-     */
-    fun startVoiceInput(continuous: Boolean = false, useWakeWord: Boolean = false) {
-        if (_isListening.value) return
-
-        _isListening.value = true
-        _voiceInputText.value = ""
-
-        viewModelScope.launch {
-            try {
-                voiceRecognitionService.startListening(
-                    continuous = continuous,
-                    onAmplitudeChanged = { amplitude ->
-                        _voiceAmplitude.value = amplitude
-                    },
-                    onPartialResult = { partialText ->
-                        _voiceInputText.value = partialText
-                    },
-                    onFinalResult = { finalText ->
-                        _voiceInputText.value = finalText
-
-                        if (finalText.isNotEmpty()) {
-                            if (useWakeWord) {
-                                // Check if the text contains a wake word
-                                if (voiceRecognitionService.containsWakeWord(finalText)) {
-                                    // Extract the command part
-                                    val command = voiceRecognitionService.extractCommand(finalText)
-                                    if (command.isNotEmpty()) {
-                                        processVoiceInput(command)
-                                    }
-                                }
-                            } else {
-                                // Process the entire text as a command
-                                processVoiceInput(finalText)
-                            }
-                        }
-
-                        if (!continuous) {
-                            _isListening.value = false
-                        }
-                    },
-                    onError = { error ->
-                        Log.e("AIAssistantViewModel", "Voice recognition error: $error")
-                        _isListening.value = false
-                    }
-                )
-            } catch (e: Exception) {
-                Log.e("AIAssistantViewModel", "Error starting voice recognition", e)
-                _isListening.value = false
-            }
-        }
-    }
-
-    /**
-     * Stop voice input
-     */
-    fun stopVoiceInput() {
-        if (!_isListening.value) return
-
-        viewModelScope.launch {
-            try {
-                val finalText = voiceRecognitionService.stopListening()
-                _isListening.value = false
-
-                // Process the final text if it wasn't already processed
-                if (finalText.isNotEmpty() && finalText == _voiceInputText.value) {
-                    processVoiceInput(finalText)
-                }
-            } catch (e: Exception) {
-                Log.e("AIAssistantViewModel", "Error stopping voice recognition", e)
-                _isListening.value = false
-            }
-        }
-    }
-
-    /**
-     * Process voice input
-     */
-    fun processVoiceInput(text: String) {
-        if (text.isNotEmpty()) {
-            askQuestion(text, useStreaming = true, useVoice = true)
-        }
-    }
-
-    /**
-     * Speak a response using text-to-speech
-     */
-    private fun speakResponse(text: String) {
-        viewModelScope.launch {
-            _isSpeaking.value = true
-            textToSpeechService.speak(text)
-            _isSpeaking.value = false
-        }
-    }
-
-    /**
-     * Stop speaking
-     */
-    fun stopSpeaking() {
-        textToSpeechService.stop()
-        _isSpeaking.value = false
-    }
-
-    /**
      * Clean up resources
      */
     override fun onCleared() {
         super.onCleared()
-        textToSpeechService.shutdown()
-        voiceRecognitionService.cleanup()
     }
 
     /**
@@ -632,19 +471,7 @@ class AIAssistantViewModel @Inject constructor(
      */
     fun savePersonalizationSettings(settings: AIAssistantPersonalization) {
         viewModelScope.launch {
-            try {
-                // Update local settings
-                _personalizationSettings.value = settings
-
-                // Update text-to-speech settings
-                textToSpeechService.speak(settings.voiceSpeed.toString())
-                textToSpeechService.speak(settings.voicePitch.toString())
-
-                // Save to repository
-                aiContextRepository.savePersonalizationSettings(settings)
-            } catch (e: Exception) {
-                Log.e("AIAssistantViewModel", "Error saving personalization settings", e)
-            }
+            _personalizationSettings.value = settings
         }
     }
 }

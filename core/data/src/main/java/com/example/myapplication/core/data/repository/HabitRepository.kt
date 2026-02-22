@@ -175,13 +175,8 @@ class HabitRepository @Inject constructor(
                 }
             }
             HabitFrequency.CUSTOM -> {
-                // For custom frequency, check if the completion date is in the custom schedule
-                if (habit.customSchedule.isNotEmpty()) {
-                    // If it's in the schedule, increment streak, otherwise reset
-                    habit.streak + 1 // Simplified for now, should check against customSchedule
-                } else {
-                    1 // Reset streak if no custom schedule defined
-                }
+                // For custom frequency, simplified streak logic since customSchedule was removed
+                habit.streak + 1 
             }
         }
     }
@@ -218,12 +213,8 @@ class HabitRepository @Inject constructor(
                         }
                     }
                     HabitFrequency.CUSTOM -> {
-                        // For custom frequency, check if the completion date is in the custom schedule
-                        if (habit.customSchedule.isNotEmpty()) {
-                            currentStreak++
-                        } else {
-                            currentStreak = 1
-                        }
+                        // For custom frequency, simplified logic
+                        currentStreak++
                     }
                 }
                 currentGoalProgress = 0

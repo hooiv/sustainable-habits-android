@@ -52,7 +52,7 @@ import androidx.navigation.NavController
 import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.data.model.HabitFrequency
-// import com.example.myapplication.features.habits.HabitViewModel
+import com.example.myapplication.features.habits.HabitViewModel
 import com.example.myapplication.core.ui.animation.*
 import com.example.myapplication.core.ui.animation.ThreeJSScene
 import com.example.myapplication.core.ui.animation.ParticleWave
@@ -147,10 +147,8 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavController) {
-    // TODO: Fix ViewModel dependency issue - need proper multi-module setup
-    // val viewModel: HabitViewModel = hiltViewModel()
-    // val habits: List<Habit> by viewModel.habits.collectAsState(emptyList())
-    val habits: List<Habit> = emptyList() // Temporary placeholder
+    val viewModel: HabitViewModel = hiltViewModel()
+    val habits: List<Habit> by viewModel.habits.collectAsState(emptyList())
     val completedCount = habits.count { it.goalProgress >= it.goal }
     val totalCount = habits.size
     val completionRate = if (totalCount > 0) completedCount * 100f / totalCount else 0f
@@ -169,7 +167,7 @@ fun StatsScreen(navController: NavController) {
     )
 
     LaunchedEffect(true) {
-        delay(1000)
+        delay(300)
         isLoading = false
     }
 
@@ -200,21 +198,10 @@ fun StatsScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                colorResource(R.color.brand_gradient_start),
-                                colorResource(R.color.brand_gradient_end)
-                            )
-                        )
-                    ),
                 title = {
                     Text(
-                        text = "Statistics Dashboard",
+                        text = "Statistics",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = colorResource(R.color.brand_accent),
                         modifier = Modifier.alpha(chartAlpha)
                     )
                 },
@@ -225,13 +212,12 @@ fun StatsScreen(navController: NavController) {
                     ) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = colorResource(R.color.brand_accent)
+                            contentDescription = "Back"
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }

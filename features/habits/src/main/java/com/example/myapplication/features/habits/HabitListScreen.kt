@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import com.example.myapplication.features.habits.HabitViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,21 +29,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.core.ui.R
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.ui.navigation.NavRoutes
 import com.example.myapplication.core.ui.animation.AnimeEasing
 import com.example.myapplication.core.ui.animation.ParticleWave
 import com.example.myapplication.core.ui.animation.animeEntrance
-import com.example.myapplication.core.ui.components.JupiterGradientButton
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,13 +51,19 @@ fun HabitListScreen(
     val habits by viewModel.habits.collectAsState(initial = emptyList())
 
     // List state for scroll animations
-    val listState = rememberLazyListState()
-    // Animation states
+    val listState = rememberLazyStaggeredGridState()
+    // Data loads reactively — no artificial delay needed
     var isLoading by remember { mutableStateOf(true) }
 
-    // Simulate loading state briefly
-    LaunchedEffect(true) {
-        delay(1500)
+    LaunchedEffect(habits) {
+        if (habits.isNotEmpty() || isLoading) {
+            isLoading = false
+        }
+    }
+
+    // Also handle the initial case where habits is empty on first load
+    LaunchedEffect(Unit) {
+        delay(600) // Short grace period for initial DB query
         isLoading = false
     }
 
@@ -71,32 +74,24 @@ fun HabitListScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                colorResource(R.color.brand_gradient_start),
-                                colorResource(R.color.brand_gradient_end)
-                            )
-                        )
-                    ),
                 title = {
                     Text(
                         "My Habits",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = colorResource(R.color.brand_accent)
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         floatingActionButton = {
-            JupiterGradientButton(
-                text = "Add Habit",
-                onClick = { navController.navigate(NavRoutes.ADD_HABIT) }
+            ExtendedFloatingActionButton(
+                onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
+                text = { Text("Add Habit", style = MaterialTheme.typography.labelLarge) }
             )
         }
     ) { innerPadding ->
@@ -302,28 +297,47 @@ fun HabitListScreen(
                                     }
                             )
 
-                            JupiterGradientButton(
-                                text = "Create First Habit",
+                            Button(
                                 onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
                                 modifier = Modifier
                                     .padding(top = 16.dp)
                                     .graphicsLayer {
                                         scaleX = iconScale * 0.9f
                                         scaleY = iconScale * 0.9f
-                                    }
-                            )
+                                    },
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end = 4.dp)
+                                )
+                                Text("Create First Habit", style = MaterialTheme.typography.labelLarge)
+                            }
                         }
                     }
                 } else {
-                    // Habits list
-                    LazyColumn(
+                    val configuration = LocalConfiguration.current
+                    val columns = when {
+                        configuration.screenWidthDp < 600 -> 1 // Phone
+                        configuration.screenWidthDp < 840 -> 2 // Foldable
+                        else -> 3 // Tablet Landscape
+                    }
+                    
+                    // Habits list array adaptive to screen width
+                    LazyVerticalStaggeredGrid(
+                        columns = StaggeredGridCells.Fixed(columns),
                         state = listState,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                             .testTag("habit_list"),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalItemSpacing = 16.dp
                     ) {
                         itemsIndexed(
                             items = filteredHabits,

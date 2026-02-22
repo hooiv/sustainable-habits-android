@@ -1,0 +1,443 @@
+﻿Configuration on demand is an incubating feature.
+Reusing configuration cache.
+> Task :core:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:preBuild UP-TO-DATE
+> Task :core:ui:preBuild UP-TO-DATE
+> Task :core:ui:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:data:preBuild UP-TO-DATE
+> Task :features:onboarding:preBuild UP-TO-DATE
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:preDebugBuild UP-TO-DATE
+> Task :features:onboarding:preDebugBuild UP-TO-DATE
+> Task :core:ui:preDebugBuild UP-TO-DATE
+> Task :core:data:preDebugBuild UP-TO-DATE
+> Task :core:data:processDebugNavigationResources UP-TO-DATE
+> Task :core:domain:generateDebugResources UP-TO-DATE
+> Task :core:domain:javaPreCompileDebug UP-TO-DATE
+> Task :core:data:javaPreCompileDebug UP-TO-DATE
+> Task :core:data:generateDebugResources UP-TO-DATE
+> Task :core:domain:processDebugNavigationResources UP-TO-DATE
+> Task :features:onboarding:processDebugNavigationResources UP-TO-DATE
+> Task :core:ui:generateDebugResources UP-TO-DATE
+> Task :core:ui:processDebugNavigationResources UP-TO-DATE
+> Task :features:onboarding:generateDebugResources UP-TO-DATE
+> Task :core:ui:javaPreCompileDebug UP-TO-DATE
+> Task :features:onboarding:packageDebugResources UP-TO-DATE
+> Task :core:data:packageDebugResources UP-TO-DATE
+> Task :core:domain:packageDebugResources UP-TO-DATE
+> Task :core:ui:packageDebugResources UP-TO-DATE
+> Task :core:data:parseDebugLocalResources UP-TO-DATE
+> Task :features:onboarding:parseDebugLocalResources UP-TO-DATE
+> Task :core:domain:parseDebugLocalResources UP-TO-DATE
+> Task :core:ui:parseDebugLocalResources UP-TO-DATE
+> Task :core:data:generateDebugRFile UP-TO-DATE
+> Task :core:domain:generateDebugRFile UP-TO-DATE
+> Task :core:ui:generateDebugRFile UP-TO-DATE
+> Task :features:onboarding:generateDebugRFile UP-TO-DATE
+> Task :core:data:kspDebugKotlin UP-TO-DATE
+> Task :core:data:compileDebugKotlin UP-TO-DATE
+> Task :core:data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:data:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:domain:kspDebugKotlin UP-TO-DATE
+> Task :core:ui:kspDebugKotlin UP-TO-DATE
+> Task :core:domain:compileDebugKotlin UP-TO-DATE
+> Task :core:domain:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:domain:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:ui:compileDebugKotlin UP-TO-DATE
+> Task :core:ui:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:ui:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:ui:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:onboarding:kspDebugKotlin UP-TO-DATE
+
+> Task :features:onboarding:compileDebugKotlin
+.\gradlew : e: file:///C:/Users/aditya/Desktop/
+sustainable-habits-android/features/onboarding/
+src/main/java/com/example/myapplication/feature
+s/onboarding/OnboardingScreen.kt:47:21 
+Argument type mismatch: actual type is 
+'String', but 'String' was expected.
+At line:1 char:48
++ ... va\jdk-21"; .\gradlew 
+:features:onboarding:compileDebugKotlin 2>&1 | 
+ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e 
+   : file:///C:/U...' was expected.:String) [  
+  ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErr 
+   or
+ 
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:48:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:49:24 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:50:27 Argument type 
+mismatch: actual type is '@Composable() 
+ComposableFunction0<Color>', but 
+'@Composable() ComposableFunction0<Color>' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:51:24 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:51:24 Argument type 
+mismatch: actual type is 'List<uninferred T 
+(of fun <T> listOf)>', but 
+'List<Pair<ImageVector, String>>' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:52:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:53:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:53:31 Unresolved 
+reference 'Repeat'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:53:38 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:54:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:56:29 Argument type 
+mismatch: actual type is 'ParticleShape', but 
+'ParticleShape' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:57:30 Argument type 
+mismatch: actual type is 'ParticleEffect', but 
+'ParticleEffect' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:60:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:61:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:62:24 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:63:27 Argument type 
+mismatch: actual type is '@Composable() 
+ComposableFunction0<Color>', but 
+'@Composable() ComposableFunction0<Color>' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:64:24 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:64:24 Argument type 
+mismatch: actual type is 'List<uninferred T 
+(of fun <T> listOf)>', but 
+'List<Pair<ImageVector, String>>' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:65:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:65:31 Unresolved 
+reference 'Alarm'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:65:37 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:66:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:67:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:67:31 Unresolved 
+reference 'LocalFireDepartment'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:67:51 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:69:29 Argument type 
+mismatch: actual type is 'ParticleShape', but 
+'ParticleShape' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:70:30 Argument type 
+mismatch: actual type is 'ParticleEffect', but 
+'ParticleEffect' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:73:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:74:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:75:24 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:76:27 Argument type 
+mismatch: actual type is '@Composable() 
+ComposableFunction0<Color>', but 
+'@Composable() ComposableFunction0<Color>' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:77:24 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:77:24 Argument type 
+mismatch: actual type is 'List<uninferred T 
+(of fun <T> listOf)>', but 
+'List<Pair<ImageVector, String>>' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:78:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:78:31 Unresolved 
+reference 'BarChart'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:78:40 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:79:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:80:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:80:31 Unresolved 
+reference 'TrendingUp'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:80:42 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:82:29 Argument type 
+mismatch: actual type is 'ParticleShape', but 
+'ParticleShape' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:83:30 Argument type 
+mismatch: actual type is 'ParticleEffect', but 
+'ParticleEffect' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:86:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:87:21 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:88:24 Argument type 
+mismatch: actual type is 'String', but 
+'String' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:89:27 Argument type 
+mismatch: actual type is '@Composable() 
+ComposableFunction0<Color>', but 
+'@Composable() ComposableFunction0<Color>' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:90:24 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:90:24 Argument type 
+mismatch: actual type is 'List<uninferred T 
+(of fun <T> listOf)>', but 
+'List<Pair<ImageVector, String>>' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:91:17 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:91:31 Unresolved 
+reference 'Cloud'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:91:37 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:92:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:93:17 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:95:29 Argument type 
+mismatch: actual type is 'ParticleShape', but 
+'ParticleShape' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:96:30 Argument type 
+mismatch: actual type is 'ParticleEffect', but 
+'ParticleEffect' was expected.
+
+> Task :features:onboarding:compileDebugKotlin FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task 
+':features:onboarding:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 8s
+41 actionable tasks: 1 executed, 40 up-to-date
+Configuration cache entry reused.

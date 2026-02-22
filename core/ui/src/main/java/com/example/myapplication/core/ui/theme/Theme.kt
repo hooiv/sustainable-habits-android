@@ -20,10 +20,13 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -42,10 +45,19 @@ data class Gradients(
     val surface: List<Color>
 )
 
+data class SpacingValues(
+    val extraSmall: Dp = 4.dp,
+    val small: Dp = 8.dp,
+    val medium: Dp = 16.dp,
+    val large: Dp = 24.dp,
+    val extraLarge: Dp = 32.dp
+)
+
 data class AnimatedTheme(
     val defaultAnimation: AnimationSpec = AnimationSpec(),
     val gradients: Gradients,
-    val animatedElevation: ElevationValues = ElevationValues()
+    val animatedElevation: ElevationValues = ElevationValues(),
+    val spacing: SpacingValues = SpacingValues()
 )
 
 data class ElevationValues(
@@ -59,26 +71,27 @@ data class ElevationValues(
 val LocalAnimatedTheme = compositionLocalOf { 
     AnimatedTheme(
         gradients = Gradients(
-            primary = listOf(GreenPrimary, GreenDark),
+            primary = listOf(GreenPrimary, SoftTeal),
             secondary = listOf(AccentColor, GreenPrimary),
-            accent = listOf(NeonPink, NeonPurple),
+            accent = listOf(SoftPink, SoftPurple),
             surface = listOf(CardLight.copy(alpha = 0.8f), CardLight)
-        )
+        ),
+        spacing = SpacingValues()
     ) 
 }
 
 val LocalAnimationSpec = compositionLocalOf { AnimationSpec() }
 
-// Enhanced dark color scheme with anime.js/three.js inspired colors
+// Elegant dark color scheme
 private val DarkColorScheme = darkColorScheme(
-    primary = NeonGreen,
-    secondary = NeonBlue,
-    tertiary = NeonPurple,
-    background = Color(0xFF121212), // Darker background for better contrast with neon colors
+    primary = SoftTeal,
+    secondary = SoftSky,
+    tertiary = SoftPurple,
+    background = Color(0xFF121212),
     surface = CardDark,
-    onPrimary = Color.Black, // Text on neon colors should be dark for better readability
-    onSecondary = Color.Black,
-    onTertiary = Color.Black,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
     primaryContainer = GreenDark,
@@ -87,12 +100,12 @@ private val DarkColorScheme = darkColorScheme(
     error = Color(0xFFFF5252) // Bright red for errors
 )
 
-// Enhanced light color scheme with anime.js/three.js inspired colors
+// Elegant light color scheme
 private val LightColorScheme = lightColorScheme(
     primary = GreenPrimary,
-    secondary = NeonBlue.copy(alpha = 0.8f), // Slightly muted for light theme
-    tertiary = NeonPurple.copy(alpha = 0.8f),
-    background = Color(0xFFF8F8F8), // Slightly off-white for better eye comfort
+    secondary = SoftSky,
+    tertiary = SoftPurple,
+    background = Color(0xFFF8F8F8),
     surface = CardLight,
     onPrimary = TextOnGreen,
     onSecondary = Color.Black,
@@ -114,7 +127,7 @@ fun MyApplicationTheme(
     val context = LocalContext.current
     // Observe the dark mode preference from ThemePreferenceManager
     // Use isSystemInDarkTheme() as the initial value before the preference is loaded
-    val darkTheme by ThemePreferenceManager.isDarkModeEnabled(context)
+    val darkTheme by remember(context) { ThemePreferenceManager.isDarkModeEnabled(context) }
         .collectAsState(initial = isSystemInDarkTheme())
 
     val colorScheme = when {
@@ -129,9 +142,9 @@ fun MyApplicationTheme(
     val animatedTheme = if (darkTheme) {
         AnimatedTheme(
             gradients = Gradients(
-                primary = listOf(NeonGreen, NeonBlue),
-                secondary = listOf(NeonBlue, NeonPurple),
-                accent = listOf(NeonPink, NeonPurple),
+                primary = listOf(SoftTeal, SoftSky),
+                secondary = listOf(SoftSky, SoftPurple),
+                accent = listOf(SoftPink, SoftPurple),
                 surface = listOf(CardDark.copy(alpha = 0.8f), CardDark)
             ),
             animatedElevation = ElevationValues(
@@ -144,9 +157,9 @@ fun MyApplicationTheme(
     } else {
         AnimatedTheme(
             gradients = Gradients(
-                primary = listOf(GreenPrimary, NeonBlue.copy(alpha = 0.7f)),
+                primary = listOf(GreenPrimary, SoftSky),
                 secondary = listOf(AccentColor, GreenPrimary),
-                accent = listOf(NeonPink.copy(alpha = 0.7f), NeonPurple.copy(alpha = 0.7f)),
+                accent = listOf(SoftPink, SoftPurple),
                 surface = listOf(CardLight.copy(alpha = 0.8f), CardLight)
             ),
             animatedElevation = ElevationValues(
@@ -163,7 +176,7 @@ fun MyApplicationTheme(
         SideEffect {
             val window = (view.context as Activity).window
             // Use a gradient-like color for the status bar
-            window.statusBarColor = if (darkTheme) NeonGreen.toArgb() else GreenPrimary.toArgb()
+            window.statusBarColor = if (darkTheme) SoftTeal.toArgb() else GreenPrimary.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
@@ -190,6 +203,10 @@ val MaterialTheme.animatedTheme: AnimatedTheme
 val MaterialTheme.animatedElevation: ElevationValues
     @Composable
     get() = LocalAnimatedTheme.current.animatedElevation
+
+val MaterialTheme.spacing: SpacingValues
+    @Composable
+    get() = LocalAnimatedTheme.current.spacing
 
 // Create a function to generate a gradient brush from the theme
 @Composable

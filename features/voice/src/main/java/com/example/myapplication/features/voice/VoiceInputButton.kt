@@ -26,6 +26,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import android.content.Context
+import android.os.PowerManager
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Voice input button with animations
@@ -78,9 +82,14 @@ fun VoiceInputButton(
     ) {
         // Animated ripple effect when listening
         if (isListening) {
-            repeat(3) { index ->
-                val infiniteTransition = rememberInfiniteTransition(label = "ripple$index")
-                val scale by infiniteTransition.animateFloat(
+            val context = LocalContext.current
+            val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+            val isPowerSaveMode = powerManager.isPowerSaveMode
+            
+            if (!isPowerSaveMode) {
+                repeat(3) { index ->
+                    val infiniteTransition = rememberInfiniteTransition(label = "ripple$index")
+                    val scale by infiniteTransition.animateFloat(
                     initialValue = 1f,
                     targetValue = 2f,
                     animationSpec = infiniteRepeatable(
@@ -103,7 +112,7 @@ fun VoiceInputButton(
                 Canvas(
                     modifier = Modifier
                         .size(buttonSize * 2)
-                        .alpha(alpha)
+                        .graphicsLayer { this.alpha = alpha }
                 ) {
                     drawCircle(
                         color = buttonColor.copy(alpha = 0.3f),

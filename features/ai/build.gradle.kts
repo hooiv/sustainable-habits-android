@@ -32,7 +32,6 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
-    implementation(project(":features:voice"))
 
     implementation(libs.androidx.core.ktx)
 
@@ -70,6 +69,9 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+    
+    // Security & Encrypted Preferences
+    implementation(libs.security.crypto)
 
     // Testing
     testImplementation(libs.junit)

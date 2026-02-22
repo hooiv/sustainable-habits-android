@@ -1,398 +1,249 @@
 package com.example.myapplication.features.onboarding
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.myapplication.core.ui.animation.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
-    // Enhanced onboarding with advanced animations
+    val totalPages = 4
     var page by rememberSaveable { mutableStateOf(0) }
-    val pages = listOf(
-        "Welcome to MyApp! Track your habits easily.",
-        "Stay motivated with reminders and stats.",
-        "Visualize your progress with beautiful charts.",
-        "Connect with friends and share your journey."
-    )
-
-    // Track if content should be visible (for animations)
-    var contentVisible by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-
-    // Start entrance animation
-    LaunchedEffect(page) {
-        contentVisible = false
-        delay(100)
-        contentVisible = true
-    }
-
-    // Create a gradient background
-    val gradientColors = listOf(
-        MaterialTheme.colorScheme.background,
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(colors = gradientColors)
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    )
+                )
             )
     ) {
-        // Add advanced particle effect in background based on current page
+        // ─── Ambient particle background per page ────────────────────────────
         when (page) {
             0 -> ParticleSystem(
                 modifier = Modifier.fillMaxSize(),
-                particleCount = 50,
-                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                particleCount = 40,
+                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                 particleShape = ParticleShape.CIRCLE,
                 particleEffect = ParticleEffect.FLOAT,
-                maxSpeed = 0.5f
+                maxSpeed = 0.4f
             )
             1 -> ParticleSystem(
                 modifier = Modifier.fillMaxSize(),
-                particleCount = 50,
-                particleColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                particleCount = 40,
+                particleColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
                 particleShape = ParticleShape.SQUARE,
                 particleEffect = ParticleEffect.WAVE,
                 maxSpeed = 0.3f
             )
             2 -> ParticleSystem(
                 modifier = Modifier.fillMaxSize(),
-                particleCount = 50,
-                particleColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f),
+                particleCount = 40,
+                particleColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f),
                 particleShape = ParticleShape.TRIANGLE,
                 particleEffect = ParticleEffect.VORTEX,
-                maxSpeed = 0.4f
+                maxSpeed = 0.35f
             )
             3 -> ParticleSystem(
                 modifier = Modifier.fillMaxSize(),
-                particleCount = 50,
-                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                particleCount = 40,
+                particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                 particleShape = ParticleShape.STAR,
                 particleEffect = ParticleEffect.PULSE,
-                maxSpeed = 0.3f,
-                interactionEnabled = true,
+                maxSpeed = 0.25f,
                 colorVariation = true
             )
         }
 
-        // Main content with animations
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
+                .padding(horizontal = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Page indicator with enhanced animation
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 48.dp)
-                    .graphicsLayer {
-                        alpha = if (contentVisible) 1f else 0f
-                    },
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pages.size) { i ->
-                    val isSelected = i == page
-                    val infiniteTransition = rememberInfiniteTransition(label = "indicator$i")
-                    val pulseScale by infiniteTransition.animateFloat(
-                        initialValue = 1f,
-                        targetValue = if (isSelected) 1.2f else 1f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(1000, easing = AnimeEasing.EaseInOutQuad),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "pulseScale$i"
-                    )
+            Spacer(modifier = Modifier.height(56.dp))
 
+            // ─── Expanding pill page indicator ───────────────────────────────
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(totalPages) { i ->
+                    val isSelected = i == page
+                    val width by animateDpAsState(
+                        targetValue = if (isSelected) 24.dp else 8.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "dot$i"
+                    )
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .size(if (isSelected) 12.dp else 8.dp)
-                            .scale(if (isSelected) pulseScale else 1f)
+                            .height(8.dp)
+                            .width(width)
                             .clip(CircleShape)
                             .background(
-                                brush = if (isSelected) {
-                                    Brush.radialGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.secondary
-                                        )
-                                    )
-                                } else {
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                                        )
-                                    )
-                                }
+                                if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
                             )
                     )
                 }
             }
 
-            // Animated text with glowing effect
-            GlowingText(
-                text = pages[page],
-                color = MaterialTheme.colorScheme.onBackground,
-                glowColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                glowRadius = 5.dp,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                particlesEnabled = false,
-                modifier = Modifier
-                    .graphicsLayer {
-                        alpha = if (contentVisible) 1f else 0f
-                        translationY = if (contentVisible) 0f else 50f
-                    }
-                    .padding(bottom = 32.dp)
-            )
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Enhanced 3D scene with interactive elements
-            ThreeJSScene(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-                    .padding(bottom = 32.dp)
-                    .graphicsLayer {
-                        alpha = if (contentVisible) 1f else 0f
-                        translationY = if (contentVisible) 0f else 100f
-                    },
-                rotationEnabled = true,
-                initialRotationY = 10f,
-                cameraDistance = 12f,
-                enableParallax = true,
-                enableShadows = true,
-                enableZoom = true,
-                enableTapInteraction = true,
-                backgroundColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                onTap = {
-                    coroutineScope.launch {
-                        // Show a visual feedback when tapped
-                        if (page < pages.lastIndex) {
-                            page++
-                        } else {
-                            onFinish()
-                        }
-                    }
+            // ─── Animated page content ────────────────────────────────────────
+            AnimatedContent(
+                targetState = page,
+                transitionSpec = {
+                    if (targetState > initialState)
+                        (slideInHorizontally { it } + fadeIn()).togetherWith(slideOutHorizontally { -it } + fadeOut())
+                    else
+                        (slideInHorizontally { -it } + fadeIn()).togetherWith(slideOutHorizontally { it } + fadeOut())
+                },
+                label = "pageContent"
+            ) { targetPage ->
+                val accentColor = when (targetPage) {
+                    1 -> MaterialTheme.colorScheme.secondary
+                    2 -> MaterialTheme.colorScheme.tertiary
+                    else -> MaterialTheme.colorScheme.primary
                 }
-            ) { sceneModifier ->
-                Box(
-                    modifier = sceneModifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                val emoji = when (targetPage) {
+                    0 -> "🌱"; 1 -> "🔔"; 2 -> "📊"; else -> "☁️"
+                }
+                val title = when (targetPage) {
+                    0 -> "Build Better Habits"
+                    1 -> "Never Miss a Day"
+                    2 -> "See Your Progress"
+                    else -> "Sync Across Devices"
+                }
+                val subtitle = when (targetPage) {
+                    0 -> "Track daily, weekly, or custom habits in one place. Every small step compounds into real change."
+                    1 -> "Smart reminders nudge you at the right moment. Set your ideal hour and let HabitFlow do the rest."
+                    2 -> "Rich charts and insights show you exactly how far you've come — and what to focus on next."
+                    else -> "Sign in with Google to back up your habits to the cloud. Safe and in sync, always."
+                }
+                val features: List<Pair<ImageVector, String>> = when (targetPage) {
+                    0 -> listOf(
+                        Icons.Default.CheckCircle to "Mark habits complete with one tap",
+                        Icons.Default.Repeat to "Daily, weekly, or custom frequency",
+                        Icons.Default.Star to "Streaks to keep you consistent"
+                    )
+                    1 -> listOf(
+                        Icons.Default.Notifications to "Personalized reminder times",
+                        Icons.Default.Schedule to "Never-miss smart nudges",
+                        Icons.Default.Favorite to "Streak protection alerts"
+                    )
+                    2 -> listOf(
+                        Icons.Default.ShowChart to "Completion rate over time",
+                        Icons.Default.Star to "Achievement badges & milestones",
+                        Icons.Default.FilterList to "Category-level breakdown"
+                    )
+                    else -> listOf(
+                        Icons.Default.Info to "Automatic cloud backup",
+                        Icons.Default.Refresh to "Seamless multi-device sync",
+                        Icons.Default.Lock to "Private & encrypted data"
+                    )
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Different content for each page with enhanced visuals
-                    when (page) {
-                        0 -> {
-                            // Habit tracking visualization
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    "Track Daily Habits",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Bold
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        accentColor.copy(alpha = 0.3f),
+                                        accentColor.copy(alpha = 0.06f)
+                                    )
                                 )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(emoji, fontSize = 52.sp)
+                    }
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
-                                // Sample habit cards
-                                repeat(3) { index ->
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Feature bullets card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                        ),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            features.forEach { (icon, label) ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(40.dp)
-                                            .padding(vertical = 4.dp)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(
-                                                brush = Brush.horizontalGradient(
-                                                    colors = listOf(
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                                                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
-                                                    )
-                                                )
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                        1 -> {
-                            // Motivation and reminders visualization
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    "Stay Motivated",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Sample achievement badges
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    repeat(3) { index ->
-                                        Box(
-                                            modifier = Modifier
-                                                .size(50.dp)
-                                                .clip(CircleShape)
-                                                .background(
-                                                    brush = Brush.radialGradient(
-                                                        colors = listOf(
-                                                            MaterialTheme.colorScheme.primary,
-                                                            MaterialTheme.colorScheme.tertiary
-                                                        )
-                                                    )
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "${index + 1}",
-                                                color = MaterialTheme.colorScheme.onPrimary,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
+                                            .size(36.dp)
+                                            .clip(CircleShape)
+                                            .background(accentColor.copy(alpha = 0.12f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = icon,
+                                            contentDescription = null,
+                                            tint = accentColor,
+                                            modifier = Modifier.size(18.dp)
+                                        )
                                     }
-                                }
-                            }
-                        }
-                        2 -> {
-                            // Visualization demo
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    "Beautiful Visualizations",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Sample chart
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(100.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-                                ) {
-                                    // Simple chart visualization
-                                    val primaryColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-                                        val width = size.width
-                                        val height = size.height
-                                        val barWidth = width / 7
-
-                                        // Draw sample bars
-                                        for (i in 0 until 7) {
-                                            val barHeight = (0.3f + (i % 3) * 0.2f) * height
-                                            drawRect(
-                                                color = primaryColor,
-                                                topLeft = Offset(i * barWidth + 4, height - barHeight),
-                                                size = Size(barWidth - 8, barHeight)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        3 -> {
-                            // Social features visualization
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    "Connect with Friends",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Sample user avatars
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    repeat(4) { index ->
-                                        Box(
-                                            modifier = Modifier
-                                                .size(40.dp)
-                                                .clip(CircleShape)
-                                                .background(
-                                                    color = when (index) {
-                                                        0 -> MaterialTheme.colorScheme.primary
-                                                        1 -> MaterialTheme.colorScheme.secondary
-                                                        2 -> MaterialTheme.colorScheme.tertiary
-                                                        else -> MaterialTheme.colorScheme.error
-                                                    }
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "U${index + 1}",
-                                                color = MaterialTheme.colorScheme.onPrimary,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // Sample challenge card
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(40.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(
-                                            brush = Brush.horizontalGradient(
-                                                colors = listOf(
-                                                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f),
-                                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                                )
-                                            )
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
+                                    Spacer(Modifier.width(12.dp))
                                     Text(
-                                        "30-Day Challenge",
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        fontWeight = FontWeight.Bold
+                                        label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -401,39 +252,50 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 }
             }
 
-            // Navigation buttons with liquid animation
+            Spacer(modifier = Modifier.weight(1f))
+
+            // ─── Navigation buttons ───────────────────────────────────────────
             Row(
                 modifier = Modifier
-                    .graphicsLayer {
-                        alpha = if (contentVisible) 1f else 0f
-                        translationY = if (contentVisible) 0f else 50f
-                    },
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxWidth()
+                    .padding(bottom = 40.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (page > 0) {
-                    LiquidButton(
-                        text = "Back",
+                    OutlinedButton(
                         onClick = { page-- },
-                        color = MaterialTheme.colorScheme.secondary,
-                        width = 120.dp
-                    )
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) { Text("Back") }
+                } else {
+                    TextButton(
+                        onClick = onFinish,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Skip", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                if (page < pages.lastIndex) {
-                    LiquidButton(
-                        text = "Next",
-                        onClick = { page++ },
-                        color = MaterialTheme.colorScheme.primary,
-                        width = 120.dp
-                    )
-                } else {
-                    LiquidButton(
-                        text = "Get Started",
-                        onClick = onFinish,
-                        color = MaterialTheme.colorScheme.primary,
-                        width = 160.dp
+                val nextAccent = when (page) {
+                    1 -> MaterialTheme.colorScheme.secondary
+                    2 -> MaterialTheme.colorScheme.tertiary
+                    else -> MaterialTheme.colorScheme.primary
+                }
+                Button(
+                    onClick = { if (page < totalPages - 1) page++ else onFinish() },
+                    modifier = Modifier
+                        .weight(2f)
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = nextAccent)
+                ) {
+                    Text(
+                        if (page < totalPages - 1) "Next" else "Get Started 🚀",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }

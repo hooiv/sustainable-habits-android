@@ -1,0 +1,659 @@
+﻿Configuration on demand is an incubating feature.
+Reusing configuration cache.
+> Task :features:demo:preBuild UP-TO-DATE
+> Task :core:data:preBuild UP-TO-DATE
+> Task :core:ui:preBuild UP-TO-DATE
+> Task :features:calendar:preBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:auth:preBuild UP-TO-DATE
+> Task :core:network:preBuild UP-TO-DATE
+> Task :features:animation:preBuild UP-TO-DATE
+> Task :features:ai:preBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :core:domain:preBuild UP-TO-DATE
+> Task :features:analytics:preBuild UP-TO-DATE
+> Task :features:analytics:preDebugBuild UP-TO-DATE
+> Task :core:data:preDebugBuild UP-TO-DATE
+> Task :core:ui:preDebugBuild UP-TO-DATE
+> Task :features:demo:preDebugBuild UP-TO-DATE
+> Task :features:calendar:preDebugBuild UP-TO-DATE
+> Task :core:domain:preDebugBuild UP-TO-DATE
+> Task :features:auth:preDebugBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :features:animation:preDebugBuild UP-TO-DATE
+> Task :core:network:preDebugBuild UP-TO-DATE
+> Task :features:gamification:preBuild UP-TO-DATE
+> Task :features:ai:preDebugBuild UP-TO-DATE
+> Task :features:gamification:preDebugBuild UP-TO-DATE
+> Task :features:habits:preBuild UP-TO-DATE
+> Task :features:habits:preDebugBuild UP-TO-DATE
+> Task :core:data:writeDebugAarMetadata UP-TO-DATE
+> Task :core:domain:writeDebugAarMetadata UP-TO-DATE
+> Task :features:demo:writeDebugAarMetadata UP-TO-DATE
+> Task :features:analytics:writeDebugAarMetadata UP-TO-DATE
+> Task :core:network:writeDebugAarMetadata UP-TO-DATE
+> Task :core:ui:writeDebugAarMetadata UP-TO-DATE
+> Task :features:calendar:writeDebugAarMetadata UP-TO-DATE
+> Task :features:ai:writeDebugAarMetadata UP-TO-DATE
+> Task :features:auth:writeDebugAarMetadata UP-TO-DATE
+> Task :features:habits:writeDebugAarMetadata UP-TO-DATE
+> Task :features:animation:writeDebugAarMetadata UP-TO-DATE
+> Task :features:gamification:writeDebugAarMetadata UP-TO-DATE
+> Task :features:stats:preBuild UP-TO-DATE
+> Task :features:social:preBuild UP-TO-DATE
+> Task :features:splash:preBuild UP-TO-DATE
+> Task :features:settings:preBuild UP-TO-DATE
+> Task :features:settings:preDebugBuild UP-TO-DATE
+> Task :features:splash:preDebugBuild UP-TO-DATE
+> Task :features:onboarding:preBuild UP-TO-DATE
+> Task :features:stats:preDebugBuild UP-TO-DATE
+> Task :features:social:preDebugBuild UP-TO-DATE
+> Task :features:onboarding:preDebugBuild UP-TO-DATE
+> Task :features:settings:writeDebugAarMetadata UP-TO-DATE
+> Task :features:stats:writeDebugAarMetadata UP-TO-DATE
+> Task :features:splash:writeDebugAarMetadata UP-TO-DATE
+> Task :features:onboarding:writeDebugAarMetadata UP-TO-DATE
+> Task :features:social:writeDebugAarMetadata UP-TO-DATE
+> Task :core:domain:processDebugNavigationResources UP-TO-DATE
+> Task :features:analytics:processDebugNavigationResources UP-TO-DATE
+> Task :core:ui:processDebugNavigationResources UP-TO-DATE
+> Task :features:auth:processDebugNavigationResources UP-TO-DATE
+> Task :features:ai:processDebugNavigationResources UP-TO-DATE
+> Task :core:network:processDebugNavigationResources UP-TO-DATE
+> Task :core:data:processDebugNavigationResources UP-TO-DATE
+> Task :features:demo:processDebugNavigationResources UP-TO-DATE
+> Task :features:animation:processDebugNavigationResources UP-TO-DATE
+> Task :features:calendar:processDebugNavigationResources UP-TO-DATE
+> Task :features:gamification:processDebugNavigationResources UP-TO-DATE
+> Task :features:stats:processDebugNavigationResources UP-TO-DATE
+> Task :features:splash:processDebugNavigationResources UP-TO-DATE
+> Task :core:data:generateDebugResources UP-TO-DATE
+> Task :features:social:processDebugNavigationResources UP-TO-DATE
+> Task :features:onboarding:processDebugNavigationResources UP-TO-DATE
+> Task :features:habits:processDebugNavigationResources UP-TO-DATE
+> Task :features:ai:generateDebugResources UP-TO-DATE
+> Task :features:settings:processDebugNavigationResources UP-TO-DATE
+> Task :core:ui:generateDebugResources UP-TO-DATE
+> Task :core:network:generateDebugResources UP-TO-DATE
+> Task :core:domain:generateDebugResources UP-TO-DATE
+> Task :features:analytics:generateDebugResources UP-TO-DATE
+> Task :features:animation:generateDebugResources UP-TO-DATE
+> Task :features:calendar:generateDebugResources UP-TO-DATE
+> Task :features:auth:generateDebugResources UP-TO-DATE
+> Task :features:demo:generateDebugResources UP-TO-DATE
+> Task :features:gamification:generateDebugResources UP-TO-DATE
+> Task :features:habits:generateDebugResources UP-TO-DATE
+> Task :core:network:packageDebugResources UP-TO-DATE
+> Task :features:settings:generateDebugResources UP-TO-DATE
+> Task :features:onboarding:generateDebugResources UP-TO-DATE
+> Task :features:auth:packageDebugResources UP-TO-DATE
+> Task :features:animation:packageDebugResources UP-TO-DATE
+> Task :core:ui:packageDebugResources UP-TO-DATE
+> Task :features:calendar:packageDebugResources UP-TO-DATE
+> Task :core:data:packageDebugResources UP-TO-DATE
+> Task :features:ai:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :features:social:generateDebugResources UP-TO-DATE
+> Task :features:splash:generateDebugResources UP-TO-DATE
+> Task :features:demo:packageDebugResources UP-TO-DATE
+> Task :features:stats:generateDebugResources UP-TO-DATE
+> Task :core:domain:packageDebugResources UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :features:analytics:packageDebugResources UP-TO-DATE
+> Task :features:gamification:packageDebugResources UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :features:habits:packageDebugResources UP-TO-DATE
+> Task :core:data:extractDeepLinksDebug UP-TO-DATE
+> Task :features:onboarding:packageDebugResources UP-TO-DATE
+> Task :features:settings:packageDebugResources UP-TO-DATE
+> Task :features:social:packageDebugResources UP-TO-DATE
+> Task :core:domain:extractDeepLinksDebug UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :core:network:extractDeepLinksDebug UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :core:ui:extractDeepLinksDebug UP-TO-DATE
+> Task :features:ai:extractDeepLinksDebug UP-TO-DATE
+> Task :features:splash:packageDebugResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :features:stats:packageDebugResources UP-TO-DATE
+> Task :features:analytics:extractDeepLinksDebug UP-TO-DATE
+> Task :features:animation:extractDeepLinksDebug UP-TO-DATE
+> Task :features:auth:extractDeepLinksDebug UP-TO-DATE
+> Task :core:data:processDebugManifest UP-TO-DATE
+> Task :core:network:processDebugManifest UP-TO-DATE
+> Task :features:ai:processDebugManifest UP-TO-DATE
+> Task :core:ui:processDebugManifest UP-TO-DATE
+> Task :core:domain:processDebugManifest UP-TO-DATE
+> Task :features:demo:extractDeepLinksDebug UP-TO-DATE
+> Task :features:animation:processDebugManifest UP-TO-DATE
+> Task :features:auth:processDebugManifest UP-TO-DATE
+> Task :features:gamification:extractDeepLinksDebug UP-TO-DATE
+> Task :features:analytics:processDebugManifest UP-TO-DATE
+> Task :features:calendar:extractDeepLinksDebug UP-TO-DATE
+> Task :features:habits:extractDeepLinksDebug UP-TO-DATE
+> Task :features:onboarding:extractDeepLinksDebug UP-TO-DATE
+> Task :features:demo:processDebugManifest UP-TO-DATE
+> Task :features:calendar:processDebugManifest UP-TO-DATE
+> Task :features:gamification:processDebugManifest UP-TO-DATE
+> Task :features:settings:extractDeepLinksDebug UP-TO-DATE
+> Task :features:stats:extractDeepLinksDebug UP-TO-DATE
+> Task :features:social:extractDeepLinksDebug UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :features:habits:processDebugManifest UP-TO-DATE
+> Task :core:domain:compileDebugLibraryResources UP-TO-DATE
+> Task :core:data:compileDebugLibraryResources UP-TO-DATE
+> Task :core:network:compileDebugLibraryResources UP-TO-DATE
+> Task :core:ui:compileDebugLibraryResources UP-TO-DATE
+> Task :features:splash:extractDeepLinksDebug UP-TO-DATE
+> Task :core:data:parseDebugLocalResources UP-TO-DATE
+> Task :features:splash:processDebugManifest UP-TO-DATE
+> Task :features:settings:processDebugManifest UP-TO-DATE
+> Task :features:ai:compileDebugLibraryResources UP-TO-DATE
+> Task :features:analytics:compileDebugLibraryResources UP-TO-DATE
+> Task :core:network:parseDebugLocalResources UP-TO-DATE
+> Task :features:stats:processDebugManifest UP-TO-DATE
+> Task :features:social:processDebugManifest UP-TO-DATE
+> Task :features:animation:compileDebugLibraryResources UP-TO-DATE
+> Task :core:domain:parseDebugLocalResources UP-TO-DATE
+> Task :features:onboarding:processDebugManifest UP-TO-DATE
+> Task :features:auth:compileDebugLibraryResources UP-TO-DATE
+> Task :features:analytics:parseDebugLocalResources UP-TO-DATE
+> Task :core:ui:parseDebugLocalResources UP-TO-DATE
+> Task :features:calendar:compileDebugLibraryResources UP-TO-DATE
+> Task :features:animation:parseDebugLocalResources UP-TO-DATE
+> Task :features:ai:parseDebugLocalResources UP-TO-DATE
+> Task :features:calendar:parseDebugLocalResources UP-TO-DATE
+> Task :features:auth:parseDebugLocalResources UP-TO-DATE
+> Task :features:animation:generateDebugRFile UP-TO-DATE
+> Task :features:demo:compileDebugLibraryResources UP-TO-DATE
+> Task :features:analytics:generateDebugRFile UP-TO-DATE
+> Task :core:data:generateDebugRFile UP-TO-DATE
+> Task :features:ai:generateDebugRFile UP-TO-DATE
+> Task :features:calendar:generateDebugRFile UP-TO-DATE
+> Task :features:auth:generateDebugRFile UP-TO-DATE
+> Task :features:gamification:compileDebugLibraryResources UP-TO-DATE
+> Task :features:onboarding:compileDebugLibraryResources UP-TO-DATE
+> Task :features:habits:compileDebugLibraryResources UP-TO-DATE
+> Task :core:ui:generateDebugRFile UP-TO-DATE
+> Task :features:habits:parseDebugLocalResources UP-TO-DATE
+> Task :features:gamification:parseDebugLocalResources UP-TO-DATE
+> Task :features:demo:parseDebugLocalResources UP-TO-DATE
+> Task :core:network:generateDebugRFile UP-TO-DATE
+> Task :features:settings:parseDebugLocalResources UP-TO-DATE
+> Task :features:onboarding:parseDebugLocalResources UP-TO-DATE
+> Task :features:settings:compileDebugLibraryResources UP-TO-DATE
+> Task :core:domain:generateDebugRFile UP-TO-DATE
+> Task :features:splash:compileDebugLibraryResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :features:habits:generateDebugRFile UP-TO-DATE
+> Task :features:stats:compileDebugLibraryResources UP-TO-DATE
+> Task :core:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:social:parseDebugLocalResources UP-TO-DATE
+> Task :features:settings:generateDebugRFile UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :features:gamification:generateDebugRFile UP-TO-DATE
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:ui:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:social:compileDebugLibraryResources UP-TO-DATE
+> Task :features:ai:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:ai:javaPreCompileDebug UP-TO-DATE
+> Task :features:analytics:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:analytics:javaPreCompileDebug UP-TO-DATE
+> Task :features:animation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:animation:javaPreCompileDebug UP-TO-DATE
+> Task :features:auth:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:onboarding:generateDebugRFile UP-TO-DATE
+> Task :features:calendar:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:demo:generateDebugRFile UP-TO-DATE
+> Task :features:social:generateDebugRFile UP-TO-DATE
+> Task :features:stats:parseDebugLocalResources UP-TO-DATE
+> Task :features:auth:javaPreCompileDebug UP-TO-DATE
+> Task :features:demo:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:habits:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:stats:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:splash:parseDebugLocalResources UP-TO-DATE
+> Task :core:network:javaPreCompileDebug UP-TO-DATE
+> Task :features:calendar:javaPreCompileDebug UP-TO-DATE
+> Task :core:domain:javaPreCompileDebug UP-TO-DATE
+> Task :core:data:javaPreCompileDebug UP-TO-DATE
+> Task :features:gamification:javaPreCompileDebug UP-TO-DATE
+> Task :core:ui:javaPreCompileDebug UP-TO-DATE
+> Task :features:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:social:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:gamification:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:splash:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :features:demo:javaPreCompileDebug UP-TO-DATE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :core:data:generateDebugAssets UP-TO-DATE
+> Task :features:habits:javaPreCompileDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :features:splash:generateDebugRFile UP-TO-DATE
+> Task :features:stats:javaPreCompileDebug UP-TO-DATE
+> Task :core:domain:generateDebugAssets UP-TO-DATE
+> Task :core:network:generateDebugAssets UP-TO-DATE
+> Task :core:ui:generateDebugAssets UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :features:ai:generateDebugAssets UP-TO-DATE
+> Task :features:stats:generateDebugRFile UP-TO-DATE
+> Task :features:splash:javaPreCompileDebug UP-TO-DATE
+> Task :features:settings:javaPreCompileDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :features:onboarding:javaPreCompileDebug UP-TO-DATE
+> Task :features:analytics:generateDebugAssets UP-TO-DATE
+> Task :features:animation:generateDebugAssets UP-TO-DATE
+> Task :features:auth:generateDebugAssets UP-TO-DATE
+> Task :features:calendar:generateDebugAssets UP-TO-DATE
+> Task :features:social:javaPreCompileDebug UP-TO-DATE
+> Task :features:demo:generateDebugAssets UP-TO-DATE
+> Task :features:calendar:mergeDebugAssets UP-TO-DATE
+> Task :features:gamification:generateDebugAssets UP-TO-DATE
+> Task :core:domain:mergeDebugAssets UP-TO-DATE
+> Task :features:animation:mergeDebugAssets UP-TO-DATE
+> Task :features:auth:mergeDebugAssets UP-TO-DATE
+> Task :features:habits:generateDebugAssets UP-TO-DATE
+> Task :features:onboarding:generateDebugAssets UP-TO-DATE
+> Task :features:settings:generateDebugAssets UP-TO-DATE
+> Task :features:analytics:mergeDebugAssets UP-TO-DATE
+> Task :features:social:generateDebugAssets UP-TO-DATE
+> Task :core:network:mergeDebugAssets UP-TO-DATE
+> Task :features:splash:generateDebugAssets UP-TO-DATE
+> Task :core:data:mergeDebugAssets UP-TO-DATE
+> Task :features:stats:generateDebugAssets UP-TO-DATE
+> Task :features:ai:mergeDebugAssets UP-TO-DATE
+> Task :features:demo:mergeDebugAssets UP-TO-DATE
+> Task :core:ui:mergeDebugAssets UP-TO-DATE
+> Task :features:habits:mergeDebugAssets UP-TO-DATE
+> Task :features:onboarding:mergeDebugAssets UP-TO-DATE
+> Task :features:gamification:mergeDebugAssets UP-TO-DATE
+> Task :features:settings:mergeDebugAssets UP-TO-DATE
+> Task :features:social:mergeDebugAssets UP-TO-DATE
+> Task :features:stats:mergeDebugAssets UP-TO-DATE
+> Task :features:splash:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:ai:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:ui:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:domain:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :core:data:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:ui:mergeDebugNativeLibs NO-SOURCE
+> Task :core:network:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:ai:mergeDebugNativeLibs NO-SOURCE
+> Task :core:domain:mergeDebugNativeLibs NO-SOURCE
+> Task :core:data:mergeDebugNativeLibs NO-SOURCE
+> Task :core:network:mergeDebugNativeLibs NO-SOURCE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :features:animation:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:analytics:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:data:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :core:network:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:analytics:mergeDebugNativeLibs NO-SOURCE
+> Task :features:auth:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:domain:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:auth:mergeDebugNativeLibs NO-SOURCE
+> Task :features:ai:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:ui:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:animation:mergeDebugNativeLibs NO-SOURCE
+> Task :features:auth:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:animation:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:gamification:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:settings:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:analytics:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:demo:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:calendar:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:habits:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:gamification:mergeDebugNativeLibs NO-SOURCE
+> Task :features:calendar:mergeDebugNativeLibs NO-SOURCE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :features:onboarding:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:demo:mergeDebugNativeLibs NO-SOURCE
+> Task :features:settings:mergeDebugNativeLibs NO-SOURCE
+> Task :features:onboarding:mergeDebugNativeLibs NO-SOURCE
+> Task :features:habits:mergeDebugNativeLibs NO-SOURCE
+> Task :features:settings:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:gamification:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:social:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:splash:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:stats:mergeDebugJniLibFolders UP-TO-DATE
+> Task :features:splash:mergeDebugNativeLibs NO-SOURCE
+> Task :features:calendar:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:demo:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:social:mergeDebugNativeLibs NO-SOURCE
+> Task :features:stats:mergeDebugNativeLibs NO-SOURCE
+> Task :features:onboarding:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:habits:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :features:social:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :features:splash:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :features:stats:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :core:data:kspDebugKotlin UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :core:data:compileDebugKotlin UP-TO-DATE
+> Task :core:data:processDebugJavaRes UP-TO-DATE
+> Task :core:data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:data:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:data:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:domain:kspDebugKotlin UP-TO-DATE
+> Task :core:ui:kspDebugKotlin UP-TO-DATE
+> Task :core:domain:compileDebugKotlin UP-TO-DATE
+> Task :core:network:kspDebugKotlin UP-TO-DATE
+> Task :core:domain:processDebugJavaRes UP-TO-DATE
+> Task :core:domain:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:ui:compileDebugKotlin UP-TO-DATE
+> Task :core:ui:processDebugJavaRes UP-TO-DATE
+> Task :core:network:compileDebugKotlin UP-TO-DATE
+> Task :core:domain:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:network:processDebugJavaRes UP-TO-DATE
+> Task :core:domain:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:domain:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:network:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:ui:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:network:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:network:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:network:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:network:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:ui:transformDebugClassesWithAsm UP-TO-DATE
+> Task :core:ui:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :core:ui:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:ui:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:animation:kspDebugKotlin UP-TO-DATE
+> Task :features:auth:kspDebugKotlin UP-TO-DATE
+> Task :features:ai:kspDebugKotlin UP-TO-DATE
+> Task :features:gamification:kspDebugKotlin UP-TO-DATE
+> Task :features:analytics:kspDebugKotlin UP-TO-DATE
+> Task :features:social:kspDebugKotlin UP-TO-DATE
+> Task :features:calendar:kspDebugKotlin UP-TO-DATE
+> Task :features:ai:compileDebugKotlin UP-TO-DATE
+> Task :features:gamification:compileDebugKotlin UP-TO-DATE
+> Task :features:animation:compileDebugKotlin UP-TO-DATE
+> Task :features:habits:kspDebugKotlin UP-TO-DATE
+> Task :features:ai:processDebugJavaRes UP-TO-DATE
+> Task :features:onboarding:kspDebugKotlin UP-TO-DATE
+> Task :features:gamification:processDebugJavaRes UP-TO-DATE
+> Task :features:ai:compileDebugJavaWithJavac UP-TO-DATE
+> Task :features:animation:processDebugJavaRes UP-TO-DATE
+> Task :features:gamification:compileDebugJavaWithJavac UP-TO-DATE
+> Task :features:social:compileDebugKotlin UP-TO-DATE
+> Task :features:animation:compileDebugJavaWithJavac UP-TO-DATE
+> Task :features:analytics:compileDebugKotlin UP-TO-DATE
+> Task :features:analytics:processDebugJavaRes UP-TO-DATE
+> Task :features:ai:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:animation:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:calendar:compileDebugKotlin UP-TO-DATE
+> Task :features:analytics:compileDebugJavaWithJavac UP-TO-DATE
+> Task :features:social:processDebugJavaRes UP-TO-DATE
+> Task :features:social:compileDebugJavaWithJavac NO-SOURCE
+> Task :features:animation:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:animation:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:calendar:compileDebugJavaWithJavac NO-SOURCE
+> Task :features:ai:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:ai:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:ai:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:calendar:processDebugJavaRes UP-TO-DATE
+> Task :features:animation:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:analytics:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:social:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:calendar:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:gamification:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:gamification:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:calendar:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:gamification:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:calendar:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:social:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:social:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:analytics:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:gamification:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:calendar:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:analytics:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:analytics:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :features:social:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:splash:kspDebugKotlin UP-TO-DATE
+> Task :features:splash:compileDebugKotlin UP-TO-DATE
+> Task :features:splash:processDebugJavaRes UP-TO-DATE
+> Task :features:splash:compileDebugJavaWithJavac NO-SOURCE
+> Task :features:splash:transformDebugClassesWithAsm UP-TO-DATE
+> Task :features:splash:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :features:splash:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :features:splash:bundleLibCompileToJarDebug UP-TO-DATE
+
+> Task :features:onboarding:compileDebugKotlin FAILED
+.\gradlew : e: file:///C:/Users/aditya/Desktop/
+sustainable-habits-android/features/onboarding/
+src/main/java/com/example/myapplication/feature
+s/onboarding/OnboardingScreen.kt:149:26 
+Argument type mismatch: actual type is 
+'List<Pair<ImageVector, String>>', but 'K (of 
+fun <K> WHEN_CALL)' was expected.
+At line:1 char:48
++ ... \Program Files\Java\jdk-21"; .\gradlew 
+:app:installDebug 2>&1 | Out-F ...
++                                  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e 
+   : file:///C:/U...' was expected.:String) [  
+  ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandErr 
+   or
+ 
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:150:25 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:151:25 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:151:39 Unresolved 
+reference 'Repeat'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:151:46 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:152:25 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:154:26 Argument type 
+mismatch: actual type is 
+'List<Pair<ImageVector, String>>', but 'K (of 
+fun <K> WHEN_CALL)' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:155:25 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:156:25 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:156:39 Unresolved 
+reference 'Schedule'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:156:48 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:157:25 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:159:26 Argument type 
+mismatch: actual type is 
+'List<Pair<ImageVector, String>>', but 'K (of 
+fun <K> WHEN_CALL)' was expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:160:25 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:160:39 Unresolved 
+reference 'ShowChart'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:160:49 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:161:25 Argument type 
+mismatch: actual type is 'Pair<ImageVector, 
+String>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:162:25 Argument type 
+mismatch: actual type is 'Pair<uninferred A 
+(of fun <A, B> A.to), uninferred B (of fun <A, 
+B> A.to)>', but 'T (of fun <T> listOf)' was 
+expected.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:162:39 Unresolved 
+reference 'FilterList'.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:162:50 Cannot infer type 
+for this parameter. Specify it explicitly.
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/onboarding/src/main/jav
+a/com/example/myapplication/features/onboarding
+/OnboardingScreen.kt:164:29 Argument type 
+mismatch: actual type is 
+'List<Pair<ImageVector, String>>', but 'K (of 
+fun <K> WHEN_CALL)' was expected.
+
+> Task :features:auth:compileDebugKotlin FAILED
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/auth/src/main/java/com/
+example/myapplication/features/auth/SignInScree
+n.kt:261:38 Unresolved reference 
+'graphicsLayer'.
+
+> Task :features:habits:compileDebugKotlin FAILED
+e: file:///C:/Users/aditya/Desktop/sustainable-
+habits-android/features/habits/src/main/java/co
+m/example/myapplication/features/habits/AddHabi
+tScreen.kt:449:71 Unresolved reference 'Done'.
+
+FAILURE: Build completed with 3 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task 
+':features:onboarding:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+===============================================
+===============================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task 
+':features:auth:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+===============================================
+===============================
+
+3: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task 
+':features:habits:compileDebugKotlin'.
+> A failure occurred while executing org.jetbra
+ins.kotlin.compilerRunner.GradleCompilerRunnerW
+ithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more 
+details
+
+* Try:
+> Run with --stacktrace option to get the 
+stack trace.
+> Run with --info or --debug option to get 
+more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+===============================================
+===============================
+
+BUILD FAILED in 15s
+338 actionable tasks: 3 executed, 335 up-to-date
+Configuration cache entry reused.

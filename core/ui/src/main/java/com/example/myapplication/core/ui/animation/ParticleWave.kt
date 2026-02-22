@@ -4,6 +4,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import android.content.Context
+import android.os.PowerManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -43,11 +46,15 @@ fun ParticleWave(
         }
     }
 
+    val context = LocalContext.current
+    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    val isPowerSaveMode = powerManager.isPowerSaveMode
+
     // Animation value for the wave movement
     val infiniteTransition = rememberInfiniteTransition(label = "wave")
     val time by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 2 * PI.toFloat(),
+        targetValue = if (isPowerSaveMode) 0f else 2 * PI.toFloat(),
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = (5000 / speed).toInt(),

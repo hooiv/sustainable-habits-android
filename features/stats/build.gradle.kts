@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+    implementation(project(":features:habits"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

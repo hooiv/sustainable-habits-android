@@ -14,6 +14,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.Cache
+import okhttp3.Interceptor
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -38,13 +42,27 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+        
+        val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB Cache
+        val cache = Cache(context.cacheDir, cacheSize)
+
+        // Offline cache interceptor
+        val offlineInterceptor = Interceptor { chain ->
+            var request = chain.request()
+            request = request.newBuilder()
+                .header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7) // 7 days stale allowed offline
+                .build()
+            chain.proceed(request)
+        }
 
         return OkHttpClient.Builder()
+            .cache(cache)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(offlineInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)

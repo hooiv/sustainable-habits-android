@@ -3,6 +3,7 @@ package com.example.myapplication.benchmark
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,12 +28,20 @@ class BaselineProfileGenerator {
             val habitList = device.findObject(By.res("habit_list"))
             if (habitList != null) {
                 habitList.setGestureMargin(device.displayWidth / 5)
-                habitList.fling(androidx.test.uiautomator.Direction.DOWN)
-                habitList.fling(androidx.test.uiautomator.Direction.UP)
+                habitList.fling(Direction.DOWN)
+                device.waitForIdle()
+                habitList.fling(Direction.UP)
+                device.waitForIdle()
             }
             
-            // Navigate to details (if possible)
-            // Just basic startup for now to ensure <500ms
+            // Navigate to Add Habit to capture more compilation routes
+            val addHabitBtn = device.findObject(By.text("Add Habit"))
+            if (addHabitBtn != null) {
+                addHabitBtn.click()
+                device.waitForIdle()
+                device.pressBack()
+                device.waitForIdle()
+            }
         }
     }
 }

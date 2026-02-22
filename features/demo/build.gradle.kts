@@ -56,18 +56,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Feature dependencies for UltraAdvancedFeaturesDemo
-    implementation(project(":features:biometric"))
-    implementation(project(":features:ml"))
-    implementation(project(":features:neural"))
-    implementation(project(":features:quantum"))
-    implementation(project(":features:spatial"))
-    implementation(project(":features:voice"))
     implementation(project(":features:auth"))
     implementation(project(":features:habits"))
-    implementation(project(":features:ar"))
-    implementation(project(":features:gestures"))
-    implementation(project(":features:advanced"))
-    implementation(project(":features:threejs"))
     implementation(project(":features:stats"))
     implementation(project(":features:animation"))
 

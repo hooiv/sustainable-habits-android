@@ -1,7 +1,13 @@
 package com.example.myapplication.core.ui.components
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,17 +42,40 @@ fun FeatureCard(
         )
     )
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    val animatedElevation by animateDpAsState(
+        targetValue = if (isPressed) 2.dp else 4.dp,
+        animationSpec = tween(durationMillis = 200),
+        label = "elevation_anim"
+    )
+    
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.98f else 1f,
+        animationSpec = tween(durationMillis = 150),
+        label = "scale_anim"
+    )
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .graphicsLayer {
+                scaleX = animatedScale
+                scaleY = animatedScale
+            }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onClick
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
         ),
-        shape = MaterialTheme.shapes.large, // Cyberpunk CutCornerShape
+        shape = MaterialTheme.shapes.large, // Now using RoundedCornerShape(24.dp) from Shape.kt
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+            defaultElevation = animatedElevation
         )
     ) {
         Row(

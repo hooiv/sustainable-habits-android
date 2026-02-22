@@ -44,6 +44,8 @@ uiautomator = "2.3.0"
 baselineprofile = "1.3.3"
 roborazzi = "1.26.0"
 robolectric = "4.13"
+leakcanary = "2.14"
+securityCrypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -173,6 +175,10 @@ roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi
 roborazzi-core = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+
+# Security & Memory
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

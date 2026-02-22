@@ -124,7 +124,7 @@ fun SplashScreen() {
                     ) {
                         // Use glowing text for enhanced effect
                         GlowingText(
-                            text = "MyApp",
+                            text = "HabitFlow",
                             color = MaterialTheme.colorScheme.onPrimary,
                             glowColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                             glowRadius = 15.dp,
