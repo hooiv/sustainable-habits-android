@@ -144,18 +144,19 @@ fun HabitItem(
         label = "rotationY"
     )
 
-    // Create color gradient based on streak and completion status - avoid color ambiguities
+    // Card gradient — uses the brand tertiary (amber) for high streaks,
+    // secondary (teal) for moderate streaks, neutral surface for new habits.
     val gradientColors = when {
         isCompletedToday -> listOf(
             MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f),
             MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f)
         )
         habit.streak > 9 -> listOf(
-            Color(0xFF39FF14).copy(alpha = 0.4f), // Use direct color value instead of NeonGreen
-            Color(0xFF00BFFF).copy(alpha = 0.2f)  // Use direct color value instead of NeonBlue
+            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
         )
         habit.streak > 4 -> listOf(
-            Color(0xFF00BFFF).copy(alpha = 0.3f), // Use direct color value instead of NeonBlue
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
             MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
         )
         else -> listOf(
@@ -195,7 +196,7 @@ fun HabitItem(
                             )
                             .alpha(0.7f)
                             .background(
-                                color = Color(0xFFFFC107),
+                                color = MaterialTheme.colorScheme.tertiary,
                                 shape = CircleShape
                             )
                             .loadingBounceEffect(enabled = true)
@@ -281,9 +282,9 @@ fun HabitItem(
                                     contentDescription = "Streak: ${habit.streak}",
                                     modifier = Modifier.size(24.dp),
                                     tint = when {
-                                        habit.streak > 9 -> Color(0xFFFF00E4) // Use direct color value instead of NeonPink
-                                        habit.streak > 4 -> Color(0xFFFF9800)
-                                        else -> Color(0xFFF57C00)
+                                        habit.streak > 9 -> com.hooiv.habitflow.core.ui.theme.StreakHigh
+                                        habit.streak > 4 -> com.hooiv.habitflow.core.ui.theme.StreakMedium
+                                        else -> com.hooiv.habitflow.core.ui.theme.StreakLow
                                     }
                                 )
 

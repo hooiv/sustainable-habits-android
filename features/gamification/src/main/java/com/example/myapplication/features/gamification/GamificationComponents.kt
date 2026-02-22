@@ -234,7 +234,7 @@ fun AchievementBadge(
                 modifier = Modifier
                     .size(80.dp)
                     .alpha(glowAlpha)
-                    .glowEffect(8.dp, Color(0xFFFFD700))
+                    .glowEffect(8.dp, com.hooiv.habitflow.core.ui.theme.AchievementGold)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
@@ -283,13 +283,13 @@ fun AchievementBadge(
                             colors = if (isUnlocked) {
                                 listOf(
                                     Color.White,
-                                    Color.Yellow,
+                                    com.hooiv.habitflow.core.ui.theme.AchievementGold,
                                     Color.White
                                 )
                             } else {
                                 listOf(
-                                    Color.Gray.copy(alpha = 0.5f),
-                                    Color.Gray.copy(alpha = 0.7f)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                                 )
                             }
                         ),
@@ -300,7 +300,7 @@ fun AchievementBadge(
                 Icon(
                     imageVector = iconVector,
                     contentDescription = title,
-                    tint = if (isUnlocked) Color.White else Color.Gray.copy(alpha = 0.7f),
+                    tint = if (isUnlocked) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                     modifier = Modifier.size(32.dp)
                 )
 
@@ -328,7 +328,7 @@ fun AchievementBadge(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = if (isUnlocked) MaterialTheme.colorScheme.onBackground else Color.Gray,
+                color = if (isUnlocked) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                 textAlign = TextAlign.Center
             )
 
@@ -336,7 +336,7 @@ fun AchievementBadge(
             Text(
                 text = description,
                 style = MaterialTheme.typography.labelSmall,
-                color = if (isUnlocked) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else Color.Gray.copy(alpha = 0.7f),
+                color = if (isUnlocked) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 4.dp)
             )
@@ -451,7 +451,7 @@ fun BadgeUnlockAnimation(
                         ),
                         shape = CircleShape
                     )
-                    .glowEffect(16.dp, Color(0xFFFFD700)),
+                    .glowEffect(16.dp, com.hooiv.habitflow.core.ui.theme.AchievementGold),
                 contentAlignment = Alignment.Center
             ) {
                 // Particle effect

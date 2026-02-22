@@ -461,9 +461,9 @@ fun StatsScreen(navController: NavController) {
                                         },
                                         contentDescription = "Rank ${index + 1}",
                                         tint = when (index) {
-                                            0 -> Color(0xFFFFD700)
-                                            1 -> Color(0xFFC0C0C0)
-                                            else -> Color(0xFFCD7F32)
+                                            0 -> com.hooiv.habitflow.core.ui.theme.AchievementGold
+                                            1 -> com.hooiv.habitflow.core.ui.theme.AchievementSilver
+                                            else -> com.hooiv.habitflow.core.ui.theme.AchievementBronze
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -492,9 +492,9 @@ fun StatsScreen(navController: NavController) {
                                         imageVector = Icons.Default.LocalFireDepartment,
                                         contentDescription = "Streak",
                                         tint = when {
-                                            habit.streak > 20 -> Color(0xFFFF1744)
-                                            habit.streak > 10 -> Color(0xFFFF9100)
-                                            else -> Color(0xFFFF9800)
+                                            habit.streak > 20 -> com.hooiv.habitflow.core.ui.theme.StreakHigh
+                                            habit.streak > 10 -> com.hooiv.habitflow.core.ui.theme.StreakMedium
+                                            else -> com.hooiv.habitflow.core.ui.theme.StreakLow
                                         },
                                         modifier = Modifier
                                             .size(20.dp)

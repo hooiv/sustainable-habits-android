@@ -146,7 +146,7 @@ fun HabitCorrelationMatrix(
                     if (i == j) {
                         // Diagonal cells (self-correlation)
                         drawRect(
-                            color = Color.Gray.copy(alpha = 0.3f),
+                            color = com.hooiv.habitflow.core.ui.theme.CorrelationNeutral.copy(alpha = 0.3f),
                             topLeft = Offset(j * cellSize, i * cellSize),
                             size = Size(cellSize, cellSize),
                             style = Stroke(width = 1f)
@@ -159,11 +159,11 @@ fun HabitCorrelationMatrix(
 
                         // Determine cell color based on correlation
                         val cellColor = when {
-                            correlation > 0.7f -> Color.Green.copy(alpha = 0.7f)
-                            correlation > 0.3f -> Color.Yellow.copy(alpha = 0.7f)
-                            correlation > -0.3f -> Color.Gray.copy(alpha = 0.3f)
+                            correlation > 0.7f -> com.hooiv.habitflow.core.ui.theme.CorrelationPositive.copy(alpha = 0.7f)
+                            correlation > 0.3f -> com.hooiv.habitflow.core.ui.theme.CorrelationWeak.copy(alpha = 0.7f)
+                            correlation > -0.3f -> com.hooiv.habitflow.core.ui.theme.CorrelationNeutral.copy(alpha = 0.3f)
                             correlation > -0.7f -> Orange.copy(alpha = 0.7f)
-                            else -> Color.Red.copy(alpha = 0.7f)
+                            else -> com.hooiv.habitflow.core.ui.theme.CorrelationNegative.copy(alpha = 0.7f)
                         }
 
                         // Check if this is the selected cell
@@ -335,7 +335,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color.Green.copy(alpha = 0.7f))
+                        .background(com.hooiv.habitflow.core.ui.theme.CorrelationPositive.copy(alpha = 0.7f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -351,7 +351,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color.Yellow.copy(alpha = 0.7f))
+                        .background(com.hooiv.habitflow.core.ui.theme.CorrelationWeak.copy(alpha = 0.7f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -367,7 +367,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color.Gray.copy(alpha = 0.3f))
+                        .background(com.hooiv.habitflow.core.ui.theme.CorrelationNeutral.copy(alpha = 0.3f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -399,7 +399,7 @@ fun HabitCorrelationMatrix(
                 Box(
                     modifier = Modifier
                         .size(16.dp)
-                        .background(Color.Red.copy(alpha = 0.7f))
+                        .background(com.hooiv.habitflow.core.ui.theme.CorrelationNegative.copy(alpha = 0.7f))
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
