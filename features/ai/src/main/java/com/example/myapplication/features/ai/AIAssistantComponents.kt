@@ -29,41 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.core.data.model.AISuggestion
+import com.example.myapplication.core.data.model.SuggestionType
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
 import kotlin.math.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 
-/**
- * Data class representing an AI suggestion
- */
-data class AISuggestion(
-    val id: String = UUID.randomUUID().toString(),
-    val title: String,
-    val description: String,
-    val type: SuggestionType,
-    val confidence: Float, // 0.0 to 1.0
-    val timestamp: Date = Date(),
-    val relatedHabitId: String? = null,
-    val actionable: Boolean = true
-)
-
-/**
- * Enum for different types of AI suggestions
- */
-enum class SuggestionType {
-    NEW_HABIT,
-    HABIT_IMPROVEMENT,
-    STREAK_PROTECTION,
-    SCHEDULE_OPTIMIZATION,
-    HABIT_CHAIN,
-    MOTIVATION,
-    INSIGHT
-}
 
 /**
  * A component that displays an AI assistant with animated avatar and suggestions
