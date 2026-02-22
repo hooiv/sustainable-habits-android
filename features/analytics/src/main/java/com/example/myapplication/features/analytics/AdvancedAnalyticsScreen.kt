@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import com.example.myapplication.features.analytics.AdvancedAnalyticsViewModel
+import com.example.myapplication.features.analytics.dayKeyOf
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -66,21 +67,18 @@ fun AdvancedAnalyticsScreen(
             emptyMap()
         } else {
             val byHabit = completions.groupBy { it.habitId }
-            fun dayKeys(habitId: String): Set<Int> =
-                byHabit[habitId]?.map {
-                    Calendar.getInstance().also { c -> c.time = Date(it.completionDate) }.let { c ->
-                        c.get(Calendar.YEAR) * 1000 + c.get(Calendar.DAY_OF_YEAR)
-                    }
-                }?.toSet() ?: emptySet()
+            fun dayKeys(habitId: String): Set<Long> =
+                byHabit[habitId]?.map { dayKeyOf(it.completionDate) }?.toSet() ?: emptySet()
 
             val result = mutableMapOf<Pair<String, String>, Float>()
             for (i in habits.indices) {
                 val daysA = dayKeys(habits[i].id)
                 for (j in i + 1 until habits.size) {
                     val daysB = dayKeys(habits[j].id)
-                    val union = (daysA union daysB).size
-                    val jaccard = if (union == 0) 0f else (daysA intersect daysB).size.toFloat() / union
-                    result[Pair(habits[i].id, habits[j].id)] = jaccard
+                    val intersectionSize = (daysA intersect daysB).size
+                    val unionSize = daysA.size + daysB.size - intersectionSize
+                    result[Pair(habits[i].id, habits[j].id)] =
+                        if (unionSize == 0) 0f else intersectionSize.toFloat() / unionSize
                 }
             }
             result

@@ -77,12 +77,8 @@ class AIAssistantViewModel @Inject constructor(
     val personalizationSettings: StateFlow<AIAssistantPersonalization> = _personalizationSettings.asStateFlow()
 
     init {
-
         // Load user habits and completions
         loadUserData()
-
-        // Load personalization settings
-        loadPersonalizationSettings()
 
         // Initialize with default suggestions
         viewModelScope.launch {
@@ -99,20 +95,18 @@ class AIAssistantViewModel @Inject constructor(
      * Load user habits and completions for context
      */
     private fun loadUserData() {
+        // Load habits — independent top-level collector
         viewModelScope.launch(ioDispatcher) {
             try {
-                // Load habits
                 habitRepository.getAllHabits().collect { habits ->
                     _userHabits.value = habits
-
-                    // After loading habits, load completions
-                    loadHabitCompletions()
                 }
             } catch (e: Exception) {
-                // If we can't load habits, just use an empty list
                 _userHabits.value = emptyList()
             }
         }
+        // Load completions — independent top-level collector (not nested inside habits)
+        loadHabitCompletions()
     }
 
     /**
@@ -129,15 +123,6 @@ class AIAssistantViewModel @Inject constructor(
                 // If we can't load completions, just use an empty list
                 _habitCompletions.value = emptyList()
             }
-        }
-    }
-
-    /**
-     * Load personalization settings
-     */
-    private fun loadPersonalizationSettings() {
-        viewModelScope.launch(ioDispatcher) {
-            _personalizationSettings.value = AIAssistantPersonalization()
         }
     }
 

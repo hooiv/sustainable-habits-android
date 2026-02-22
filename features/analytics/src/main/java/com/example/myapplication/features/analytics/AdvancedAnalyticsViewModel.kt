@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.util.UUID
+import java.util.Calendar
 import javax.inject.Inject
 
 /**
@@ -128,7 +128,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
             val count = byHabit[bestHabit.id]?.size ?: 0
             insights.add(
                 AnalyticsInsight(
-                    id = "trend_${bestHabit.id}",
+                    id = "trend_${bestHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
                     title = "Top Performing Habit",
                     description = "'${bestHabit.name}' leads with $count total completions — keep it up!",
                     type = InsightType.TREND_DETECTION,
@@ -144,7 +144,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
         if (streakHabit != null && streakHabit.streak > 0) {
             insights.add(
                 AnalyticsInsight(
-                    id = "streak_${streakHabit.id}",
+                    id = "streak_${streakHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
                     title = "Longest Active Streak",
                     description = "'${streakHabit.name}' has a current streak of ${streakHabit.streak} day(s). Don't break the chain!",
                     type = InsightType.ACHIEVEMENT,
@@ -161,21 +161,13 @@ class AdvancedAnalyticsViewModel @Inject constructor(
             var habitA = sorted[0]
             var habitB = sorted[1]
             for (i in sorted.indices) {
-                val daysA = byHabit[sorted[i].id]
-                    ?.map { java.util.Date(it.completionDate).let { d ->
-                        val c = java.util.Calendar.getInstance().also { c -> c.time = d }
-                        c.get(java.util.Calendar.YEAR) * 1000 + c.get(java.util.Calendar.DAY_OF_YEAR)
-                    } }?.toSet() ?: continue
+                val daysA = completionDayKeys(byHabit[sorted[i].id]) ?: continue
                 for (j in i + 1 until sorted.size) {
-                    val daysB = byHabit[sorted[j].id]
-                        ?.map { java.util.Date(it.completionDate).let { d ->
-                            val c = java.util.Calendar.getInstance().also { c -> c.time = d }
-                            c.get(java.util.Calendar.YEAR) * 1000 + c.get(java.util.Calendar.DAY_OF_YEAR)
-                        } }?.toSet() ?: continue
-                    val intersection = (daysA intersect daysB).size
-                    val union = (daysA union daysB).size
-                    if (union > 0) {
-                        val jaccard = intersection.toFloat() / union
+                    val daysB = completionDayKeys(byHabit[sorted[j].id]) ?: continue
+                    val intersectionSize = (daysA intersect daysB).size
+                    val unionSize = daysA.size + daysB.size - intersectionSize
+                    if (unionSize > 0) {
+                        val jaccard = intersectionSize.toFloat() / unionSize
                         if (jaccard > bestCorrelation) {
                             bestCorrelation = jaccard
                             habitA = sorted[i]
@@ -188,7 +180,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
                 val pct = (bestCorrelation * 100).toInt()
                 insights.add(
                     AnalyticsInsight(
-                        id = "corr_${habitA.id}_${habitB.id}",
+                        id = "corr_${habitA.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}_${habitB.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
                         title = "Habit Correlation",
                         description = "'${habitA.name}' and '${habitB.name}' are completed together $pct% of the time.",
                         type = InsightType.CORRELATION,
@@ -205,7 +197,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
         if (neglectedHabit != null) {
             insights.add(
                 AnalyticsInsight(
-                    id = "anomaly_${neglectedHabit.id}",
+                    id = "anomaly_${neglectedHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
                     title = "Habit Needs Attention",
                     description = "'${neglectedHabit.name}' has no recorded completions yet. Try completing it today!",
                     type = InsightType.ANOMALY_DETECTION,
@@ -218,4 +210,20 @@ class AdvancedAnalyticsViewModel @Inject constructor(
 
         return insights
     }
+
+    /** Converts completion records to a set of calendar-day keys (Long) for overlap comparison. */
+    private fun completionDayKeys(completions: List<HabitCompletion>?): Set<Long>? {
+        if (completions.isNullOrEmpty()) return null
+        return completions.map { dayKeyOf(it.completionDate) }.toSet()
+    }
+}
+
+/**
+ * Returns a Long key representing the calendar day of [epochMillis].
+ * Uses `year * 10000L + dayOfYear` to avoid integer overflow and ensure uniqueness.
+ */
+internal fun dayKeyOf(epochMillis: Long): Long {
+    val c = Calendar.getInstance()
+    c.timeInMillis = epochMillis
+    return c.get(Calendar.YEAR) * 10000L + c.get(Calendar.DAY_OF_YEAR)
 }
