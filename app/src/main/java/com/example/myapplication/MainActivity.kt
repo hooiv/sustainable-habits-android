@@ -20,6 +20,7 @@ import com.example.myapplication.core.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -74,6 +75,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val context = LocalContext.current
+                    val coroutineScope = rememberCoroutineScope()
                     var startDestination by rememberSaveable(stateSaver = StartDestination.Saver) {
                         mutableStateOf<StartDestination>(StartDestination.Splash)
                     }
@@ -103,18 +105,23 @@ class MainActivity : ComponentActivity() {
                             StartDestination.Splash -> SplashScreen()
                             StartDestination.Onboarding -> OnboardingScreen(
                                 onFinish = {
-                                    val masterKey = MasterKey.Builder(context)
-                                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                                        .build()
-                                        
-                                    EncryptedSharedPreferences.create(
-                                        context,
-                                        "onboarding",
-                                        masterKey,
-                                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                                    ).edit().putBoolean("completed", true).apply()
-                                    startDestination = StartDestination.Main
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        val masterKey = MasterKey.Builder(context)
+                                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                            .build()
+
+                                        EncryptedSharedPreferences.create(
+                                            context,
+                                            "onboarding",
+                                            masterKey,
+                                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                                        ).edit().putBoolean("completed", true).apply()
+
+                                        withContext(Dispatchers.Main) {
+                                            startDestination = StartDestination.Main
+                                        }
+                                    }
                                 }
                             )
                             StartDestination.Main -> AppNavigation()
