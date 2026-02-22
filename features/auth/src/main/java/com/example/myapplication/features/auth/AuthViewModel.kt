@@ -3,7 +3,6 @@ package com.example.myapplication.features.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.data.util.FirebaseUtil
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,10 +50,5 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 
      fun clearError() {
         _authState.value = _authState.value.copy(error = null)
-    }
-
-    fun checkUserLoggedIn() {
-        val currentUser = FirebaseUtil.getCurrentUser()
-        _authState.value = AuthState(isSignedIn = currentUser != null, userId = currentUser?.uid)
     }
 }
