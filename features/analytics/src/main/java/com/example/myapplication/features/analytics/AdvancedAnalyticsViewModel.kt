@@ -128,7 +128,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
             val count = byHabit[bestHabit.id]?.size ?: 0
             insights.add(
                 AnalyticsInsight(
-                    id = "trend_${bestHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
+                    id = "trend_${sanitizeId(bestHabit.id)}",
                     title = "Top Performing Habit",
                     description = "'${bestHabit.name}' leads with $count total completions — keep it up!",
                     type = InsightType.TREND_DETECTION,
@@ -144,7 +144,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
         if (streakHabit != null && streakHabit.streak > 0) {
             insights.add(
                 AnalyticsInsight(
-                    id = "streak_${streakHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
+                    id = "streak_${sanitizeId(streakHabit.id)}",
                     title = "Longest Active Streak",
                     description = "'${streakHabit.name}' has a current streak of ${streakHabit.streak} day(s). Don't break the chain!",
                     type = InsightType.ACHIEVEMENT,
@@ -180,7 +180,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
                 val pct = (bestCorrelation * 100).toInt()
                 insights.add(
                     AnalyticsInsight(
-                        id = "corr_${habitA.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}_${habitB.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
+                        id = "corr_${sanitizeId(habitA.id)}_${sanitizeId(habitB.id)}",
                         title = "Habit Correlation",
                         description = "'${habitA.name}' and '${habitB.name}' are completed together $pct% of the time.",
                         type = InsightType.CORRELATION,
@@ -197,7 +197,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
         if (neglectedHabit != null) {
             insights.add(
                 AnalyticsInsight(
-                    id = "anomaly_${neglectedHabit.id.replace(Regex("[^a-zA-Z0-9_-]"), "_")}",
+                    id = "anomaly_${sanitizeId(neglectedHabit.id)}",
                     title = "Habit Needs Attention",
                     description = "'${neglectedHabit.name}' has no recorded completions yet. Try completing it today!",
                     type = InsightType.ANOMALY_DETECTION,
@@ -227,3 +227,6 @@ internal fun dayKeyOf(epochMillis: Long): Long {
     c.timeInMillis = epochMillis
     return c.get(Calendar.YEAR) * 10000L + c.get(Calendar.DAY_OF_YEAR)
 }
+
+/** Sanitizes a raw habit ID for use as an insight ID key. */
+private fun sanitizeId(raw: String): String = raw.replace(Regex("[^a-zA-Z0-9_-]"), "_")

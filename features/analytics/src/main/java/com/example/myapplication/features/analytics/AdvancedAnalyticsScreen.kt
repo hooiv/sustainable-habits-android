@@ -521,20 +521,22 @@ fun PatternCard(
                 // Pattern insights
                 Text(
                     text = run {
-                        val cal = Calendar.getInstance()
                         val dayNames = mapOf(
                             Calendar.MONDAY to "Mondays", Calendar.TUESDAY to "Tuesdays",
                             Calendar.WEDNESDAY to "Wednesdays", Calendar.THURSDAY to "Thursdays",
                             Calendar.FRIDAY to "Fridays", Calendar.SATURDAY to "Saturdays",
                             Calendar.SUNDAY to "Sundays"
                         )
+                        val calendarOf: (Long) -> Calendar = { ms ->
+                            Calendar.getInstance().also { it.timeInMillis = ms }
+                        }
                         val bestDay = completions
-                            .groupingBy { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.DAY_OF_WEEK) }
-                            .eachCount()
+                            .map { calendarOf(it.completionDate).get(Calendar.DAY_OF_WEEK) }
+                            .groupingBy { it }.eachCount()
                             .maxByOrNull { it.value }
                         val bestHour = completions
-                            .groupingBy { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.HOUR_OF_DAY) / 6 }
-                            .eachCount()
+                            .map { calendarOf(it.completionDate).get(Calendar.HOUR_OF_DAY) / 6 }
+                            .groupingBy { it }.eachCount()
                             .maxByOrNull { it.value }
                         val dayLabel = bestDay?.let { dayNames[it.key] } ?: "weekdays"
                         val timeLabel = when (bestHour?.key) {
