@@ -48,7 +48,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-     fun clearError() {
+    fun clearError() {
         _authState.value = _authState.value.copy(error = null)
     }
 }
