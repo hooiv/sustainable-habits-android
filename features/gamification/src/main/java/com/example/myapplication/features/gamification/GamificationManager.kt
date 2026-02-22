@@ -33,10 +33,6 @@ class GamificationManager @Inject constructor(
     private val _xpForNextLevel = MutableStateFlow(100)
     val xpForNextLevel: StateFlow<Int> = _xpForNextLevel.asStateFlow()
 
-    // Recently unlocked badges
-    private val _recentlyUnlockedBadges = MutableStateFlow<List<Badge>>(emptyList())
-    val recentlyUnlockedBadges: StateFlow<List<Badge>> = _recentlyUnlockedBadges.asStateFlow()
-
     // All badges
     private val _allBadges = MutableStateFlow<List<Badge>>(emptyList())
     val allBadges: StateFlow<List<Badge>> = _allBadges.asStateFlow()
