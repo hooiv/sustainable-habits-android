@@ -149,7 +149,6 @@ fun StatsScreen(navController: NavController) {
                     particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     particleCount = 30,
                     waveHeight = 30f,
-                    waveWidth = 1000f,
                     speed = 0.2f
                 )
             }

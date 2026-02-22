@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.Random
 
 /**
  * A composable that renders a wave of animated particles.
@@ -38,10 +39,10 @@ fun ParticleWave(
     val particles = remember {
         List(particleCount) {
             WaveParticle(
-                initialX = Math.random().toFloat(),
-                initialY = Math.random().toFloat(),
-                size = particleSizeRange.start + (particleSizeRange.endInclusive - particleSizeRange.start) * Math.random().toFloat(),
-                phase = (Math.random() * 2 * PI).toFloat()
+                initialX = Random.nextFloat(),
+                initialY = Random.nextFloat(),
+                size = particleSizeRange.start + (particleSizeRange.endInclusive - particleSizeRange.start) * Random.nextFloat(),
+                phase = (Random.nextFloat() * 2 * PI).toFloat()
             )
         }
     }

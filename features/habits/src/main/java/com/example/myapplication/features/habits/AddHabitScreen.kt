@@ -134,7 +134,6 @@ fun AddHabitScreen(
                 particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 particleCount = 20,
                 waveHeight = 20f,
-                waveWidth = 1000f,
                 speed = 0.2f
             )
 

@@ -113,7 +113,6 @@ fun HabitListScreen(
                     particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     particleCount = 30,
                     waveHeight = 30f,
-                    waveWidth = 1000f,
                     speed = 0.2f
                 )
             }
@@ -226,7 +225,6 @@ fun HabitListScreen(
                             particleColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                             particleCount = 50,
                             waveHeight = 80f,
-                            waveWidth = 1000f,
                             speed = 0.3f
                         )
 
