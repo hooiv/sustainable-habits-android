@@ -43,13 +43,13 @@ import kotlin.math.*
 @Composable
 fun AIAssistantCard(
     modifier: Modifier = Modifier,
+    isProcessing: Boolean = false,
     suggestions: List<AISuggestion> = emptyList(),
     onSuggestionClick: (AISuggestion) -> Unit = {},
     onAskQuestion: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     var userQuestion by remember { mutableStateOf("") }
-    var isThinking by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -75,7 +75,7 @@ fun AIAssistantCard(
                 // Animated AI avatar
                 AIAnimatedAvatar(
                     modifier = Modifier.size(60.dp),
-                    isThinking = isThinking
+                    isThinking = isProcessing
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -89,7 +89,7 @@ fun AIAssistantCard(
                     )
 
                     Text(
-                        text = if (isThinking) "Thinking..." else "How can I help you today?",
+                        text = if (isProcessing) "Thinking..." else "How can I help you today?",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -165,13 +165,11 @@ fun AIAssistantCard(
                     Button(
                         onClick = {
                             if (userQuestion.isNotBlank()) {
-                                isThinking = true
                                 onAskQuestion(userQuestion)
                                 userQuestion = ""
-                                isThinking = false
                             }
                         },
-                        enabled = userQuestion.isNotBlank() && !isThinking
+                        enabled = userQuestion.isNotBlank() && !isProcessing
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
@@ -190,29 +188,17 @@ fun AIAssistantCard(
                 ) {
                     QuickSuggestionChip(
                         text = "Suggest a new habit",
-                        onClick = {
-                            isThinking = true
-                            onAskQuestion("Suggest a new habit for me")
-                            isThinking = false
-                        }
+                        onClick = { onAskQuestion("Suggest a new habit for me") }
                     )
 
                     QuickSuggestionChip(
                         text = "Optimize my schedule",
-                        onClick = {
-                            isThinking = true
-                            onAskQuestion("Help me optimize my habit schedule")
-                            isThinking = false
-                        }
+                        onClick = { onAskQuestion("Help me optimize my habit schedule") }
                     )
 
                     QuickSuggestionChip(
                         text = "Improve motivation",
-                        onClick = {
-                            isThinking = true
-                            onAskQuestion("How can I stay motivated?")
-                            isThinking = false
-                        }
+                        onClick = { onAskQuestion("How can I stay motivated?") }
                     )
                 }
             }

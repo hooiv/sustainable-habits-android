@@ -109,6 +109,7 @@ fun AIAssistantScreen(
         ) {
             // AI Assistant Card
             AIAssistantCard(
+                isProcessing = isProcessing || isStreaming,
                 suggestions = suggestions,
                 onSuggestionClick = { suggestion ->
                     coroutineScope.launch {
