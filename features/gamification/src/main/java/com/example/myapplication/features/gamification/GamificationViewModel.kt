@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.*
@@ -79,27 +80,27 @@ class GamificationViewModel @Inject constructor(
     }
 
     /**
-     * Observe reactive state from GamificationManager in a single coroutine using combine.
+     * Observe reactive state from GamificationManager in a single coroutine.
+     * Uses [combine] to collect all 5 StateFlows concurrently, ensuring the
+     * ViewModel's derived state is always consistent across a single emission.
      * Called once from init to avoid duplicate collectors if loadGamificationData() is re-invoked.
      */
     private fun observeGamificationManagerState() {
         viewModelScope.launch {
-            gamificationManager.currentXp.collect { _currentXp.value = it }
-        }
-        viewModelScope.launch {
-            gamificationManager.currentLevel.collect { _currentLevel.value = it }
-        }
-        viewModelScope.launch {
-            gamificationManager.xpForNextLevel.collect { _xpForNextLevel.value = it }
-        }
-        viewModelScope.launch {
-            gamificationManager.allBadges.collect { badges ->
+            combine(
+                gamificationManager.currentXp,
+                gamificationManager.currentLevel,
+                gamificationManager.xpForNextLevel,
+                gamificationManager.allBadges,
+                gamificationManager.availableRewards
+            ) { xp, level, xpForNext, badges, rewards ->
+                _currentXp.value = xp
+                _currentLevel.value = level
+                _xpForNextLevel.value = xpForNext
                 _allBadges.value = badges
                 _unlockedBadges.value = badges.filter { it.isUnlocked }
-            }
-        }
-        viewModelScope.launch {
-            gamificationManager.availableRewards.collect { _availableRewards.value = it }
+                _availableRewards.value = rewards
+            }.collect()
         }
     }
 
