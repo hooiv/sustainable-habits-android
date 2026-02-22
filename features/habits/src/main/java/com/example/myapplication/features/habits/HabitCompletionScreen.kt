@@ -57,11 +57,10 @@ fun HabitCompletionScreen(
     AppScaffold(
         title = "$habitName Completions",
         onNavigateBack = { navController.popBackStack() }
-    ) { paddingValues ->
+    ) { _ ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
         ) {
             // Main content
             Column(
