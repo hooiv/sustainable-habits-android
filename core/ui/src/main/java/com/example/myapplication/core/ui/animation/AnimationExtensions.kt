@@ -15,6 +15,7 @@ import androidx.compose.animation.core.animateIntSizeAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 
 /**
  * Custom easing functions for animations (simplified version)
@@ -55,6 +56,30 @@ fun Modifier.animateContentSizeCustom(
 ): Modifier {
     // Create a custom implementation using animateIntSizeAsState
     return this
+}
+
+/**
+ * Applies a 3D card tilt effect using graphicsLayer.
+ * Used by ThreeDCard to show depth based on touch rotation values.
+ */
+fun Modifier.threeDCard(
+    rotationX: Float = 0f,
+    rotationY: Float = 0f,
+    shadowElevation: Float = 8f
+): Modifier = this.graphicsLayer {
+    this.rotationX = rotationX
+    this.rotationY = rotationY
+    this.shadowElevation = shadowElevation
+    this.cameraDistance = 12f * density
+}
+
+/**
+ * Applies a flip rotation around the Y axis.
+ * Used by FlipCard to animate between front and back faces.
+ */
+fun Modifier.flipCard(rotationY: Float): Modifier = this.graphicsLayer {
+    this.rotationY = rotationY
+    this.cameraDistance = 12f * density
 }
 
 /**

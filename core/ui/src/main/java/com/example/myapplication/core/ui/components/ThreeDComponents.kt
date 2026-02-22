@@ -1,7 +1,6 @@
 package com.example.myapplication.core.ui.components
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,15 +8,10 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.alpha
 import com.example.myapplication.core.ui.animation.flipCard
 import com.example.myapplication.core.ui.animation.threeDCard
 import kotlin.math.abs
@@ -144,103 +138,3 @@ fun FlipCard(
     }
 }
 
-/**
- * A gradient button with 3D-like press animation effect.
- */
-@Composable
-fun GradientButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    gradientColors: List<Color> = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.tertiary
-    ),
-    contentColor: Color = MaterialTheme.colorScheme.onPrimary
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "scale"
-    )
-    
-    Button(
-        onClick = onClick,
-        modifier = modifier.scale(scale),
-        interactionSource = interactionSource,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = contentColor
-        ),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    brush = Brush.horizontalGradient(colors = gradientColors),
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = text)
-        }
-    }
-}
-
-/**
- * A shimmer loading placeholder with animation effect.
- */
-@Composable
-fun ShimmerItem(
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = true,
-    contentAlpha: Float = 0f,
-    content: @Composable () -> Unit
-) {
-    val shimmerColors = listOf(
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-    )
-    
-    val transition = rememberInfiniteTransition(label = "shimmer")
-    val translateAnimation = transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "shimmer"
-    )
-    
-    Box(modifier = modifier) {
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = shimmerColors,
-                            startX = translateAnimation.value - 1000,
-                            endX = translateAnimation.value
-                        )
-                    )
-            )
-        } else {
-            Box(modifier = Modifier.fillMaxSize().alpha(contentAlpha)) {
-                content()
-            }
-        }
-    }
-}

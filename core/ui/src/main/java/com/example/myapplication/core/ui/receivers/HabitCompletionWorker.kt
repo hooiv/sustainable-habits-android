@@ -24,13 +24,12 @@ class HabitCompletionWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val habitId = inputData.getString("habit_id") ?: return Result.failure()
 
-        try {
-            Log.d("HabitCompletionWorker", "Processing habit completion for ID: $habitId")
+        return try {
             repository.markHabitCompleted(habitId)
-            return Result.success()
+            Result.success()
         } catch (e: Exception) {
             Log.e("HabitCompletionWorker", "Error completing habit: ${e.message}")
-            return Result.retry()
+            Result.retry()
         }
     }
 }
@@ -47,21 +46,18 @@ class HabitCompletionFallbackWorker(
     override suspend fun doWork(): Result {
         val habitId = inputData.getString("habit_id") ?: return Result.failure()
 
-        try {
-            Log.d("HabitCompletionWorker", "Processing habit completion for ID: $habitId")
-
+        return try {
             // Create repository manually since we don't have injection
             val database = AppDatabase.getInstance(applicationContext)
             val habitDao = database.habitDao()
             val habitCompletionDao = database.habitCompletionDao()
-            val workManager = androidx.work.WorkManager.getInstance(applicationContext)
-            val repository = HabitRepository(habitDao, habitCompletionDao, workManager)
+            val repository = HabitRepository(habitDao, habitCompletionDao)
 
             repository.markHabitCompleted(habitId)
-            return Result.success()
+            Result.success()
         } catch (e: Exception) {
             Log.e("HabitCompletionWorker", "Error completing habit: ${e.message}")
-            return Result.retry()
+            Result.retry()
         }
     }
 }

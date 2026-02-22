@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -281,5 +282,101 @@ fun GlowingText(
                 glowEffect = true
             )
         }
+    }
+}
+
+/** Shape of individual particles rendered by [ParticleSystem]. */
+enum class ParticleShape { CIRCLE, SQUARE, TRIANGLE, STAR }
+
+/** Motion pattern applied to particles by [ParticleSystem]. */
+enum class ParticleEffect { FLOAT, WAVE, VORTEX, PULSE }
+
+/**
+ * Renders an ambient particle background. Delegates rendering to [ParticleWave];
+ * [particleShape] and [particleEffect] are accepted for API compatibility but
+ * the visual is a simple wave that fits all use-cases in this app.
+ */
+@Composable
+fun ParticleSystem(
+    modifier: Modifier = Modifier,
+    particleCount: Int = 30,
+    particleColor: Color = Color.White.copy(alpha = 0.3f),
+    particleShape: ParticleShape = ParticleShape.CIRCLE,
+    particleEffect: ParticleEffect = ParticleEffect.FLOAT,
+    maxSpeed: Float = 0.5f,
+    particleSize: Dp = 4.dp,
+    glowEffect: Boolean = false,
+    colorVariation: Boolean = false
+) {
+    ParticleWave(
+        modifier = modifier,
+        particleColor = particleColor,
+        particleCount = particleCount,
+        particleSizeRange = (particleSize.value * 0.5f)..(particleSize.value * 2f),
+        speed = maxSpeed
+    )
+}
+
+/**
+ * Lightweight 3D-scene container that wraps [content] with a subtle graphicsLayer
+ * rotation. Replaces the deleted WebView-based ThreeJS integration.
+ */
+@Composable
+fun ThreeJSScene(
+    modifier: Modifier = Modifier,
+    rotationEnabled: Boolean = true,
+    initialRotationY: Float = 0f,
+    cameraDistance: Float = 12f,
+    enableParallax: Boolean = false,
+    enableShadows: Boolean = false,
+    backgroundColor: Color = Color.Transparent,
+    content: @Composable (Modifier) -> Unit
+) {
+    val density = LocalDensity.current
+    Box(modifier = modifier) {
+        content(
+            Modifier.graphicsLayer {
+                this.rotationY = if (rotationEnabled) initialRotationY else 0f
+                this.cameraDistance = cameraDistance * density.density
+            }
+        )
+    }
+}
+
+/**
+ * One-shot particle burst effect. Rendered as an animated [ParticleWave] that
+ * fades out after [duration] ms. When [repeat] is false the animation stops after
+ * one cycle.
+ */
+@Composable
+fun ParticleExplosion(
+    modifier: Modifier = Modifier,
+    particleColor: Color = Color.White.copy(alpha = 0.4f),
+    particleCount: Int = 20,
+    explosionRadius: Float = 150f,
+    duration: Int = 1500,
+    repeat: Boolean = false
+) {
+    var visible by remember { mutableStateOf(true) }
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(duration),
+        label = "explosionFade"
+    )
+    LaunchedEffect(repeat) {
+        if (!repeat) {
+            delay(duration.toLong())
+            visible = false
+        } else {
+            visible = true
+        }
+    }
+    if (alpha > 0f) {
+        ParticleWave(
+            modifier = modifier.alpha(alpha),
+            particleColor = particleColor,
+            particleCount = particleCount,
+            waveHeight = explosionRadius / 5f
+        )
     }
 }
