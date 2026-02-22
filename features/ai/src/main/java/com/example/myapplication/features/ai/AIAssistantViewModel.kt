@@ -70,14 +70,8 @@ class AIAssistantViewModel @Inject constructor(
     private val _habitCompletions = MutableStateFlow<List<HabitCompletion>>(emptyList())
 
     // Mood data for emotional context
-    private val _moodData = MutableStateFlow<List<MoodEntry>>(emptyList())
-
     // Location data for spatial context
-    private val _locationData = MutableStateFlow<List<LocationContext>>(emptyList())
-
     // Time patterns for temporal context
-    private val _timePatterns = MutableStateFlow<List<TimePattern>>(emptyList())
-
     // Personalization settings
     private val _personalizationSettings = MutableStateFlow(AIAssistantPersonalization())
     val personalizationSettings: StateFlow<AIAssistantPersonalization> = _personalizationSettings.asStateFlow()
@@ -96,9 +90,6 @@ class AIAssistantViewModel @Inject constructor(
                 _userHabits.value,
                 null,
                 _habitCompletions.value,
-                _moodData.value,
-                _locationData.value,
-                _timePatterns.value,
                 _personalizationSettings.value
             )
         }
@@ -122,11 +113,6 @@ class AIAssistantViewModel @Inject constructor(
                 _userHabits.value = emptyList()
             }
         }
-
-        // Load additional context data
-        loadMoodData()
-        loadLocationData()
-        loadTimePatterns()
     }
 
     /**
@@ -143,33 +129,6 @@ class AIAssistantViewModel @Inject constructor(
                 // If we can't load completions, just use an empty list
                 _habitCompletions.value = emptyList()
             }
-        }
-    }
-
-    /**
-     * Load mood data for emotional context
-     */
-    private fun loadMoodData() {
-        viewModelScope.launch(ioDispatcher) {
-            _moodData.value = emptyList()
-        }
-    }
-
-    /**
-     * Load location data for spatial context
-     */
-    private fun loadLocationData() {
-        viewModelScope.launch(ioDispatcher) {
-            _locationData.value = emptyList()
-        }
-    }
-
-    /**
-     * Load time patterns for temporal context
-     */
-    private fun loadTimePatterns() {
-        viewModelScope.launch(ioDispatcher) {
-            _timePatterns.value = emptyList()
         }
     }
 
@@ -200,63 +159,42 @@ class AIAssistantViewModel @Inject constructor(
                             aiService.generateNewHabitSuggestion(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.SCHEDULE_OPTIMIZATION ->
                             aiService.generateScheduleOptimization(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.MOTIVATION ->
                             aiService.generateMotivationTips(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.HABIT_IMPROVEMENT ->
                             aiService.generateHabitImprovementTips(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.STREAK_PROTECTION ->
                             aiService.generateStreakProtectionTips(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.HABIT_CHAIN ->
                             aiService.generateHabitChainSuggestions(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                         SuggestionType.INSIGHT ->
                             aiService.generateInsightAnalysis(
                                 _userHabits.value,
                                 _habitCompletions.value,
-                                _moodData.value,
-                                _locationData.value,
-                                _timePatterns.value,
                                 _personalizationSettings.value
                             )
                     }
@@ -269,9 +207,6 @@ class AIAssistantViewModel @Inject constructor(
                         _userHabits.value,
                         suggestion,
                         _habitCompletions.value,
-                        _moodData.value,
-                        _locationData.value,
-                        _timePatterns.value,
                         _personalizationSettings.value
                     )
 
@@ -315,9 +250,6 @@ class AIAssistantViewModel @Inject constructor(
                 prompt,
                 _userHabits.value,
                 _habitCompletions.value,
-                _moodData.value,
-                _locationData.value,
-                _timePatterns.value,
                 _personalizationSettings.value
             ).flowOn(ioDispatcher).collect { chunk ->
                 // Append chunk to streaming response
@@ -332,9 +264,6 @@ class AIAssistantViewModel @Inject constructor(
                 _userHabits.value,
                 suggestion,
                 _habitCompletions.value,
-                _moodData.value,
-                _locationData.value,
-                _timePatterns.value,
                 _personalizationSettings.value
             )
 
@@ -362,9 +291,6 @@ class AIAssistantViewModel @Inject constructor(
                         question,
                         _userHabits.value,
                         _habitCompletions.value,
-                        _moodData.value,
-                        _locationData.value,
-                        _timePatterns.value,
                         _personalizationSettings.value
                     )
 
@@ -384,9 +310,6 @@ class AIAssistantViewModel @Inject constructor(
                         _userHabits.value,
                         customSuggestion,
                         _habitCompletions.value,
-                        _moodData.value,
-                        _locationData.value,
-                        _timePatterns.value,
                         _personalizationSettings.value
                     )
 
@@ -419,9 +342,6 @@ class AIAssistantViewModel @Inject constructor(
                 question,
                 _userHabits.value,
                 _habitCompletions.value,
-                _moodData.value,
-                _locationData.value,
-                _timePatterns.value,
                 _personalizationSettings.value
             ).flowOn(ioDispatcher).collect { chunk ->
                 // Append chunk to streaming response
@@ -444,9 +364,6 @@ class AIAssistantViewModel @Inject constructor(
                 _userHabits.value,
                 customSuggestion,
                 _habitCompletions.value,
-                _moodData.value,
-                _locationData.value,
-                _timePatterns.value,
                 _personalizationSettings.value
             )
 
