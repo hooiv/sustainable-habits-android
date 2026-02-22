@@ -86,7 +86,7 @@ class OpenAIService @Inject constructor(
             )
 
             if (response.isSuccessful && response.body() != null) {
-                val content = response.body()!!.choices.firstOrNull()?.message?.content ?:
+                val content = response.body()?.choices?.firstOrNull()?.message?.content ?:
                     "I'm sorry, I couldn't generate a response at this time."
                 return@withContext content
             } else {
@@ -142,7 +142,7 @@ class OpenAIService @Inject constructor(
             )
 
             if (response.isSuccessful && response.body() != null) {
-                val responseBody = response.body()!!
+                val responseBody = response.body() ?: return@withContext
                 val source = responseBody.source()
 
                 // Process the streaming response
@@ -283,7 +283,7 @@ class OpenAIService @Inject constructor(
             )
 
             if (response.isSuccessful && response.body() != null) {
-                val content = response.body()!!.choices.firstOrNull()?.message?.content ?: ""
+                val content = response.body()?.choices?.firstOrNull()?.message?.content ?: ""
                 // Extract JSON from the response
                 val jsonContent = extractJsonFromString(content)
 

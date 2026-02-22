@@ -275,17 +275,19 @@ fun EditHabitScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        if (habitName.isNotBlank() && originalHabit != null) {
-                            val updatedHabit = originalHabit!!.copy(
-                                name = habitName,
-                                description = habitDescription.takeIf { it.isNotBlank() },
-                                frequency = selectedFrequency,
-                                goal = goal.toIntOrNull() ?: 1,
-                                reminderTime = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm")),
-                                category = habitCategory.takeIf { it.isNotBlank() }
-                            )
-                            viewModel.updateHabit(updatedHabit)
-                            navController.popBackStack()
+                        if (habitName.isNotBlank()) {
+                            originalHabit?.let { original ->
+                                val updatedHabit = original.copy(
+                                    name = habitName,
+                                    description = habitDescription.takeIf { it.isNotBlank() },
+                                    frequency = selectedFrequency,
+                                    goal = goal.toIntOrNull() ?: 1,
+                                    reminderTime = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                    category = habitCategory.takeIf { it.isNotBlank() }
+                                )
+                                viewModel.updateHabit(updatedHabit)
+                                navController.popBackStack()
+                            }
                         }
                     },
                     modifier = Modifier
