@@ -250,14 +250,11 @@ class GamificationViewModel @Inject constructor(
     private fun unlockBadge(badge: Badge) {
         viewModelScope.launch {
             try {
-                // Update badge
-                val updatedBadges = _allBadges.value.toMutableList()
-                val index = updatedBadges.indexOfFirst { it.id == badge.id }
-                if (index >= 0) {
-                    updatedBadges[index] = badge.copy(isUnlocked = true, unlockedDate = Date())
-                    _allBadges.value = updatedBadges
-                    _unlockedBadges.value = updatedBadges.filter { it.isUnlocked }
+                val updated = _allBadges.value.map { b ->
+                    if (b.id == badge.id) b.copy(isUnlocked = true, unlockedDate = java.util.Date()) else b
                 }
+                _allBadges.value = updated
+                _unlockedBadges.value = updated.filter { it.isUnlocked }
                 
                 // Award XP
                 val xpAwarded = when (badge.type) {

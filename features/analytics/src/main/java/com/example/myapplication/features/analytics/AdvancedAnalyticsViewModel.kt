@@ -126,95 +126,76 @@ class AdvancedAnalyticsViewModel @Inject constructor(
     ): List<AnalyticsInsight> {
         val sorted = habits.sortedBy { it.id }
         val byHabit = completions.groupBy { it.habitId }
-        val insights = mutableListOf<AnalyticsInsight>()
 
-        // Best-performing habit (highest completion count)
-        val bestHabit = sorted.maxByOrNull { byHabit[it.id]?.size ?: 0 }
-        if (bestHabit != null) {
-            val count = byHabit[bestHabit.id]?.size ?: 0
-            insights.add(
-                AnalyticsInsight(
-                    id = "trend_${sanitizeId(bestHabit.id)}",
+        return buildList {
+            // Best-performing habit
+            sorted.maxByOrNull { byHabit[it.id]?.size ?: 0 }?.let { best ->
+                add(AnalyticsInsight(
+                    id = "trend_${sanitizeId(best.id)}",
                     title = "Top Performing Habit",
-                    description = "'${bestHabit.name}' leads with $count total completions — keep it up!",
+                    description = "'${best.name}' leads with ${byHabit[best.id]?.size ?: 0} total completions — keep it up!",
                     type = InsightType.TREND_DETECTION,
                     confidence = 1.0f,
-                    relatedHabitIds = listOf(bestHabit.id),
+                    relatedHabitIds = listOf(best.id),
                     timestamp = System.currentTimeMillis()
-                )
-            )
-        }
+                ))
+            }
 
-        // Longest current streak
-        val streakHabit = sorted.maxByOrNull { it.streak }
-        if (streakHabit != null && streakHabit.streak > 0) {
-            insights.add(
-                AnalyticsInsight(
-                    id = "streak_${sanitizeId(streakHabit.id)}",
+            // Longest current streak
+            sorted.maxByOrNull { it.streak }?.takeIf { it.streak > 0 }?.let { sh ->
+                add(AnalyticsInsight(
+                    id = "streak_${sanitizeId(sh.id)}",
                     title = "Longest Active Streak",
-                    description = "'${streakHabit.name}' has a current streak of ${streakHabit.streak} day(s). Don't break the chain!",
+                    description = "'${sh.name}' has a current streak of ${sh.streak} day(s). Don't break the chain!",
                     type = InsightType.ACHIEVEMENT,
                     confidence = 1.0f,
-                    relatedHabitIds = listOf(streakHabit.id),
+                    relatedHabitIds = listOf(sh.id),
                     timestamp = System.currentTimeMillis()
-                )
-            )
-        }
+                ))
+            }
 
-        // Pair with highest co-completion on same calendar day
-        if (sorted.size >= 2) {
-            var bestCorrelation = -1f
-            var habitA = sorted[0]
-            var habitB = sorted[1]
-            for (i in sorted.indices) {
-                val daysA = completionDayKeys(byHabit[sorted[i].id]) ?: continue
-                for (j in i + 1 until sorted.size) {
-                    val daysB = completionDayKeys(byHabit[sorted[j].id]) ?: continue
-                    val intersectionSize = (daysA intersect daysB).size
-                    val unionSize = daysA.size + daysB.size - intersectionSize
-                    if (unionSize > 0) {
-                        val jaccard = intersectionSize.toFloat() / unionSize
-                        if (jaccard > bestCorrelation) {
-                            bestCorrelation = jaccard
-                            habitA = sorted[i]
-                            habitB = sorted[j]
+            // Pair with highest co-completion (Jaccard similarity)
+            if (sorted.size >= 2) {
+                var bestCorrelation = -1f
+                var habitA = sorted[0]; var habitB = sorted[1]
+                for (i in sorted.indices) {
+                    val daysA = completionDayKeys(byHabit[sorted[i].id]) ?: continue
+                    for (j in i + 1 until sorted.size) {
+                        val daysB = completionDayKeys(byHabit[sorted[j].id]) ?: continue
+                        val inter = (daysA intersect daysB).size
+                        val union = daysA.size + daysB.size - inter
+                        if (union > 0) {
+                            val jaccard = inter.toFloat() / union
+                            if (jaccard > bestCorrelation) { bestCorrelation = jaccard; habitA = sorted[i]; habitB = sorted[j] }
                         }
                     }
                 }
-            }
-            if (bestCorrelation >= 0f) {
-                val pct = (bestCorrelation * 100).toInt()
-                insights.add(
-                    AnalyticsInsight(
+                if (bestCorrelation >= 0f) {
+                    add(AnalyticsInsight(
                         id = "corr_${sanitizeId(habitA.id)}_${sanitizeId(habitB.id)}",
                         title = "Habit Correlation",
-                        description = "'${habitA.name}' and '${habitB.name}' are completed together $pct% of the time.",
+                        description = "'${habitA.name}' and '${habitB.name}' are completed together ${(bestCorrelation * 100).toInt()}% of the time.",
                         type = InsightType.CORRELATION,
                         confidence = bestCorrelation,
                         relatedHabitIds = listOf(habitA.id, habitB.id),
                         timestamp = System.currentTimeMillis()
-                    )
-                )
+                    ))
+                }
             }
-        }
 
-        // Habit with zero completions (needs attention)
-        val neglectedHabit = sorted.firstOrNull { (byHabit[it.id]?.size ?: 0) == 0 }
-        if (neglectedHabit != null) {
-            insights.add(
-                AnalyticsInsight(
-                    id = "anomaly_${sanitizeId(neglectedHabit.id)}",
+            // Habit with zero completions (needs attention)
+            sorted.firstOrNull { (byHabit[it.id]?.size ?: 0) == 0 }?.let { neglected ->
+                add(AnalyticsInsight(
+                    id = "anomaly_${sanitizeId(neglected.id)}",
                     title = "Habit Needs Attention",
-                    description = "'${neglectedHabit.name}' has no recorded completions yet. Try completing it today!",
+                    description = "'${neglected.name}' has no recorded completions yet. Try completing it today!",
                     type = InsightType.ANOMALY_DETECTION,
                     confidence = 1.0f,
-                    relatedHabitIds = listOf(neglectedHabit.id),
+                    relatedHabitIds = listOf(neglected.id),
                     timestamp = System.currentTimeMillis()
-                )
-            )
+                ))
+            }
         }
-
-        return insights
     }
 
     /** Converts completion records to a set of calendar-day keys (Long) for overlap comparison. */

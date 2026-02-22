@@ -39,7 +39,6 @@ import com.hooiv.habitflow.features.auth.AuthViewModel
 import com.hooiv.habitflow.features.habits.HabitViewModel
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
-import java.util.Date
 
 // Helper function to parse Firebase data map to a Habit domain object
 private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
@@ -51,16 +50,16 @@ private fun parseHabitMapToDomain(id: String, data: Map<String, Any>): Habit? {
         val goal = (data["goal"] as? Long)?.toInt() ?: 1
         val goalProgress = (data["goalProgress"] as? Long)?.toInt() ?: 0
         val streak = (data["streak"] as? Long)?.toInt() ?: 0
-        val createdTimestamp = data["createdDate"] as? Timestamp
-        val createdDate = createdTimestamp?.toDate() ?: Date()
-        val lastUpdatedTimestamp = (data["lastUpdatedTimestamp"] as? Timestamp)?.toDate() ?: createdDate
-        val lastCompletedDate = (data["lastCompletedDate"] as? Timestamp)?.toDate()
-        val completionHistory = (data["completionHistory"] as? List<*>)?.mapNotNull { (it as? Timestamp)?.toDate() }?.toMutableList() ?: mutableListOf()
+        val createdDate = (data["createdDate"] as? Timestamp)?.toDate()?.time ?: System.currentTimeMillis()
+        val lastUpdatedTs = (data["lastUpdatedTimestamp"] as? Timestamp)?.toDate()?.time ?: createdDate
+        val lastCompletedDate = (data["lastCompletedDate"] as? Timestamp)?.toDate()?.time
+        val completionHistory = (data["completionHistory"] as? List<*>)
+            ?.mapNotNull { (it as? Timestamp)?.toDate()?.time } ?: emptyList()
         val isEnabled = data["isEnabled"] as? Boolean ?: true
         val reminderTime = data["reminderTime"] as? String
         val unlockedBadges = (data["unlockedBadges"] as? List<*>)?.mapNotNull { (it as? Long)?.toInt() } ?: emptyList()
         val category = data["category"] as? String
-        Habit(id = id, name = name, description = description, frequency = frequency, goal = goal, goalProgress = goalProgress, streak = streak, createdDate = createdDate, lastUpdatedTimestamp = lastUpdatedTimestamp, lastCompletedDate = lastCompletedDate, completionHistory = completionHistory, isEnabled = isEnabled, reminderTime = reminderTime, unlockedBadges = unlockedBadges, category = category)
+        Habit(id = id, name = name, description = description, frequency = frequency, goal = goal, goalProgress = goalProgress, streak = streak, createdDate = createdDate, lastUpdatedTimestamp = lastUpdatedTs, lastCompletedDate = lastCompletedDate, completionHistory = completionHistory, isEnabled = isEnabled, reminderTime = reminderTime, unlockedBadges = unlockedBadges, category = category)
     } catch (e: Exception) {
         Log.e("SettingsScreenParser", "Failed to parse habit $id: ${e.message}", e)
         null

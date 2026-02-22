@@ -6,7 +6,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.hooiv.habitflow.core.data.database.Converters
-import java.util.Date
 import java.util.UUID
 
 /**

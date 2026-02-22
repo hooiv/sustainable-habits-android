@@ -66,18 +66,18 @@ fun AdvancedAnalyticsScreen(
             fun dayKeys(habitId: String): Set<Long> =
                 byHabit[habitId]?.map { dayKeyOf(it.completionDate) }?.toSet() ?: emptySet()
 
-            val result = mutableMapOf<Pair<String, String>, Float>()
-            for (i in habits.indices) {
-                val daysA = dayKeys(habits[i].id)
-                for (j in i + 1 until habits.size) {
-                    val daysB = dayKeys(habits[j].id)
-                    val intersectionSize = (daysA intersect daysB).size
-                    val unionSize = daysA.size + daysB.size - intersectionSize
-                    result[Pair(habits[i].id, habits[j].id)] =
-                        if (unionSize == 0) 0f else intersectionSize.toFloat() / unionSize
+            buildMap {
+                for (i in habits.indices) {
+                    val daysA = dayKeys(habits[i].id)
+                    for (j in i + 1 until habits.size) {
+                        val daysB = dayKeys(habits[j].id)
+                        val inter = (daysA intersect daysB).size
+                        val union = daysA.size + daysB.size - inter
+                        put(Pair(habits[i].id, habits[j].id),
+                            if (union == 0) 0f else inter.toFloat() / union)
+                    }
                 }
             }
-            result
         }
     }
 

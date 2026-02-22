@@ -12,6 +12,15 @@ android {
     defaultConfig {
         minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // API key injected from local.properties (never committed to source control).
+        // To set it: add OPENAI_API_KEY=sk-... to your local.properties file.
+        val openAiKey = project.findProperty("OPENAI_API_KEY")?.toString() ?: ""
+        buildConfigField("String", "OPENAI_API_KEY", "\"$openAiKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {

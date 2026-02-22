@@ -1,11 +1,13 @@
 package com.hooiv.habitflow.core.data.model
 
 import java.util.Date
+import androidx.compose.runtime.Immutable
 import java.util.UUID
 
 /**
  * Data class representing an AI suggestion
  */
+@Immutable
 data class AISuggestion(
     val id: String = UUID.randomUUID().toString(),
     val title: String,

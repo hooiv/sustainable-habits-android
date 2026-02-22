@@ -23,7 +23,7 @@ data class Badge(
     val type: BadgeType,
     val milestone: Int = 0,
     val category: String = "",
-    var isUnlocked: Boolean = false,
+    val isUnlocked: Boolean = false,
     val unlockedDate: Date? = null
 )
 
@@ -35,7 +35,7 @@ data class Reward(
     val title: String,
     val description: String,
     val xpCost: Int,
-    var isUnlocked: Boolean = false,
+    val isUnlocked: Boolean = false,
     val unlockedDate: Date? = null
 )
 

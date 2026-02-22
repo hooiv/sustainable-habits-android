@@ -275,8 +275,8 @@ fun HabitTrendsLineChart(
             val cal = Calendar.getInstance()
             val dailyCompletionCounts = IntArray(7) { 0 }
             habits.forEach { habit ->
-                habit.completionHistory.forEach { date ->
-                    cal.time = date
+                habit.completionHistory.forEach { ms ->
+                    cal.timeInMillis = ms
                     val dayIndex = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7
                     dailyCompletionCounts[dayIndex]++
                 }

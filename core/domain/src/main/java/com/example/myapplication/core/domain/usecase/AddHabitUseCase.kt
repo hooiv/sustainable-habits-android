@@ -3,12 +3,10 @@ package com.hooiv.habitflow.core.domain.usecase
 import com.hooiv.habitflow.core.data.model.Habit
 import com.hooiv.habitflow.core.data.model.HabitFrequency
 import com.hooiv.habitflow.core.data.repository.HabitRepository
-import java.util.Date
 import javax.inject.Inject
 
 /**
- * Use case for creating a new habit.
- * Encapsulates the creation logic including setting sensible defaults.
+ * Creates a new habit with sensible defaults and persists it via the repository.
  */
 class AddHabitUseCase @Inject constructor(
     private val repository: HabitRepository
@@ -21,19 +19,16 @@ class AddHabitUseCase @Inject constructor(
         goal: Int = 1,
         reminderTime: String? = null
     ) {
-        val newHabit = Habit(
-            name = name,
-            description = description?.takeIf { it.isNotBlank() },
-            category = category,
-            frequency = frequency,
-            createdDate = Date(),
-            goal = goal,
-            goalProgress = 0,
-            streak = 0,
-            completionHistory = mutableListOf(),
-            isEnabled = true,
-            reminderTime = reminderTime
+        repository.insertHabit(
+            Habit(
+                name = name,
+                description = description?.takeIf { it.isNotBlank() },
+                category = category,
+                frequency = frequency,
+                goal = goal,
+                reminderTime = reminderTime
+                // All other fields use default values defined in Habit data class
+            )
         )
-        repository.insertHabit(newHabit)
     }
 }

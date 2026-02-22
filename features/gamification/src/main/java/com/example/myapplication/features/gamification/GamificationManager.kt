@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,7 +64,7 @@ class GamificationManager @Inject constructor(
             // Initialize rewards
             initializeRewards()
         } catch (e: Exception) {
-            Log.e(TAG, "Error initializing gamification system: ${e.message}")
+            if (android.util.Log.isLoggable(TAG, android.util.Log.ERROR)) Log.e(TAG, "Error initializing gamification system", e)
         }
     }
 
@@ -73,147 +72,94 @@ class GamificationManager @Inject constructor(
      * Initialize badges
      */
     private suspend fun initializeBadges() {
-        val badges = mutableListOf<Badge>()
-
-        // Streak badges
-        streakMilestones.forEach { milestone ->
-            badges.add(
-                Badge(
+        val badges = buildList {
+            // Streak badges
+            streakMilestones.forEach { milestone ->
+                add(Badge(
                     id = "streak_$milestone",
                     title = "$milestone Day Streak",
                     description = "Complete a habit for $milestone days in a row",
                     type = BadgeType.STREAK,
-                    milestone = milestone,
-                    isUnlocked = false
-                )
-            )
-        }
-
-        // Completion badges
-        completionMilestones.forEach { milestone ->
-            badges.add(
-                Badge(
+                    milestone = milestone
+                ))
+            }
+            // Completion badges
+            completionMilestones.forEach { milestone ->
+                add(Badge(
                     id = "completion_$milestone",
                     title = "$milestone Completions",
                     description = "Complete habits $milestone times",
                     type = BadgeType.COMPLETION,
-                    milestone = milestone,
-                    isUnlocked = false
-                )
-            )
-        }
-
-        // Category badges
-        val categories = listOf("health", "productivity", "mindfulness", "social")
-        categories.forEach { category ->
-            categoryMilestones.forEach { milestone ->
-                badges.add(
-                    Badge(
+                    milestone = milestone
+                ))
+            }
+            // Category badges
+            listOf("health", "productivity", "mindfulness", "social").forEach { category ->
+                categoryMilestones.forEach { milestone ->
+                    add(Badge(
                         id = "${category}_$milestone",
                         title = "$category Master",
                         description = "Complete $milestone $category habits",
                         type = BadgeType.CATEGORY,
                         category = category,
-                        milestone = milestone,
-                        isUnlocked = false
-                    )
-                )
+                        milestone = milestone
+                    ))
+                }
             }
+            // Special badges
+            add(Badge(id = "early_bird",      title = "Early Bird",       description = "Complete 5 habits before 8 AM",  type = BadgeType.SPECIAL))
+            add(Badge(id = "night_owl",       title = "Night Owl",        description = "Complete 5 habits after 10 PM",  type = BadgeType.SPECIAL))
+            add(Badge(id = "weekend_warrior", title = "Weekend Warrior",  description = "Complete 10 habits on weekends", type = BadgeType.SPECIAL))
         }
+        val resolvedBadges = updateBadgeUnlockStatus(badges)
 
-        // Special badges
-        badges.add(
-            Badge(
-                id = "early_bird",
-                title = "Early Bird",
-                description = "Complete 5 habits before 8 AM",
-                type = BadgeType.SPECIAL,
-                isUnlocked = false
-            )
-        )
-
-        badges.add(
-            Badge(
-                id = "night_owl",
-                title = "Night Owl",
-                description = "Complete 5 habits after 10 PM",
-                type = BadgeType.SPECIAL,
-                isUnlocked = false
-            )
-        )
-
-        badges.add(
-            Badge(
-                id = "weekend_warrior",
-                title = "Weekend Warrior",
-                description = "Complete 10 habits on weekends",
-                type = BadgeType.SPECIAL,
-                isUnlocked = false
-            )
-        )
-
-        // Update badge unlock status based on user data
-        updateBadgeUnlockStatus(badges)
-
-        _allBadges.value = badges
+        _allBadges.value = resolvedBadges
     }
 
     /**
-     * Update badge unlock status based on user data.
-     * Uses a single getAllCompletions() query instead of N+1 per-habit queries.
+     * Returns a new badge list with `isUnlocked` set based on user data.
+     * Uses a single getAllCompletions() query — no N+1 per-habit queries.
      */
-    private suspend fun updateBadgeUnlockStatus(badges: MutableList<Badge>) {
-        try {
-            // Get all habits and all completions with single queries
+    private suspend fun updateBadgeUnlockStatus(badges: List<Badge>): List<Badge> {
+        return try {
             val habits = habitRepository.getAllHabits().first()
             val allCompletions = habitRepository.getAllCompletions().first()
 
-            // Check streak badges
             val maxStreak = habits.maxOfOrNull { it.streak } ?: 0
-            badges.filter { it.type == BadgeType.STREAK }.forEach { badge ->
-                badge.isUnlocked = maxStreak >= badge.milestone
-            }
-
-            // Check completion badges
             val totalCompletions = allCompletions.size
-            badges.filter { it.type == BadgeType.COMPLETION }.forEach { badge ->
-                badge.isUnlocked = totalCompletions >= badge.milestone
-            }
+            val categoryCounts = habits.groupBy { it.category }.mapValues { it.value.size }
 
-            // Check category badges
-            val categoryCounts = habits.groupBy { it.category }.mapValues { entry -> entry.value.size }
-            badges.filter { it.type == BadgeType.CATEGORY }.forEach { badge ->
-                val count = categoryCounts[badge.category] ?: 0
-                badge.isUnlocked = count >= badge.milestone
-            }
-
-            // Check special badges
             val calendar = Calendar.getInstance()
-
-            // Early bird badge
-            val earlyMorningCompletions = allCompletions.count {
-                calendar.time = Date(it.completionDate)
-                calendar.get(Calendar.HOUR_OF_DAY) < 8
+            val earlyCompletions = allCompletions.count { c ->
+                calendar.timeInMillis = c.completionDate; calendar[Calendar.HOUR_OF_DAY] < 8
             }
-            badges.find { it.id == "early_bird" }?.isUnlocked = earlyMorningCompletions >= 5
-
-            // Night owl badge
-            val lateNightCompletions = allCompletions.count {
-                calendar.time = Date(it.completionDate)
-                calendar.get(Calendar.HOUR_OF_DAY) >= 22
+            val lateCompletions = allCompletions.count { c ->
+                calendar.timeInMillis = c.completionDate; calendar[Calendar.HOUR_OF_DAY] >= 22
             }
-            badges.find { it.id == "night_owl" }?.isUnlocked = lateNightCompletions >= 5
-
-            // Weekend warrior badge
-            val weekendCompletions = allCompletions.count {
-                calendar.time = Date(it.completionDate)
-                val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-                dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY
+            val weekendCompletions = allCompletions.count { c ->
+                calendar.timeInMillis = c.completionDate
+                val dow = calendar[Calendar.DAY_OF_WEEK]
+                dow == Calendar.SATURDAY || dow == Calendar.SUNDAY
             }
-            badges.find { it.id == "weekend_warrior" }?.isUnlocked = weekendCompletions >= 10
 
+            badges.map { badge ->
+                val unlocked = when (badge.type) {
+                    BadgeType.STREAK     -> maxStreak >= badge.milestone
+                    BadgeType.COMPLETION -> totalCompletions >= badge.milestone
+                    BadgeType.CATEGORY   -> (categoryCounts[badge.category] ?: 0) >= badge.milestone
+                    BadgeType.SPECIAL    -> when (badge.id) {
+                        "early_bird"      -> earlyCompletions >= 5
+                        "night_owl"       -> lateCompletions >= 5
+                        "weekend_warrior" -> weekendCompletions >= 10
+                        else              -> badge.isUnlocked
+                    }
+                }
+                if (unlocked != badge.isUnlocked) badge.copy(isUnlocked = unlocked) else badge
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Error updating badge unlock status: ${e.message}")
+            if (android.util.Log.isLoggable(TAG, android.util.Log.ERROR))
+                android.util.Log.e(TAG, "Error updating badge unlock status: ${e.message}")
+            badges
         }
     }
 
@@ -249,7 +195,7 @@ class GamificationManager @Inject constructor(
             _currentXp.value = currentXpInLevel
             _xpForNextLevel.value = xpForNextLevel
         } catch (e: Exception) {
-            Log.e(TAG, "Error calculating XP and level: ${e.message}")
+            if (android.util.Log.isLoggable(TAG, android.util.Log.ERROR)) Log.e(TAG, "Error calculating XP and level", e)
         }
     }
 
@@ -257,39 +203,10 @@ class GamificationManager @Inject constructor(
      * Initialize rewards
      */
     private fun initializeRewards() {
-        val rewards = mutableListOf<Reward>()
-
-        // Add some default rewards
-        rewards.add(
-            Reward(
-                id = "custom_theme",
-                title = "Custom Theme",
-                description = "Unlock a custom theme for the app",
-                xpCost = 500,
-                isUnlocked = false
-            )
-        )
-
-        rewards.add(
-            Reward(
-                id = "advanced_analytics",
-                title = "Advanced Analytics",
-                description = "Unlock advanced analytics features",
-                xpCost = 1000,
-                isUnlocked = false
-            )
-        )
-
-        rewards.add(
-            Reward(
-                id = "premium_badges",
-                title = "Premium Badges",
-                description = "Unlock premium badges",
-                xpCost = 2000,
-                isUnlocked = false
-            )
-        )
-
-        _availableRewards.value = rewards
+        _availableRewards.value = buildList {
+            add(Reward(id = "custom_theme",       title = "Custom Theme",       description = "Unlock a custom theme for the app",       xpCost = 500))
+            add(Reward(id = "advanced_analytics", title = "Advanced Analytics", description = "Unlock advanced analytics features",       xpCost = 1000))
+            add(Reward(id = "premium_badges",     title = "Premium Badges",     description = "Unlock premium badge collection",          xpCost = 2000))
+        }
     }
 }

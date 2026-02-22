@@ -260,9 +260,9 @@ fun EditHabitScreen(
                                 StatChip(label = "Streak", value = "🔥 ${habit.streak}", modifier = Modifier.weight(1f))
                                 StatChip(label = "Completions", value = "✅ ${habit.completionHistory.size}", modifier = Modifier.weight(1f))
                             }
-                            habit.lastCompletedDate?.let { date ->
+                            habit.lastCompletedDate?.let { ms ->
                                 Text(
-                                    "Last completed: ${SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)}",
+                                    "Last completed: ${SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(java.util.Date(ms))}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

@@ -29,8 +29,8 @@ class OpenAIService @Inject constructor(
     companion object {
         private const val TAG = "OpenAIService"
         private const val MODEL = "gpt-4o" // Using the latest model for better responses
-        // In a real app, this would be stored securely and not hardcoded
-        private const val API_KEY = "sk-demo-key-replace-with-real-key-in-production"
+        
+        private val API_KEY: String get() = try { com.hooiv.habitflow.core.network.BuildConfig.OPENAI_API_KEY } catch (_: Exception) { "" }
         private const val SYSTEM_PROMPT = """You are an AI assistant specialized in habit formation and behavior change.
             You help users build sustainable habits by providing personalized advice, motivation, and insights.
             Your responses should be evidence-based, practical, and focused on helping users develop and maintain positive habits.

@@ -1,39 +1,47 @@
 package com.hooiv.habitflow.core.data.repository
 
-import com.hooiv.habitflow.core.data.database.HabitDao
+import androidx.room.withTransaction
+import com.hooiv.habitflow.core.data.database.AppDatabase
 import com.hooiv.habitflow.core.data.database.HabitCompletionDao
-import com.hooiv.habitflow.core.data.model.*
+import com.hooiv.habitflow.core.data.database.HabitDao
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.model.HabitFrequency
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class HabitRepository @Inject constructor(
+    private val db: AppDatabase,
     private val habitDao: HabitDao,
     private val habitCompletionDao: HabitCompletionDao
 ) {
 
-    fun getAllHabits(): Flow<List<Habit>> {
-        return habitDao.getAllHabits()
-    }
+    // ── Read ──────────────────────────────────────────────────────────────────
 
-    fun getHabitById(habitId: String): Flow<Habit?> {
-        return habitDao.getHabitById(habitId)
-    }
+    fun getAllHabits(): Flow<List<Habit>> = habitDao.getAllHabits()
+
+    fun getHabitById(habitId: String): Flow<Habit?> = habitDao.getHabitById(habitId)
+
+    fun getActiveHabits(): Flow<List<Habit>> = habitDao.getActiveHabits()
+
+    // ── Write ─────────────────────────────────────────────────────────────────
 
     suspend fun insertHabit(habit: Habit) {
-        habitDao.insertHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
+        habitDao.insertHabit(
+            habit.copy(isSynced = false, lastUpdatedTimestamp = System.currentTimeMillis())
+        )
     }
 
     suspend fun updateHabit(habit: Habit) {
-        habitDao.updateHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
+        habitDao.updateHabit(
+            habit.copy(isSynced = false, lastUpdatedTimestamp = System.currentTimeMillis())
+        )
     }
 
     suspend fun deleteHabit(habit: Habit) {
-        // Soft delete: Mark as deleted and unsynced
         habitDao.softDeleteHabit(habit.id)
     }
 
@@ -41,235 +49,184 @@ class HabitRepository @Inject constructor(
         habitDao.insertOrReplaceHabits(habits)
     }
 
-    suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date(), note: String? = null, mood: Int? = null, location: String? = null, photoUri: String? = null) {
-        val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
+    // ── Completion ────────────────────────────────────────────────────────────
 
-        // Check if habit is enabled
-        if (!habit.isEnabled) {
-            return
-        }
+    /**
+     * Records a habit completion and updates streak / progress atomically.
+     *
+     * Uses `withTransaction` so the [HabitCompletion] insert and the [Habit] update
+     * are committed together — the UI never sees an inconsistent intermediate state.
+     */
+    suspend fun markHabitCompleted(
+        habitId: String,
+        completionDateMs: Long = System.currentTimeMillis(),
+        note: String? = null,
+        mood: Int? = null,
+        location: String? = null,
+        photoUri: String? = null
+    ) {
+        // Single-shot suspend query — avoids `flow.firstOrNull()` anti-pattern
+        val habit = habitDao.getHabitByIdOnce(habitId) ?: return
+        if (!habit.isEnabled) return
 
-        // Create a habit completion record
         val completion = HabitCompletion(
             habitId = habitId,
-            completionDate = completionDate.time,
+            completionDate = completionDateMs,
             note = note,
             mood = mood,
             location = location,
             photoUri = photoUri
         )
 
-        // Insert the completion record
-        habitCompletionDao.insertCompletion(completion)
+        db.withTransaction {
+            habitCompletionDao.insertCompletion(completion)
 
-        // First, check if we've already completed this habit in the current period
-        if (isSamePeriod(habit.lastCompletedDate, completionDate, habit.frequency) &&
-            habit.lastCompletedDate != null) {
-            // If already completed in same period, just increment progress
-            val updatedHabit = habit.copy(
-                goalProgress = habit.goalProgress + 1,
-                lastCompletedDate = completionDate,
-                completionHistory = (habit.completionHistory + completionDate).toMutableList()
-            )
+            val updatedHistory = habit.completionHistory + completionDateMs
 
-            // Calculate streak only when goal is reached
-            if (updatedHabit.goalProgress >= updatedHabit.goal) {
-                val newStreak = habit.streak + 1
+            val alreadyInSamePeriod =
+                habit.lastCompletedDate != null &&
+                isSamePeriod(habit.lastCompletedDate, completionDateMs, habit.frequency)
 
-                // Badge milestones
-                val badgeMilestones = listOf(7, 30, 100)
-                val newUnlockedBadges = habit.unlockedBadges.toMutableList()
-                for (milestone in badgeMilestones) {
-                    if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
-                        newUnlockedBadges.add(milestone)
-                    }
-                }
-
-                habitDao.updateHabit(
-                    updatedHabit.copy(
-                        streak = newStreak,
-                        goalProgress = 0, // Reset progress after reaching goal
-                        unlockedBadges = newUnlockedBadges
+            val updatedHabit = if (alreadyInSamePeriod) {
+                val newProgress = habit.goalProgress + 1
+                if (newProgress >= habit.goal) {
+                    habit.copy(
+                        goalProgress = 0,
+                        streak = habit.streak + 1,
+                        lastCompletedDate = completionDateMs,
+                        completionHistory = updatedHistory,
+                        unlockedBadges = newMilestones(habit.unlockedBadges, habit.streak + 1)
                     )
-                )
-            } else {
-                habitDao.updateHabit(updatedHabit)
-            }
-        } else {
-            // Different period or first completion
-            val updatedHabit = habit.copy(
-                goalProgress = 1, // Start with 1, not incrementing
-                lastCompletedDate = completionDate,
-                completionHistory = (habit.completionHistory + completionDate).toMutableList()
-            )
-
-            // Check if goal is reached in one go
-            if (updatedHabit.goalProgress >= updatedHabit.goal) {
-                val newStreak = calculateNewStreak(habit, completionDate)
-
-                // Badge milestones
-                val badgeMilestones = listOf(7, 30, 100)
-                val newUnlockedBadges = habit.unlockedBadges.toMutableList()
-                for (milestone in badgeMilestones) {
-                    if (newStreak >= milestone && !newUnlockedBadges.contains(milestone)) {
-                        newUnlockedBadges.add(milestone)
-                    }
-                }
-
-                habitDao.updateHabit(
-                    updatedHabit.copy(
-                        streak = newStreak,
-                        goalProgress = 0, // Reset progress after reaching goal
-                        unlockedBadges = newUnlockedBadges
+                } else {
+                    habit.copy(
+                        goalProgress = newProgress,
+                        lastCompletedDate = completionDateMs,
+                        completionHistory = updatedHistory
                     )
-                )
+                }
             } else {
-                habitDao.updateHabit(updatedHabit)
-            }
-        }
-    }
-
-    // Helper function to calculate new streak based on correct consecutive check
-    private fun calculateNewStreak(habit: Habit, completionDate: Date): Int {
-        // If this is the first completion ever, start with streak 1
-        if (habit.lastCompletedDate == null) {
-            return 1
-        }
-
-        return when (habit.frequency) {
-            HabitFrequency.DAILY -> {
-                if (isConsecutiveDay(habit.lastCompletedDate, completionDate)) {
-                    habit.streak + 1
-                } else if (isSameDay(habit.lastCompletedDate, completionDate)) {
-                    habit.streak // Don't change streak for same day completions
+                // New period
+                if (habit.goal <= 1) {
+                    val newStreak = calculateNewStreak(habit, completionDateMs)
+                    habit.copy(
+                        goalProgress = 0,
+                        streak = newStreak,
+                        lastCompletedDate = completionDateMs,
+                        completionHistory = updatedHistory,
+                        unlockedBadges = newMilestones(habit.unlockedBadges, newStreak)
+                    )
                 } else {
-                    1 // Reset streak if days not consecutive
+                    habit.copy(
+                        goalProgress = 1,
+                        lastCompletedDate = completionDateMs,
+                        completionHistory = updatedHistory
+                    )
                 }
             }
-            HabitFrequency.WEEKLY -> {
-                if (isConsecutiveWeek(habit.lastCompletedDate, completionDate)) {
-                    habit.streak + 1
-                } else if (isSameWeek(habit.lastCompletedDate, completionDate)) {
-                    habit.streak // Don't change streak for same week completions
-                } else {
-                    1 // Reset streak if weeks not consecutive
-                }
-            }
-            HabitFrequency.MONTHLY -> {
-                if (isConsecutiveMonth(habit.lastCompletedDate, completionDate)) {
-                    habit.streak + 1
-                } else if (isSameMonth(habit.lastCompletedDate, completionDate)) {
-                    habit.streak // Don't change streak for same month completions
-                } else {
-                    1 // Reset streak if months not consecutive
-                }
-            }
-            HabitFrequency.CUSTOM -> {
-                // For custom frequency, simplified streak logic since customSchedule was removed
-                habit.streak + 1 
-            }
+
+            habitDao.updateHabit(
+                updatedHabit.copy(isSynced = false, lastUpdatedTimestamp = System.currentTimeMillis())
+            )
         }
     }
 
-    private fun isSameDay(date1: Date?, date2: Date): Boolean {
-        if (date1 == null) return false
-        val cal1 = Calendar.getInstance().apply { time = date1 }
-        val cal2 = Calendar.getInstance().apply { time = date2 }
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-               cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
-    }
+    // ── Completions ───────────────────────────────────────────────────────────
 
-    private fun isConsecutiveDay(previousCompletion: Date?, currentCompletion: Date): Boolean {
-        if (previousCompletion == null) return false
-        val prevCal = Calendar.getInstance().apply { time = previousCompletion }
-        val currCal = Calendar.getInstance().apply { time = currentCompletion }
-        prevCal.add(Calendar.DAY_OF_YEAR, 1)
-        return prevCal.get(Calendar.YEAR) == currCal.get(Calendar.YEAR) &&
-               prevCal.get(Calendar.DAY_OF_YEAR) == currCal.get(Calendar.DAY_OF_YEAR)
-    }
+    fun getHabitCompletions(habitId: String): Flow<List<HabitCompletion>> =
+        habitCompletionDao.getCompletionsForHabit(habitId)
 
-    private fun isSameWeek(date1: Date?, date2: Date): Boolean {
-        if (date1 == null) return false
-        val cal1 = Calendar.getInstance().apply { time = date1 }
-        val cal2 = Calendar.getInstance().apply { time = date2 }
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-               cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR)
-    }
+    fun getAllCompletions(): Flow<List<HabitCompletion>> =
+        habitCompletionDao.getAllCompletions()
 
-    private fun isConsecutiveWeek(previousCompletion: Date?, currentCompletion: Date): Boolean {
-        if (previousCompletion == null) return false
-        val prevCal = Calendar.getInstance().apply { time = previousCompletion }
-        val currCal = Calendar.getInstance().apply { time = currentCompletion }
-        prevCal.add(Calendar.WEEK_OF_YEAR, 1)
-        return prevCal.get(Calendar.YEAR) == currCal.get(Calendar.YEAR) &&
-               prevCal.get(Calendar.WEEK_OF_YEAR) == currCal.get(Calendar.WEEK_OF_YEAR)
-    }
-
-    private fun isSameMonth(date1: Date?, date2: Date): Boolean {
-        if (date1 == null) return false
-        val cal1 = Calendar.getInstance().apply { time = date1 }
-        val cal2 = Calendar.getInstance().apply { time = date2 }
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-               cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
-    }
-
-    private fun isConsecutiveMonth(previousCompletion: Date?, currentCompletion: Date): Boolean {
-        if (previousCompletion == null) return false
-        val prevCal = Calendar.getInstance().apply { time = previousCompletion }
-        val currCal = Calendar.getInstance().apply { time = currentCompletion }
-        prevCal.add(Calendar.MONTH, 1)
-        return prevCal.get(Calendar.YEAR) == currCal.get(Calendar.YEAR) &&
-               prevCal.get(Calendar.MONTH) == currCal.get(Calendar.MONTH)
-    }
-
-    private fun isSamePeriod(date1: Date?, date2: Date, frequency: HabitFrequency): Boolean {
-        if (date1 == null) return false
-        return when (frequency) {
-            HabitFrequency.DAILY -> isSameDay(date1, date2)
-            HabitFrequency.WEEKLY -> isSameWeek(date1, date2)
-            HabitFrequency.MONTHLY -> isSameMonth(date1, date2)
-            HabitFrequency.CUSTOM -> {
-                // For custom frequency, we need to check if both dates are in the same custom period
-                // This is a simplified implementation
-                true // Assuming custom periods are defined elsewhere
-            }
-        }
-    }
-
-    // Fetch habits for the current day
-    fun getTodayHabits(): Flow<List<Habit>> {
-        return habitDao.getTodayHabits()
-    }
-
-    /**
-     * Get completions for a specific habit
-     */
-    fun getHabitCompletions(habitId: String): Flow<List<HabitCompletion>> {
-        return habitCompletionDao.getCompletionsForHabit(habitId)
-    }
-
-    /**
-     * Get all completions
-     */
-    fun getAllCompletions(): Flow<List<HabitCompletion>> {
-        return habitCompletionDao.getAllCompletions()
-    }
-
-    /**
-     * Delete a habit completion
-     */
-    suspend fun deleteHabitCompletion(completion: HabitCompletion) {
+    suspend fun deleteHabitCompletion(completion: HabitCompletion) =
         habitCompletionDao.deleteCompletion(completion)
-    }
+
+    suspend fun updateHabitCompletion(completion: HabitCompletion) =
+        habitCompletionDao.updateCompletion(completion)
+
+    // ── Private helpers ───────────────────────────────────────────────────────
 
     /**
-     * Update a habit completion
+     * Returns a new `unlockedBadges` list that includes any newly reached milestones.
+     * Uses [Set] for O(1) membership check rather than `List.contains()`.
      */
-    suspend fun updateHabitCompletion(completion: HabitCompletion) {
-        habitCompletionDao.updateCompletion(completion)
+    private fun newMilestones(current: List<Int>, newStreak: Int): List<Int> {
+        val unlocked = current.toHashSet()
+        val milestones = intArrayOf(7, 30, 100, 365)
+        var changed = false
+        for (m in milestones) {
+            if (newStreak >= m && unlocked.add(m)) changed = true
+        }
+        return if (changed) unlocked.sorted() else current
     }
 
-    // --- Sync Logic ---
-    // TODO: Wire enqueueSync() with real Firebase conflict resolution when the app uses a single
-    // source of truth. For now, backup/restore is handled directly in SettingsScreen via FirebaseUtil.
+    private fun calculateNewStreak(habit: Habit, completionMs: Long): Int {
+        val prev = habit.lastCompletedDate ?: return 1
+        return when (habit.frequency) {
+            HabitFrequency.DAILY -> when {
+                isConsecutiveDay(prev, completionMs) -> habit.streak + 1
+                isSameDay(prev, completionMs)        -> habit.streak
+                else                                 -> 1
+            }
+            HabitFrequency.WEEKLY -> when {
+                isConsecutiveWeek(prev, completionMs) -> habit.streak + 1
+                isSameWeek(prev, completionMs)        -> habit.streak
+                else                                  -> 1
+            }
+            HabitFrequency.MONTHLY -> when {
+                isConsecutiveMonth(prev, completionMs) -> habit.streak + 1
+                isSameMonth(prev, completionMs)        -> habit.streak
+                else                                   -> 1
+            }
+            HabitFrequency.CUSTOM -> habit.streak + 1
+        }
+    }
+
+    private fun cal(ms: Long): Calendar = Calendar.getInstance().also { it.timeInMillis = ms }
+
+    private fun isSameDay(a: Long, b: Long): Boolean {
+        val ca = cal(a); val cb = cal(b)
+        return ca[Calendar.YEAR] == cb[Calendar.YEAR] &&
+               ca[Calendar.DAY_OF_YEAR] == cb[Calendar.DAY_OF_YEAR]
+    }
+
+    private fun isConsecutiveDay(prev: Long, curr: Long): Boolean {
+        val cp = cal(prev).also { it.add(Calendar.DAY_OF_YEAR, 1) }
+        val cc = cal(curr)
+        return cp[Calendar.YEAR] == cc[Calendar.YEAR] &&
+               cp[Calendar.DAY_OF_YEAR] == cc[Calendar.DAY_OF_YEAR]
+    }
+
+    private fun isSameWeek(a: Long, b: Long): Boolean {
+        val ca = cal(a); val cb = cal(b)
+        return ca[Calendar.YEAR] == cb[Calendar.YEAR] &&
+               ca[Calendar.WEEK_OF_YEAR] == cb[Calendar.WEEK_OF_YEAR]
+    }
+
+    private fun isConsecutiveWeek(prev: Long, curr: Long): Boolean {
+        val cp = cal(prev).also { it.add(Calendar.WEEK_OF_YEAR, 1) }
+        val cc = cal(curr)
+        return cp[Calendar.YEAR] == cc[Calendar.YEAR] &&
+               cp[Calendar.WEEK_OF_YEAR] == cc[Calendar.WEEK_OF_YEAR]
+    }
+
+    private fun isSameMonth(a: Long, b: Long): Boolean {
+        val ca = cal(a); val cb = cal(b)
+        return ca[Calendar.YEAR] == cb[Calendar.YEAR] &&
+               ca[Calendar.MONTH] == cb[Calendar.MONTH]
+    }
+
+    private fun isConsecutiveMonth(prev: Long, curr: Long): Boolean {
+        val cp = cal(prev).also { it.add(Calendar.MONTH, 1) }
+        val cc = cal(curr)
+        return cp[Calendar.YEAR] == cc[Calendar.YEAR] &&
+               cp[Calendar.MONTH] == cc[Calendar.MONTH]
+    }
+
+    private fun isSamePeriod(prev: Long, curr: Long, freq: HabitFrequency) = when (freq) {
+        HabitFrequency.DAILY   -> isSameDay(prev, curr)
+        HabitFrequency.WEEKLY  -> isSameWeek(prev, curr)
+        HabitFrequency.MONTHLY -> isSameMonth(prev, curr)
+        HabitFrequency.CUSTOM  -> false
+    }
 }

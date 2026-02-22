@@ -24,14 +24,14 @@ object FirebaseUtil {
             "goal" to habit.goal,
             "goalProgress" to habit.goalProgress,
             "streak" to habit.streak,
-            "lastCompletedDate" to habit.lastCompletedDate?.let { Timestamp(it) },
-            "createdDate" to Timestamp(habit.createdDate),
-            "completionHistory" to habit.completionHistory.map { Timestamp(it) },
+            "lastCompletedDate" to habit.lastCompletedDate?.let { Timestamp(java.util.Date(it)) },
+            "createdDate" to Timestamp(java.util.Date(habit.createdDate)),
+            "completionHistory" to habit.completionHistory.map { Timestamp(java.util.Date(it)) },
             "isEnabled" to habit.isEnabled,
             "reminderTime" to habit.reminderTime,
             "unlockedBadges" to habit.unlockedBadges,
             "category" to habit.category,
-            "lastUpdatedTimestamp" to Timestamp(habit.lastUpdatedTimestamp)
+            "lastUpdatedTimestamp" to Timestamp(java.util.Date(habit.lastUpdatedTimestamp))
         )
     }
 

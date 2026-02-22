@@ -45,9 +45,6 @@ import com.hooiv.habitflow.core.ui.components.ThreeDCard
 import com.hooiv.habitflow.core.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun HabitItem(
@@ -60,11 +57,12 @@ fun HabitItem(
     index: Int = 0
 ) {
     // Get current date for comparison and formatting
-    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
     val isCompletedToday = remember(habit) {
-        habit.lastCompletedDate?.let {
-            dateFormat.format(it) == dateFormat.format(Date())
-        } ?: false
+        val lastMs = habit.lastCompletedDate ?: return@remember false
+        val lastCal = java.util.Calendar.getInstance().also { it.timeInMillis = lastMs }
+        val todayCal = java.util.Calendar.getInstance()
+        lastCal[java.util.Calendar.YEAR] == todayCal[java.util.Calendar.YEAR] &&
+        lastCal[java.util.Calendar.DAY_OF_YEAR] == todayCal[java.util.Calendar.DAY_OF_YEAR]
     }
 
     // Card states
