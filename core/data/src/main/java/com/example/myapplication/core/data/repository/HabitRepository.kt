@@ -13,8 +13,7 @@ import javax.inject.Singleton
 @Singleton // Mark as a singleton so Hilt provides the same instance
 class HabitRepository @Inject constructor(
     private val habitDao: HabitDao,
-    private val habitCompletionDao: HabitCompletionDao,
-    private val workManager: androidx.work.WorkManager
+    private val habitCompletionDao: HabitCompletionDao
 ) {
 
     fun getAllHabits(): Flow<List<Habit>> {
@@ -27,18 +26,15 @@ class HabitRepository @Inject constructor(
 
     suspend fun insertHabit(habit: Habit) {
         habitDao.insertHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
-        enqueueSync()
     }
 
     suspend fun updateHabit(habit: Habit) {
         habitDao.updateHabit(habit.copy(isSynced = false, lastUpdatedTimestamp = Date()))
-        enqueueSync()
     }
 
     suspend fun deleteHabit(habit: Habit) {
         // Soft delete: Mark as deleted and unsynced
         habitDao.softDeleteHabit(habit.id)
-        enqueueSync()
     }
 
     suspend fun insertOrReplaceHabits(habits: List<Habit>) {
@@ -274,24 +270,6 @@ class HabitRepository @Inject constructor(
     }
 
     // --- Sync Logic ---
-
-    /**
-     * Triggers an immediate background sync.
-     * Uses KEEP policy to avoid replacing existing syncs if running.
-     */
-    fun enqueueSync() {
-        val syncRequest = androidx.work.OneTimeWorkRequestBuilder<com.example.myapplication.core.data.sync.HabitSyncWorker>()
-            .setConstraints(
-                androidx.work.Constraints.Builder()
-                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                    .build()
-            )
-            .build()
-        
-        workManager.enqueueUniqueWork(
-            "HabitSyncWork",
-            androidx.work.ExistingWorkPolicy.KEEP,
-            syncRequest
-        )
-    }
+    // TODO: Wire enqueueSync() with real Firebase conflict resolution when the app uses a single
+    // source of truth. For now, backup/restore is handled directly in SettingsScreen via FirebaseUtil.
 }

@@ -31,14 +31,6 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE id = :habitId")
     fun getHabitById(habitId: String): Flow<Habit?>
 
-    // --- Sync Methods ---
-
-    @Query("SELECT * FROM habits WHERE isSynced = 0")
-    suspend fun getUnsyncedHabits(): List<Habit>
-
-    @Query("UPDATE habits SET isSynced = 1, lastSynced = :timestamp WHERE id IN (:ids)")
-    suspend fun markSynced(ids: List<String>, timestamp: Long = System.currentTimeMillis())
-
     @Query("UPDATE habits SET isDeleted = 1, isSynced = 0, lastUpdatedTimestamp = :timestamp WHERE id = :habitId")
     suspend fun softDeleteHabit(habitId: String, timestamp: java.util.Date = java.util.Date())
 
