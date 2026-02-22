@@ -31,8 +31,6 @@ import com.example.myapplication.core.data.model.AISuggestion
 import com.example.myapplication.core.data.model.SuggestionType
 import com.example.myapplication.core.data.model.Habit
 import com.example.myapplication.core.ui.animation.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,8 +49,6 @@ fun AIAssistantCard(
     var expanded by remember { mutableStateOf(false) }
     var userQuestion by remember { mutableStateOf("") }
     var isThinking by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -169,12 +165,9 @@ fun AIAssistantCard(
                         onClick = {
                             if (userQuestion.isNotBlank()) {
                                 isThinking = true
-                                coroutineScope.launch {
-                                    onAskQuestion(userQuestion)
-                                    delay(2000) // Simulate AI thinking
-                                    userQuestion = ""
-                                    isThinking = false
-                                }
+                                onAskQuestion(userQuestion)
+                                userQuestion = ""
+                                isThinking = false
                             }
                         },
                         enabled = userQuestion.isNotBlank() && !isThinking
@@ -198,11 +191,8 @@ fun AIAssistantCard(
                         text = "Suggest a new habit",
                         onClick = {
                             isThinking = true
-                            coroutineScope.launch {
-                                onAskQuestion("Suggest a new habit for me")
-                                delay(2000) // Simulate AI thinking
-                                isThinking = false
-                            }
+                            onAskQuestion("Suggest a new habit for me")
+                            isThinking = false
                         }
                     )
 
@@ -210,11 +200,8 @@ fun AIAssistantCard(
                         text = "Optimize my schedule",
                         onClick = {
                             isThinking = true
-                            coroutineScope.launch {
-                                onAskQuestion("Help me optimize my habit schedule")
-                                delay(2000) // Simulate AI thinking
-                                isThinking = false
-                            }
+                            onAskQuestion("Help me optimize my habit schedule")
+                            isThinking = false
                         }
                     )
 
@@ -222,11 +209,8 @@ fun AIAssistantCard(
                         text = "Improve motivation",
                         onClick = {
                             isThinking = true
-                            coroutineScope.launch {
-                                onAskQuestion("How can I stay motivated?")
-                                delay(2000) // Simulate AI thinking
-                                isThinking = false
-                            }
+                            onAskQuestion("How can I stay motivated?")
+                            isThinking = false
                         }
                     )
                 }

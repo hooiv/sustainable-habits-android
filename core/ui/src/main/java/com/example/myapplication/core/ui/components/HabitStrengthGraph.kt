@@ -51,7 +51,6 @@ fun HabitStrengthGraph(
     
     // State for touch interaction
     var touchedIndex by remember { mutableStateOf<Int?>(null) }
-    var touchX by remember { mutableStateOf(0f) }
 
     LaunchedEffect(dataPoints) {
         progress.animateTo(
@@ -71,7 +70,6 @@ fun HabitStrengthGraph(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = { offset ->
-                            touchX = offset.x
                             // Calculate nearest index based on width
                             val stepX = size.width / (dataPoints.size - 1)
                             val index = (offset.x / stepX).toInt().coerceIn(0, dataPoints.lastIndex)
