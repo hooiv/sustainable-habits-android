@@ -41,6 +41,8 @@ import com.hooiv.habitflow.core.ui.animation.AnimeEasing
 import com.hooiv.habitflow.core.ui.animation.ParticleWave
 import com.hooiv.habitflow.core.ui.animation.animeEntrance
 import com.hooiv.habitflow.core.ui.theme.MyApplicationTheme
+import com.hooiv.habitflow.core.ui.util.rememberWindowWidthSizeClass
+import com.hooiv.habitflow.core.ui.util.maxContentWidth
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -142,7 +144,9 @@ fun AddHabitScreen(
 
             Column(
                 modifier = Modifier
+                    .widthIn(max = rememberWindowWidthSizeClass().maxContentWidth())
                     .fillMaxSize()
+                    .align(Alignment.TopCenter)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
