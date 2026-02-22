@@ -49,19 +49,6 @@ class AIAssistantViewModel @Inject constructor(
     private val _streamingResponse = MutableStateFlow("")
     val streamingResponse: StateFlow<String> = _streamingResponse.asStateFlow()
 
-    // Voice input/output state
-    private val _isListening = MutableStateFlow(false)
-    val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
-
-    private val _isSpeaking = MutableStateFlow(false)
-    val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
-
-    private val _voiceInputText = MutableStateFlow("")
-    val voiceInputText: StateFlow<String> = _voiceInputText.asStateFlow()
-
-    private val _voiceAmplitude = MutableStateFlow(0f)
-    val voiceAmplitude: StateFlow<Float> = _voiceAmplitude.asStateFlow()
-
     // User habits for context
     private val _userHabits = MutableStateFlow<List<Habit>>(emptyList())
 
