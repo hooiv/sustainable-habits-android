@@ -527,15 +527,14 @@ fun PatternCard(
                             Calendar.FRIDAY to "Fridays", Calendar.SATURDAY to "Saturdays",
                             Calendar.SUNDAY to "Sundays"
                         )
-                        val calendarOf: (Long) -> Calendar = { ms ->
-                            Calendar.getInstance().also { it.timeInMillis = ms }
-                        }
+                        // Reuse a single Calendar instance; sequential map is safe
+                        val cal = Calendar.getInstance()
                         val bestDay = completions
-                            .map { calendarOf(it.completionDate).get(Calendar.DAY_OF_WEEK) }
+                            .map { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.DAY_OF_WEEK) }
                             .groupingBy { it }.eachCount()
                             .maxByOrNull { it.value }
                         val bestHour = completions
-                            .map { calendarOf(it.completionDate).get(Calendar.HOUR_OF_DAY) / 6 }
+                            .map { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.HOUR_OF_DAY) / 6 }
                             .groupingBy { it }.eachCount()
                             .maxByOrNull { it.value }
                         val dayLabel = bestDay?.let { dayNames[it.key] } ?: "weekdays"

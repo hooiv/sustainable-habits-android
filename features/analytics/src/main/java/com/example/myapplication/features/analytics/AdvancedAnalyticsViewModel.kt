@@ -221,6 +221,7 @@ class AdvancedAnalyticsViewModel @Inject constructor(
 /**
  * Returns a Long key representing the calendar day of [epochMillis].
  * Uses `year * 10000L + dayOfYear` to avoid integer overflow and ensure uniqueness.
+ * Each call creates its own Calendar instance, so this function is thread-safe.
  */
 internal fun dayKeyOf(epochMillis: Long): Long {
     val c = Calendar.getInstance()
