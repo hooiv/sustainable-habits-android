@@ -69,13 +69,9 @@ dependencies {
     implementation(project(":features:habits"))
     implementation(project(":features:settings"))
     implementation(project(":features:auth"))
-    implementation(project(":features:demo"))
-    implementation(project(":features:animation"))
     implementation(project(":features:gamification"))
     implementation(project(":features:stats"))
-    implementation(project(":features:calendar"))
     implementation(project(":features:onboarding"))
-    implementation(project(":features:social"))
     implementation(project(":features:splash"))
 
     implementation(libs.androidx.core.ktx)

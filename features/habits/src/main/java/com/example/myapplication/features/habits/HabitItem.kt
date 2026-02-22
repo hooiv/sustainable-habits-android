@@ -133,11 +133,7 @@ fun HabitItem(
     onCompletedClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onToggleEnabled: () -> Unit,
-    onNeuralInterfaceClick: () -> Unit = {},
     onCompletionHistoryClick: () -> Unit = {},
-    onARVisualizationClick: () -> Unit = {},
-    onBiometricIntegrationClick: () -> Unit = {},
-    onQuantumVisualizationClick: () -> Unit = {},
     index: Int = 0 // Added index parameter for staggered animations
 ) {
     // Get current date for comparison and formatting

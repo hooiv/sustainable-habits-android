@@ -238,12 +238,6 @@ fun SettingsScreen(
             // ─── Advanced ──────────────────────────────────────────────────
             SettingsSectionCard(title = "Advanced Features", icon = Icons.Default.AutoAwesome) {
                 SettingsNavRow(icon = Icons.Default.Face, label = "AI Assistant", onClick = { navController.navigate(NavRoutes.AI_ASSISTANT) })
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                SettingsNavRow(icon = Icons.Default.KeyboardVoice, label = "Voice Commands", onClick = { navController.navigate(NavRoutes.VOICE_INTEGRATION) })
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                SettingsNavRow(icon = Icons.Default.Star, label = "Neural Interface", onClick = { navController.navigate(NavRoutes.neuralInterface("global")) })
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                SettingsNavRow(icon = Icons.Default.Lightbulb, label = "Animation Demo", onClick = { navController.navigate(NavRoutes.ANIMATION_DEMO) })
             }
 
             // ─── About ────────────────────────────────────────────────────

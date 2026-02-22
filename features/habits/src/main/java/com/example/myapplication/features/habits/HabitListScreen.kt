@@ -333,18 +333,8 @@ fun HabitListScreen(
                                     onCompletedClick = { viewModel.markHabitCompleted(habit.id) },
                                     onDeleteClick = { viewModel.deleteHabit(habit) },
                                     onToggleEnabled = { viewModel.toggleHabitEnabled(habit) },
-                                    onNeuralInterfaceClick = { navController.navigate(NavRoutes.neuralInterface(habit.id)) },
                                     onCompletionHistoryClick = {
                                         navController.navigate(NavRoutes.habitCompletion(habit.id, habit.name))
-                                    },
-                                    onARVisualizationClick = {
-                                        navController.navigate(NavRoutes.ar(habit.id))
-                                    },
-                                    onBiometricIntegrationClick = {
-                                        navController.navigate(NavRoutes.biometricIntegration(habit.id))
-                                    },
-                                    onQuantumVisualizationClick = {
-                                        navController.navigate(NavRoutes.quantumVisualization(habit.id))
                                     }
                                 )
                             }

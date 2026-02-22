@@ -24,10 +24,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlin.math.pow
 
 // Feature Navigation Graphs
-import com.example.myapplication.features.advanced.navigation.advancedGraph
-import com.example.myapplication.features.animation.navigation.animationGraph
+import androidx.navigation.compose.composable
+import com.example.myapplication.features.ai.ui.AIAssistantScreen
+import com.example.myapplication.features.ai.ui.AIAssistantSettingsScreen
+import com.example.myapplication.features.analytics.ui.AdvancedAnalyticsScreen
 import com.example.myapplication.features.auth.navigation.authGraph
-import com.example.myapplication.features.demo.navigation.demoGraph
 import com.example.myapplication.features.habits.navigation.habitsGraph
 import com.example.myapplication.features.settings.navigation.settingsGraph
 import com.example.myapplication.features.stats.navigation.statsGraph
@@ -163,9 +164,20 @@ fun AppNavigationGraph(navController: NavHostController) {
         statsGraph(navController)
         settingsGraph(navController)
         authGraph(navController)
-        demoGraph(navController)
-        animationGraph(navController)
-        advancedGraph(navController)
+        composable(route = NavRoutes.AI_ASSISTANT) {
+            AIAssistantScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(route = NavRoutes.AI_ASSISTANT_SETTINGS) {
+            AIAssistantSettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(route = NavRoutes.ADVANCED_ANALYTICS) {
+            AdvancedAnalyticsScreen(navController = navController)
+        }
     }
 }
 

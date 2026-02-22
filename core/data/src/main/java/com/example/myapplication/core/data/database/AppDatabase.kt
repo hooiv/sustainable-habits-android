@@ -10,14 +10,7 @@ import com.example.myapplication.core.data.model.*
 @Database(
     entities = [
         Habit::class,
-        HabitCompletion::class,
-        HabitNeuralNetwork::class,
-        NeuralNode::class,
-        NeuralConnection::class,
-        NeuralActivation::class,
-        NeuralTrainingSession::class,
-        NeuralTrainingEpoch::class,
-        NeuralPrediction::class
+        HabitCompletion::class
     ],
     version = 7,
     exportSchema = false
@@ -27,7 +20,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
     abstract fun habitCompletionDao(): HabitCompletionDao
-    abstract fun neuralNetworkDao(): NeuralNetworkDao
 
 
     companion object {
