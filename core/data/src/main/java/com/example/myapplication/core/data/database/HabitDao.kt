@@ -16,7 +16,7 @@ interface HabitDao {
     suspend fun insertHabit(habit: Habit)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplaceHabits(habits: List<Habit>) // New method for batch insert/replace
+    suspend fun insertOrReplaceHabits(habits: List<Habit>)
 
     @Update
     suspend fun updateHabit(habit: Habit)
@@ -24,7 +24,6 @@ interface HabitDao {
     @Delete
     suspend fun deleteHabit(habit: Habit)
 
-    // Query to get today's habits
     @Query("SELECT * FROM habits WHERE date(createdDate) = date('now') AND isDeleted = 0")
     fun getTodayHabits(): Flow<List<Habit>>
 
@@ -34,7 +33,6 @@ interface HabitDao {
     @Query("UPDATE habits SET isDeleted = 1, isSynced = 0, lastUpdatedTimestamp = :timestamp WHERE id = :habitId")
     suspend fun softDeleteHabit(habitId: String, timestamp: java.util.Date = java.util.Date())
 
-    // Update getAllHabits to exclude soft-deleted items
     @Query("SELECT * FROM habits WHERE isDeleted = 0 ORDER BY createdDate DESC")
     fun getAllHabits(): Flow<List<Habit>>
 }

@@ -10,7 +10,7 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton // Mark as a singleton so Hilt provides the same instance
+@Singleton
 class HabitRepository @Inject constructor(
     private val habitDao: HabitDao,
     private val habitCompletionDao: HabitCompletionDao

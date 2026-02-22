@@ -21,7 +21,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun habitCompletionDao(): HabitCompletionDao
 
-
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -220,8 +219,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "habit_database"
                 )
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7) // Add all migrations
-                .fallbackToDestructiveMigration() // As a last resort, recreate the database
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance
