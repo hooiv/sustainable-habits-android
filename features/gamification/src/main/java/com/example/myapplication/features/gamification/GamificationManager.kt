@@ -1,8 +1,6 @@
 package com.example.myapplication.features.gamification
 
 import android.util.Log
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.data.repository.HabitRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -164,19 +162,14 @@ class GamificationManager @Inject constructor(
     }
 
     /**
-     * Update badge unlock status based on user data
+     * Update badge unlock status based on user data.
+     * Uses a single getAllCompletions() query instead of N+1 per-habit queries.
      */
     private suspend fun updateBadgeUnlockStatus(badges: MutableList<Badge>) {
         try {
-            // Get all habits
-            val habits = habitRepository.getAllHabits().first() ?: emptyList()
-
-            // Get all completions
-            val allCompletions = mutableListOf<HabitCompletion>()
-            habits.forEach { habit ->
-                val completions = habitRepository.getHabitCompletions(habit.id).first() ?: emptyList()
-                allCompletions.addAll(completions)
-            }
+            // Get all habits and all completions with single queries
+            val habits = habitRepository.getAllHabits().first()
+            val allCompletions = habitRepository.getAllCompletions().first()
 
             // Check streak badges
             val maxStreak = habits.maxOfOrNull { it.streak } ?: 0
@@ -228,19 +221,14 @@ class GamificationManager @Inject constructor(
     }
 
     /**
-     * Calculate current XP and level
+     * Calculate current XP and level.
+     * Uses a single getAllCompletions() query instead of N+1 per-habit queries.
      */
     private suspend fun calculateXpAndLevel() {
         try {
-            // Get all habits
-            val habits = habitRepository.getAllHabits().first() ?: emptyList()
-
-            // Get all completions
-            val allCompletions = mutableListOf<HabitCompletion>()
-            habits.forEach { habit ->
-                val completions = habitRepository.getHabitCompletions(habit.id).first() ?: emptyList()
-                allCompletions.addAll(completions)
-            }
+            // Single query for all habits and all completions
+            val habits = habitRepository.getAllHabits().first()
+            val allCompletions = habitRepository.getAllCompletions().first()
 
             // Calculate total XP
             // Base XP: 10 per completion
