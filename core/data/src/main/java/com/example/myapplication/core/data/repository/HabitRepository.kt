@@ -240,24 +240,6 @@ class HabitRepository @Inject constructor(
         }
     }
 
-    /**
-     * Resets a habit's goal progress (and streak if broken) when a new period begins.
-     * Called when the app detects that the habit's goal period has elapsed without completion.
-     * TODO: Wire this up to the habit list screen or a periodic WorkManager task.
-     */
-    suspend fun resetHabitProgressIfNeeded(habitId: String, currentDate: Date = Date()) {
-        val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
-        if (habit.lastCompletedDate == null) return
-
-        if (!isSamePeriod(habit.lastCompletedDate, currentDate, habit.frequency)) {
-            if (habit.goalProgress < habit.goal && habit.streak > 0) {
-                habitDao.updateHabit(habit.copy(goalProgress = 0, streak = 0))
-            } else {
-                habitDao.updateHabit(habit.copy(goalProgress = 0))
-            }
-        }
-    }
-
     // Fetch habits for the current day
     fun getTodayHabits(): Flow<List<Habit>> {
         return habitDao.getTodayHabits()
