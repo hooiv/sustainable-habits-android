@@ -86,13 +86,15 @@ fun HabitListScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
-                text = { Text("Add Habit", style = MaterialTheme.typography.labelLarge) }
-            )
+            if (habits.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
+                    text = { Text("Add Habit", style = MaterialTheme.typography.labelLarge) }
+                )
+            }
         }
     ) { innerPadding ->
         Box(
@@ -122,51 +124,38 @@ fun HabitListScreen(
             }
 
             Column(modifier = Modifier.fillMaxSize()) {
-                // Category filter card with animation
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .graphicsLayer {
-                            // Add subtle floating animation
-                            translationY = if (!isLoading) 0f else -50f
-                            alpha = if (!isLoading) 1f else 0f
-                        }
-                        .animateContentSize(
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessLow
-                            )
-                        ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Column(
+                // Category filter card — only shown when there are habits to filter
+                if (habits.isNotEmpty()) {
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .graphicsLayer {
+                                translationY = if (!isLoading) 0f else -50f
+                                alpha = if (!isLoading) 1f else 0f
+                            }
+                            .animateContentSize(
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                        ),
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(
-                            "Filter by Category",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Horizontal category chips
+                        // Horizontal category chips (no header label needed — chips are self-explanatory)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .horizontalScroll(rememberScrollState()),
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             categories.forEachIndexed { index, category ->
                                 val isSelected = category == selectedCategory
 
-                                // Add staggered entrance animation for each chip
                                 Box(
                                     modifier = Modifier.animeEntrance(
                                         visible = !isLoading,
@@ -280,9 +269,6 @@ fun HabitListScreen(
                                 color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier
                                     .padding(bottom = 8.dp)
-                                    .graphicsLayer {
-                                        alpha = iconScale * 0.8f
-                                    }
                             )
 
                             Text(
@@ -292,19 +278,12 @@ fun HabitListScreen(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(bottom = 24.dp)
-                                    .graphicsLayer {
-                                        alpha = iconScale * 0.7f
-                                    }
                             )
 
                             Button(
                                 onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
                                 modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .graphicsLayer {
-                                        scaleX = iconScale * 0.9f
-                                        scaleY = iconScale * 0.9f
-                                    },
+                                    .padding(top = 16.dp),
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
