@@ -52,21 +52,22 @@ fun HabitDetailsScreen(
             else -> {
                 val minTs = timestamps.first()
                 val maxTs = timestamps.last()
-                val range = (maxTs - minTs).toFloat()
-                if (range == 0f) {
+                if (maxTs == minTs) {
                     // All completions at the exact same timestamp
                     List(timestamps.size) { 1.0f }
                 } else {
+                    val range = (maxTs - minTs).toFloat()
                     timestamps.map { ((it - minTs) / range).toFloat() }
                 }
             }
         }
     }
 
+    val completionWord = if (completions.size == 1) "completion" else "completions"
     val analysisText = if (completions.isEmpty())
         "Complete this habit to start building your consistency graph."
     else
-        "Based on ${completions.size} recorded completion(s). The curve shows how your completion frequency has evolved over time."
+        "Based on ${completions.size} recorded $completionWord. The curve shows how your completion frequency has evolved over time."
 
     Scaffold(
         topBar = {
