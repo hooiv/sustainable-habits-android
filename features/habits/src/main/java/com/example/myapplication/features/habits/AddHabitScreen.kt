@@ -2,7 +2,6 @@ package com.example.myapplication.features.habits.ui
 
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import com.example.myapplication.features.habits.HabitViewModel
@@ -49,7 +48,6 @@ fun AddHabitScreen(
     navController: NavController,
     viewModel: HabitViewModel = hiltViewModel()
 ) {
-    Log.d("AddHabitScreen", "AddHabitScreen composable entered")
     var habitName by remember { mutableStateOf("") }
     var habitDescription by remember { mutableStateOf("") }
     var habitCategory by remember { mutableStateOf("") }
@@ -401,8 +399,6 @@ fun AddHabitScreen(
                 Button(
                     onClick = {
                         if (habitName.isNotBlank()) {
-                            Log.d("AddHabitScreen", "Save Habit button clicked. Name: $habitName, Desc: $habitDescription, Freq: $selectedFrequency, Category: $habitCategory")
-
                             val goalValue = goal.toIntOrNull() ?: 1
                             val reminderTimeString = reminderTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
 

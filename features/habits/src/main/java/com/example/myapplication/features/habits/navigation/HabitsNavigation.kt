@@ -1,6 +1,5 @@
 package com.example.myapplication.features.habits.navigation
 
-import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -35,7 +34,6 @@ fun NavGraphBuilder.habitsGraph(navController: NavController) {
     }
 
     composable(route = NavRoutes.ADD_HABIT) {
-        Log.d("AppNavigation", "Setting up AddHabitScreen")
         AddHabitScreen(navController = navController)
     }
 
@@ -46,7 +44,6 @@ fun NavGraphBuilder.habitsGraph(navController: NavController) {
         })
     ) { backStackEntry ->
         val habitId = backStackEntry.arguments?.getString(NavRoutes.EDIT_HABIT_ARG_ID)
-        Log.d("AppNavigation", "Setting up EditHabitScreen with habitId: $habitId")
         EditHabitScreen(navController = navController, habitId = habitId)
     }
 

@@ -1,6 +1,5 @@
 package com.example.myapplication.features.habits
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.data.model.Habit
@@ -29,7 +28,7 @@ class HabitViewModel @Inject constructor(
     private val getHabitByIdUseCase: GetHabitByIdUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val markHabitCompletedUseCase: MarkHabitCompletedUseCase,
-    private val resetHabitProgressUseCase: ResetHabitProgressUseCase,
+    private val insertOrReplaceHabitsUseCase: InsertOrReplaceHabitsUseCase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
@@ -49,7 +48,6 @@ class HabitViewModel @Inject constructor(
         goal: Int = 1,
         reminderTime: String? = null
     ) {
-        Log.d("HabitViewModel", "addHabit called. Name: $name, Freq: $frequency, Goal: $goal")
         viewModelScope.launch {
             addHabitUseCase(name, description, category, frequency, goal, reminderTime)
         }
@@ -71,37 +69,19 @@ class HabitViewModel @Inject constructor(
 
     fun restoreHabits(habitsToRestore: List<Habit>) {
         viewModelScope.launch {
-            Log.d("HabitViewModel", "Restoring ${habitsToRestore.size} habits.")
-            habitsToRestore.forEach { updateHabitUseCase(it) }
+            insertOrReplaceHabitsUseCase(habitsToRestore)
         }
     }
 
     fun markHabitCompleted(habitId: String) {
-        Log.d("HabitViewModel", "Marking habit as completed: $habitId")
         viewModelScope.launch {
             markHabitCompletedUseCase(habitId)
-        }
-    }
-
-    fun checkAndResetHabitProgress(habitId: String) {
-        viewModelScope.launch {
-            resetHabitProgressUseCase(habitId)
         }
     }
 
     fun toggleHabitEnabled(habit: Habit) {
         viewModelScope.launch {
             updateHabitUseCase(habit.copy(isEnabled = !habit.isEnabled))
-        }
-    }
-
-    fun updateHabitReminder(habitId: String, reminderTime: String?) {
-        viewModelScope.launch {
-            getHabitByIdUseCase(habitId).collect { habit ->
-                habit?.let {
-                    updateHabitUseCase(it.copy(reminderTime = reminderTime))
-                }
-            }
         }
     }
 }

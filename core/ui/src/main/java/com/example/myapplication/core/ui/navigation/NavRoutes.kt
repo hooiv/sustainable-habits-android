@@ -8,7 +8,6 @@ object NavRoutes {
     const val EDIT_HABIT_ARG_ID = "habitId" // Argument name
     const val EDIT_HABIT = "$EDIT_HABIT_ROUTE/{$EDIT_HABIT_ARG_ID}" // Full route with argument placeholder
     const val STATS = "stats"
-    const val CALENDAR = "calendar"
     const val SETTINGS = "settings"
     const val SIGN_IN = "sign_in" // Added sign_in route
     const val ANIMATION_DEMO = "animation_demo" // Added animation demo route

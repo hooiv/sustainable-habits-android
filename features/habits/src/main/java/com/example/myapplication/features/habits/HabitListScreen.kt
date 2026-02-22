@@ -53,9 +53,7 @@ fun HabitListScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(habits) {
-        if (habits.isNotEmpty() || isLoading) {
-            isLoading = false
-        }
+        isLoading = false
     }
 
     // Also handle the initial case where habits is empty on first load

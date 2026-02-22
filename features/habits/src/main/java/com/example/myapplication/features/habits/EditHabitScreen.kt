@@ -322,21 +322,6 @@ private fun StatChip(label: String, value: String, modifier: Modifier = Modifier
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditHabitTimePickerDialog(
-    onDismissRequest: () -> Unit,
-    onConfirm: () -> Unit,
-    timePickerState: TimePickerState
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        confirmButton = { TextButton(onClick = onConfirm) { Text("Confirm") } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
-        text = { TimePicker(state = timePickerState) }
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun EditHabitScreenPreview() {

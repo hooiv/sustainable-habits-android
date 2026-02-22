@@ -204,6 +204,7 @@ fun SettingsScreen(
                                     return@launch
                                 }
                                 val habits = dataMap.mapNotNull { (id, m) -> parseHabitMapToDomain(id, m) }
+                                habitViewModel.restoreHabits(habits)
                                 Toast.makeText(context, "Restored ${habits.size} habits ✓", Toast.LENGTH_SHORT).show()
                             } catch (e: Exception) {
                                 Toast.makeText(context, "Restore failed: ${e.message}", Toast.LENGTH_SHORT).show()
