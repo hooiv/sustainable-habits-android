@@ -252,7 +252,6 @@ class AIAssistantViewModel @Inject constructor(
                 _personalizationSettings.value
             )
 
-            // Feature removed
         } finally {
             _isStreaming.value = false
             _isProcessing.value = false
@@ -352,7 +351,6 @@ class AIAssistantViewModel @Inject constructor(
                 _personalizationSettings.value
             )
 
-            // Feature removed
         } finally {
             _isStreaming.value = false
             _isProcessing.value = false
