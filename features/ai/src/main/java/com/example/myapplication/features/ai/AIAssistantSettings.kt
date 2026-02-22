@@ -15,9 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.core.data.model.AIAssistantPersonalization
-import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 
 /**
  * AI Assistant Settings Screen
@@ -25,8 +23,7 @@ import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AIAssistantSettingsScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: AIAssistantViewModel = hiltViewModel()
+    onNavigateBack: () -> Unit
 ) {
     var settings by remember { mutableStateOf(AIAssistantPersonalization()) }
     val scrollState = rememberScrollState()

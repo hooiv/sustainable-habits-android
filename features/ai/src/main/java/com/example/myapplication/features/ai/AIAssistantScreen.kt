@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
 import android.content.Context
 import android.os.PowerManager
 import androidx.compose.ui.graphics.graphicsLayer
