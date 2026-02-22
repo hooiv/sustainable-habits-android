@@ -30,7 +30,9 @@ class HabitCompletionViewModel @Inject constructor(
     val error: StateFlow<String?> = _error.asStateFlow()
 
     /**
-     * Load completions for a specific habit
+     * Load completions for a specific habit.
+     * Room's Flow pushes every subsequent DB change automatically, so this only
+     * needs to be called once per screen session (e.g. from LaunchedEffect).
      */
     fun loadCompletionsForHabit(habitId: String) {
         viewModelScope.launch {
@@ -38,17 +40,21 @@ class HabitCompletionViewModel @Inject constructor(
             try {
                 habitRepository.getHabitCompletions(habitId).collect { completionList ->
                     _completions.value = completionList
+                    // Clear the loading indicator on the first (and every) emission.
+                    // The finally block is NOT used here because collect() on a Room
+                    // Flow never completes — finally would only run on cancellation.
+                    _isLoading.value = false
                 }
             } catch (e: Exception) {
                 _error.value = "Failed to load completions: ${e.message}"
-            } finally {
                 _isLoading.value = false
             }
         }
     }
 
     /**
-     * Add a completion for a habit
+     * Add a completion for a habit.
+     * Room's reactive Flow emits the update automatically; no manual reload needed.
      */
     fun addCompletion(
         habitId: String,
@@ -58,7 +64,6 @@ class HabitCompletionViewModel @Inject constructor(
         photoUri: String? = null
     ) {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 habitRepository.markHabitCompleted(
                     habitId = habitId,
@@ -68,48 +73,36 @@ class HabitCompletionViewModel @Inject constructor(
                     location = location,
                     photoUri = photoUri
                 )
-                // Reload completions after adding a new one
-                loadCompletionsForHabit(habitId)
             } catch (e: Exception) {
                 _error.value = "Failed to add completion: ${e.message}"
-            } finally {
-                _isLoading.value = false
             }
         }
     }
 
     /**
-     * Delete a completion
+     * Delete a completion.
+     * Room's reactive Flow emits the update automatically; no manual reload needed.
      */
     fun deleteCompletion(completion: HabitCompletion) {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 habitRepository.deleteHabitCompletion(completion)
-                // Reload completions after deleting one
-                loadCompletionsForHabit(completion.habitId)
             } catch (e: Exception) {
                 _error.value = "Failed to delete completion: ${e.message}"
-            } finally {
-                _isLoading.value = false
             }
         }
     }
 
     /**
-     * Update a completion
+     * Update a completion.
+     * Room's reactive Flow emits the update automatically; no manual reload needed.
      */
     fun updateCompletion(completion: HabitCompletion) {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 habitRepository.updateHabitCompletion(completion)
-                // Reload completions after updating one
-                loadCompletionsForHabit(completion.habitId)
             } catch (e: Exception) {
                 _error.value = "Failed to update completion: ${e.message}"
-            } finally {
-                _isLoading.value = false
             }
         }
     }
