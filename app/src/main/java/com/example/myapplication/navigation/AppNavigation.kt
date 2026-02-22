@@ -166,6 +166,7 @@ fun AppNavigationGraph(navController: NavHostController) {
         demoGraph(navController)
         animationGraph(navController)
         advancedGraph(navController)
+    }
 }
 
 private val EaseOutQuint = Easing { fraction -> 1f - (1f - fraction).pow(5) }

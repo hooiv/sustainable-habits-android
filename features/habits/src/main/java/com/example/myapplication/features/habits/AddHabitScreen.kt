@@ -405,7 +405,7 @@ fun AddHabitScreen(
                             viewModel.addHabit(
                                 name = habitName,
                                 description = habitDescription,
-                                category = habitCategory.takeIf { it.isNotBlank() } ?: "Uncategorized",
+                                category = habitCategory.takeIf { it.isNotBlank() },
                                 frequency = selectedFrequency,
                                 goal = goalValue,
                                 reminderTime = reminderTimeString

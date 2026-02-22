@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.core.data.model.HabitCompletion
 import com.example.myapplication.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,42 +37,6 @@ class HabitCompletionViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 habitRepository.getHabitCompletions(habitId).collect { completionList ->
-                    _completions.value = completionList
-                }
-            } catch (e: Exception) {
-                _error.value = "Failed to load completions: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    /**
-     * Load all completions
-     */
-    fun loadAllCompletions() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                habitRepository.getAllCompletions().collect { completionList ->
-                    _completions.value = completionList
-                }
-            } catch (e: Exception) {
-                _error.value = "Failed to load completions: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    /**
-     * Load completions in a date range
-     */
-    fun loadCompletionsInDateRange(startDate: Long, endDate: Long) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                habitRepository.getCompletionsInDateRange(startDate, endDate).collect { completionList ->
                     _completions.value = completionList
                 }
             } catch (e: Exception) {

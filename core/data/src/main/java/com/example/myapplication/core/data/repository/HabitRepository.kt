@@ -240,11 +240,6 @@ class HabitRepository @Inject constructor(
         }
     }
 
-    // Fetch habits for the current day
-    fun getTodayHabits(): Flow<List<Habit>> {
-        return habitDao.getTodayHabits()
-    }
-
     /**
      * Resets a habit's goal progress (and streak if broken) when a new period begins.
      * Called when the app detects that the habit's goal period has elapsed without completion.
@@ -263,6 +258,11 @@ class HabitRepository @Inject constructor(
         }
     }
 
+    // Fetch habits for the current day
+    fun getTodayHabits(): Flow<List<Habit>> {
+        return habitDao.getTodayHabits()
+    }
+
     /**
      * Get completions for a specific habit
      */
@@ -275,27 +275,6 @@ class HabitRepository @Inject constructor(
      */
     fun getAllCompletions(): Flow<List<HabitCompletion>> {
         return habitCompletionDao.getAllCompletions()
-    }
-
-    /**
-     * Get completions in a date range
-     */
-    fun getCompletionsInDateRange(startDate: Long, endDate: Long): Flow<List<HabitCompletion>> {
-        return habitCompletionDao.getCompletionsInDateRange(startDate, endDate)
-    }
-
-    /**
-     * Get completions for a habit in a date range
-     */
-    fun getCompletionsForHabitInDateRange(habitId: String, startDate: Long, endDate: Long): Flow<List<HabitCompletion>> {
-        return habitCompletionDao.getCompletionsForHabitInDateRange(habitId, startDate, endDate)
-    }
-
-    /**
-     * Insert a habit completion
-     */
-    suspend fun insertHabitCompletion(completion: HabitCompletion) {
-        habitCompletionDao.insertCompletion(completion)
     }
 
     /**
