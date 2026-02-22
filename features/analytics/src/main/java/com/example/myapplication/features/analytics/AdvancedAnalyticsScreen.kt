@@ -344,9 +344,17 @@ fun TrendCard(
                         text = if (completions.isEmpty()) {
                             "Complete this habit more to see trend analysis"
                         } else {
-                            "Your consistency with this habit has ${
-                                listOf("improved", "remained stable", "declined").random()
-                            } over the past ${(2..8).random()} weeks."
+                            val now = System.currentTimeMillis()
+                            val fourWeeksMs = 28L * 24 * 60 * 60 * 1000
+                            val recent = completions.count { it.completionDate >= now - fourWeeksMs }
+                            val older = completions.count { it.completionDate < now - fourWeeksMs && it.completionDate >= now - 2 * fourWeeksMs }
+                            val trend = when {
+                                older == 0 -> "started"
+                                recent > older -> "improved"
+                                recent < older -> "declined"
+                                else -> "remained stable"
+                            }
+                            "Your consistency with this habit has $trend over the past 4 weeks ($recent completions vs. $older in the previous period)."
                         },
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -512,11 +520,28 @@ fun PatternCard(
 
                 // Pattern insights
                 Text(
-                    text = "You tend to complete this habit most often on ${
-                        listOf("Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "weekends").random()
-                    } and during the ${
-                        listOf("morning", "afternoon", "evening").random()
-                    }.",
+                    text = run {
+                        val cal = Calendar.getInstance()
+                        val dayNames = mapOf(
+                            Calendar.MONDAY to "Mondays", Calendar.TUESDAY to "Tuesdays",
+                            Calendar.WEDNESDAY to "Wednesdays", Calendar.THURSDAY to "Thursdays",
+                            Calendar.FRIDAY to "Fridays", Calendar.SATURDAY to "Saturdays",
+                            Calendar.SUNDAY to "Sundays"
+                        )
+                        val bestDay = completions
+                            .groupingBy { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.DAY_OF_WEEK) }
+                            .eachCount()
+                            .maxByOrNull { it.value }
+                        val bestHour = completions
+                            .groupingBy { cal.also { c -> c.timeInMillis = it.completionDate }.get(Calendar.HOUR_OF_DAY) / 6 }
+                            .eachCount()
+                            .maxByOrNull { it.value }
+                        val dayLabel = bestDay?.let { dayNames[it.key] } ?: "weekdays"
+                        val timeLabel = when (bestHour?.key) {
+                            0 -> "early morning"; 1 -> "morning"; 2 -> "afternoon"; else -> "evening"
+                        }
+                        "You tend to complete this habit most often on $dayLabel and during the $timeLabel."
+                    },
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

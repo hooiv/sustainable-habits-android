@@ -1,13 +1,8 @@
 package com.example.myapplication.core.network.ai
 
 import com.example.myapplication.core.data.model.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,12 +12,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class LocalAIService @Inject constructor() : AIService {
-    companion object {
-        private const val TAG = "LocalAIService"
-
-        // Simulate processing delay for more realistic experience
-        private const val PROCESSING_DELAY_MS = 1000L
-    }
 
     override suspend fun generateResponse(question: String, userHabits: List<Habit>?, habitCompletions: List<HabitCompletion>?, moodData: List<MoodEntry>?, locationData: List<LocationContext>?, timePatterns: List<TimePattern>?, personalization: AIAssistantPersonalization): String {
         return "This is a local response to the question: $question"
