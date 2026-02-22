@@ -21,7 +21,6 @@ import com.example.myapplication.features.gamification.AchievementBadge
 import com.example.myapplication.features.gamification.ExperienceBar
 import com.example.myapplication.core.ui.animation.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen() {
@@ -30,7 +29,6 @@ fun SplashScreen() {
     var showText by remember { mutableStateOf(false) }
     var showBadges by remember { mutableStateOf(false) }
     var showExperienceBar by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
 
     // Start animations after a short delay
     LaunchedEffect(Unit) {
@@ -208,10 +206,8 @@ fun SplashScreen() {
                         primaryColor = MaterialTheme.colorScheme.tertiary,
                         backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
                         onLevelUp = {
-                            coroutineScope.launch {
-                                level++
-                                currentXp = 0
-                            }
+                            level++
+                            currentXp = 0
                         }
                     )
                 }
