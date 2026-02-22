@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.animation
+package com.hooiv.habitflow.core.ui.animation
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind

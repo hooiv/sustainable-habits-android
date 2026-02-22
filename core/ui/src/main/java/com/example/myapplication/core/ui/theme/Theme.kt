@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.theme
+package com.hooiv.habitflow.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.myapplication.core.data.util.ThemePreferenceManager
+import com.hooiv.habitflow.core.data.util.ThemePreferenceManager
 
 // Create composition locals for our anime-inspired theme properties
 data class AnimationSpec(

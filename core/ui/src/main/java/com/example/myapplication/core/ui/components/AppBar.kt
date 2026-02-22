@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import com.example.myapplication.core.ui.R
+import com.hooiv.habitflow.core.ui.R
 
 /**
  * Common app bar component

@@ -1,4 +1,4 @@
-package com.example.myapplication.core.data.model
+package com.hooiv.habitflow.core.data.model
 
 /**
  * Data class for AI Assistant personalization settings.

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.gamification
+package com.hooiv.habitflow.features.gamification
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.core.ui.animation.*
+import com.hooiv.habitflow.core.ui.animation.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.*

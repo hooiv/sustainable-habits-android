@@ -1,10 +1,10 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.domain.usecase.*
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
-import com.example.myapplication.core.di.IoDispatcher
+import com.hooiv.habitflow.core.di.IoDispatcher
 
 /**
  * ViewModel for habit management screens.

@@ -1,14 +1,14 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.domain.usecase.AddHabitUseCase
-import com.example.myapplication.core.domain.usecase.DeleteHabitUseCase
-import com.example.myapplication.core.domain.usecase.GetHabitByIdUseCase
-import com.example.myapplication.core.domain.usecase.GetHabitsUseCase
-import com.example.myapplication.core.domain.usecase.InsertOrReplaceHabitsUseCase
-import com.example.myapplication.core.domain.usecase.MarkHabitCompletedUseCase
-import com.example.myapplication.core.domain.usecase.UpdateHabitUseCase
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.domain.usecase.AddHabitUseCase
+import com.hooiv.habitflow.core.domain.usecase.DeleteHabitUseCase
+import com.hooiv.habitflow.core.domain.usecase.GetHabitByIdUseCase
+import com.hooiv.habitflow.core.domain.usecase.GetHabitsUseCase
+import com.hooiv.habitflow.core.domain.usecase.InsertOrReplaceHabitsUseCase
+import com.hooiv.habitflow.core.domain.usecase.MarkHabitCompletedUseCase
+import com.hooiv.habitflow.core.domain.usecase.UpdateHabitUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify

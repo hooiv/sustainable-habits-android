@@ -1,10 +1,10 @@
-package com.example.myapplication.features.habits.ui
+package com.hooiv.habitflow.features.habits.ui
 
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import com.example.myapplication.features.habits.HabitViewModel
+import com.hooiv.habitflow.features.habits.HabitViewModel
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -36,11 +36,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.ui.animation.AnimeEasing
-import com.example.myapplication.core.ui.animation.ParticleWave
-import com.example.myapplication.core.ui.animation.animeEntrance
-import com.example.myapplication.core.ui.theme.MyApplicationTheme
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.ui.animation.AnimeEasing
+import com.hooiv.habitflow.core.ui.animation.ParticleWave
+import com.hooiv.habitflow.core.ui.animation.animeEntrance
+import com.hooiv.habitflow.core.ui.theme.MyApplicationTheme
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 

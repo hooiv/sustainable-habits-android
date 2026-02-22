@@ -1,4 +1,4 @@
-package com.example.myapplication.features.gamification
+package com.hooiv.habitflow.features.gamification
 
 import java.util.Date
 import java.util.UUID

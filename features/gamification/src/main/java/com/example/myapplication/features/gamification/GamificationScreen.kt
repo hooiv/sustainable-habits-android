@@ -1,4 +1,4 @@
-package com.example.myapplication.features.gamification
+package com.hooiv.habitflow.features.gamification
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.core.ui.components.LoadingIndicator
+import com.hooiv.habitflow.core.ui.components.LoadingIndicator
 
 /**
  * Screen for displaying gamification features
@@ -515,5 +515,32 @@ fun ProgressItem(
                     )
             )
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Gamification — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun GamificationScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        GamificationScreen()
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Gamification — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun GamificationScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        GamificationScreen()
     }
 }

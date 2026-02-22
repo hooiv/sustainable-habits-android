@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import com.example.myapplication.core.ui.R
+import com.hooiv.habitflow.core.ui.R
 
 /**
  * A reusable scaffold component with a branded top app bar

@@ -1,12 +1,12 @@
-package com.example.myapplication.core.ui.receivers
+package com.hooiv.habitflow.core.ui.receivers
 
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.myapplication.core.data.database.AppDatabase
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.data.database.AppDatabase
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

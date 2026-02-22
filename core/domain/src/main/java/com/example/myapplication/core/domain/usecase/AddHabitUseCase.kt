@@ -1,8 +1,8 @@
-package com.example.myapplication.core.domain.usecase
+package com.hooiv.habitflow.core.domain.usecase
 
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import java.util.Date
 import javax.inject.Inject
 

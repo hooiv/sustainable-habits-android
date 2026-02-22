@@ -1,12 +1,12 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import androidx.compose.ui.test.onRoot
-import com.example.myapplication.features.habits.ui.HabitItem
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.data.model.HabitPriority
+import com.hooiv.habitflow.features.habits.ui.HabitItem
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.data.model.HabitPriority
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -1,10 +1,10 @@
-package com.example.myapplication.features.auth.navigation
+package com.hooiv.habitflow.features.auth.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.myapplication.core.ui.navigation.NavRoutes
-import com.example.myapplication.features.auth.SignInScreen
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.features.auth.SignInScreen
 
 fun NavGraphBuilder.authGraph(navController: NavController) {
     composable(route = NavRoutes.SIGN_IN) {

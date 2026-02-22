@@ -1,7 +1,7 @@
-package com.example.myapplication.core.network.ai
+package com.hooiv.habitflow.core.network.ai
 
 import android.util.Log
-import com.example.myapplication.core.data.model.*
+import com.hooiv.habitflow.core.data.model.*
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapplication.core.ui.components.HabitStrengthGraph
+import com.hooiv.habitflow.core.ui.components.HabitStrengthGraph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,5 +127,32 @@ fun HabitDetailsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitDetails — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun HabitDetailsScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        HabitDetailsScreen(habitId = "preview", onBackClick = {})
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitDetails — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun HabitDetailsScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        HabitDetailsScreen(habitId = "preview", onBackClick = {})
     }
 }

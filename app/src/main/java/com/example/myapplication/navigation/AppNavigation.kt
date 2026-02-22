@@ -1,4 +1,4 @@
-package com.example.myapplication.navigation
+package com.hooiv.habitflow.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.*
@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.List
-import com.example.myapplication.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,14 +25,14 @@ import kotlin.math.pow
 
 // Feature Navigation Graphs
 import androidx.navigation.compose.composable
-import com.example.myapplication.features.ai.ui.AIAssistantScreen
-import com.example.myapplication.features.ai.ui.AIAssistantSettingsScreen
-import com.example.myapplication.features.analytics.ui.AdvancedAnalyticsScreen
-import com.example.myapplication.features.auth.navigation.authGraph
-import com.example.myapplication.features.gamification.GamificationScreen
-import com.example.myapplication.features.habits.navigation.habitsGraph
-import com.example.myapplication.features.settings.navigation.settingsGraph
-import com.example.myapplication.features.stats.navigation.statsGraph
+import com.hooiv.habitflow.features.ai.ui.AIAssistantScreen
+import com.hooiv.habitflow.features.ai.ui.AIAssistantSettingsScreen
+import com.hooiv.habitflow.features.analytics.ui.AdvancedAnalyticsScreen
+import com.hooiv.habitflow.features.auth.navigation.authGraph
+import com.hooiv.habitflow.features.gamification.GamificationScreen
+import com.hooiv.habitflow.features.habits.navigation.habitsGraph
+import com.hooiv.habitflow.features.settings.navigation.settingsGraph
+import com.hooiv.habitflow.features.stats.navigation.statsGraph
 
 @Composable
 fun MainBottomBar(

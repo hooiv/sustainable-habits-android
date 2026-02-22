@@ -1,6 +1,6 @@
-package com.example.myapplication.core.domain.usecase
+package com.hooiv.habitflow.core.domain.usecase
 
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import javax.inject.Inject
 
 /**

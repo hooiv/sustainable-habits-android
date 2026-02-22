@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

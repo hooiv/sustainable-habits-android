@@ -1,10 +1,10 @@
-package com.example.myapplication.ui
+package com.hooiv.habitflow.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.features.habits.ui.HabitItem
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.features.habits.ui.HabitItem
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

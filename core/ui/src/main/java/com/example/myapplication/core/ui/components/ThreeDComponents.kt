@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.core.ui.animation.flipCard
-import com.example.myapplication.core.ui.animation.threeDCard
+import com.hooiv.habitflow.core.ui.animation.flipCard
+import com.hooiv.habitflow.core.ui.animation.threeDCard
 import kotlin.math.abs
 
 /**

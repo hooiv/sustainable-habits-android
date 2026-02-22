@@ -1,6 +1,6 @@
-package com.example.myapplication.core.network.ai
+package com.hooiv.habitflow.core.network.ai
 
-import com.example.myapplication.core.data.model.*
+import com.hooiv.habitflow.core.data.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

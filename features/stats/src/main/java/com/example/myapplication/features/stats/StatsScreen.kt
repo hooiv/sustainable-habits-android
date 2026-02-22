@@ -1,4 +1,4 @@
-package com.example.myapplication.features.stats
+package com.hooiv.habitflow.features.stats
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -42,17 +42,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.ui.R
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.features.habits.HabitViewModel
-import com.example.myapplication.core.ui.animation.*
-import com.example.myapplication.core.ui.components.*
-import com.example.myapplication.core.ui.theme.*
+import com.hooiv.habitflow.core.ui.R
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.features.habits.HabitViewModel
+import com.hooiv.habitflow.core.ui.animation.*
+import com.hooiv.habitflow.core.ui.components.*
+import com.hooiv.habitflow.core.ui.theme.*
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart as MPPieChart
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.PercentFormatter
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
@@ -81,8 +80,7 @@ fun StatsScreen(navController: NavController) {
         label = "completionRate"
     )
 
-    LaunchedEffect(true) {
-        delay(300)
+    LaunchedEffect(habits) {
         isLoading = false
     }
 
@@ -756,5 +754,43 @@ fun CompletionPieChart(
             pieChart.data = PieData(dataSet)
             pieChart.invalidate()
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Stats — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun StatsScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        StatsScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Stats — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun StatsScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        StatsScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Stats — Tablet 10\"",
+    showBackground = true, widthDp = 800, heightDp = 1280
+)
+@androidx.compose.runtime.Composable
+private fun StatsScreenTabletPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme {
+        StatsScreen(navController = androidx.navigation.compose.rememberNavController())
     }
 }

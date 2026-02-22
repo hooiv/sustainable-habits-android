@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits.ui
+package com.hooiv.habitflow.features.habits.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,9 +17,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.features.habits.HabitCompletionViewModel
-import com.example.myapplication.core.data.model.HabitCompletion
-import com.example.myapplication.core.ui.components.AppScaffold
+import com.hooiv.habitflow.features.habits.HabitCompletionViewModel
+import com.hooiv.habitflow.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.ui.components.AppScaffold
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -349,5 +349,40 @@ fun CompletionItem(
                 }
             }
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitCompletion — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun HabitCompletionScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        HabitCompletionScreen(
+            navController = androidx.navigation.compose.rememberNavController(),
+            habitId = "preview",
+            habitName = "Morning Run"
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitCompletion — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun HabitCompletionScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        HabitCompletionScreen(
+            navController = androidx.navigation.compose.rememberNavController(),
+            habitId = "preview",
+            habitName = "Morning Run"
+        )
     }
 }

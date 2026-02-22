@@ -1,4 +1,4 @@
-package com.example.myapplication.core.di
+package com.hooiv.habitflow.core.di
 
 import dagger.Module
 import dagger.Provides

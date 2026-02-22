@@ -1,10 +1,10 @@
-package com.example.myapplication.features.ai.viewmodel
+package com.hooiv.habitflow.features.ai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.core.network.ai.AIService
-import com.example.myapplication.core.data.model.*
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.network.ai.AIService
+import com.hooiv.habitflow.core.data.model.*
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineDispatcher
 import java.util.UUID
 import javax.inject.Inject
-import com.example.myapplication.core.di.IoDispatcher
+import com.hooiv.habitflow.core.di.IoDispatcher
 
 /**
  * ViewModel for the AI Assistant screen

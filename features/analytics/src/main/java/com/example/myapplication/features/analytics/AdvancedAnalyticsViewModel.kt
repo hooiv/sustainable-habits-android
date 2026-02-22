@@ -1,12 +1,12 @@
-package com.example.myapplication.features.analytics
+package com.hooiv.habitflow.features.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitCompletion
-import com.example.myapplication.core.data.repository.HabitRepository
-import com.example.myapplication.features.analytics.ui.AnalyticsInsight
-import com.example.myapplication.features.analytics.ui.InsightType
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.repository.HabitRepository
+import com.hooiv.habitflow.features.analytics.ui.AnalyticsInsight
+import com.hooiv.habitflow.features.analytics.ui.InsightType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

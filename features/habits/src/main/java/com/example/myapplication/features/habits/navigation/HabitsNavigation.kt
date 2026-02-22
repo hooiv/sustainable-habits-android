@@ -1,16 +1,16 @@
-package com.example.myapplication.features.habits.navigation
+package com.hooiv.habitflow.features.habits.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.myapplication.core.ui.navigation.NavRoutes
-import com.example.myapplication.features.habits.ui.AddHabitScreen
-import com.example.myapplication.features.habits.ui.EditHabitScreen
-import com.example.myapplication.features.habits.ui.HabitListScreen
-import com.example.myapplication.features.habits.ui.HabitCompletionScreen
-import com.example.myapplication.features.habits.HabitDetailsScreen
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.features.habits.ui.AddHabitScreen
+import com.hooiv.habitflow.features.habits.ui.EditHabitScreen
+import com.hooiv.habitflow.features.habits.ui.HabitListScreen
+import com.hooiv.habitflow.features.habits.ui.HabitCompletionScreen
+import com.hooiv.habitflow.features.habits.HabitDetailsScreen
 
 fun NavGraphBuilder.habitsGraph(navController: NavController) {
     composable(route = NavRoutes.HABIT_LIST) {

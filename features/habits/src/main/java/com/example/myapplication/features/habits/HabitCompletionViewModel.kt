@@ -1,9 +1,9 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.core.data.model.HabitCompletion
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

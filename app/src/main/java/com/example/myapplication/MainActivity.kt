@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.hooiv.habitflow
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,10 +13,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
-import com.example.myapplication.features.onboarding.OnboardingScreen
-import com.example.myapplication.features.splash.SplashScreen
-import com.example.myapplication.navigation.AppNavigation
-import com.example.myapplication.core.ui.theme.MyApplicationTheme
+import com.hooiv.habitflow.features.onboarding.OnboardingScreen
+import com.hooiv.habitflow.features.splash.SplashScreen
+import com.hooiv.habitflow.navigation.AppNavigation
+import com.hooiv.habitflow.core.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

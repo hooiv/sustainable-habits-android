@@ -1,4 +1,4 @@
-package com.example.myapplication.core.data.util
+package com.hooiv.habitflow.core.data.util
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

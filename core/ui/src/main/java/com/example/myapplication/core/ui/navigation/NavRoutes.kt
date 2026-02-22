@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.navigation
+package com.hooiv.habitflow.core.ui.navigation
 
 object NavRoutes {
     const val HABIT_LIST = "habit_list"

@@ -1,9 +1,9 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import androidx.compose.ui.test.onRoot
-import com.example.myapplication.core.ui.theme.TestTheme
+import com.hooiv.habitflow.core.ui.theme.TestTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

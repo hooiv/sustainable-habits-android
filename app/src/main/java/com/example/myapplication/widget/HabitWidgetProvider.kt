@@ -1,4 +1,4 @@
-package com.example.myapplication.widget
+package com.hooiv.habitflow.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -6,10 +6,10 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import com.example.myapplication.R
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.database.AppDatabase
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.R
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.database.AppDatabase
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first

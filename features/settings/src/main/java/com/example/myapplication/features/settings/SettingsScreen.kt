@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.myapplication.features.settings
+package com.hooiv.habitflow.features.settings
 
 import android.content.Context
 import android.net.Uri
@@ -29,14 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
-import com.example.myapplication.core.data.util.FirebaseUtil
-import com.example.myapplication.core.data.util.ThemePreferenceManager
-import com.example.myapplication.core.ui.navigation.NavRoutes
-import com.example.myapplication.core.ui.util.NotificationUtil
-import com.example.myapplication.features.auth.AuthViewModel
-import com.example.myapplication.features.habits.HabitViewModel
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.data.util.FirebaseUtil
+import com.hooiv.habitflow.core.data.util.ThemePreferenceManager
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.core.ui.util.NotificationUtil
+import com.hooiv.habitflow.features.auth.AuthViewModel
+import com.hooiv.habitflow.features.habits.HabitViewModel
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -373,4 +373,37 @@ private fun SettingsNavRow(
     onClick: () -> Unit
 ) {
     SettingsActionRow(icon = icon, label = label, onClick = onClick)
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Settings — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun SettingsScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        SettingsScreen(
+            navController = androidx.navigation.compose.rememberNavController(),
+            context = androidx.compose.ui.platform.LocalContext.current
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Settings — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun SettingsScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        SettingsScreen(
+            navController = androidx.navigation.compose.rememberNavController(),
+            context = androidx.compose.ui.platform.LocalContext.current
+        )
+    }
 }

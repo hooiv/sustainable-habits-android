@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits.ui
+package com.hooiv.habitflow.features.habits.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -10,10 +10,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.rememberScrollState
-import com.example.myapplication.features.habits.HabitViewModel
+import com.hooiv.habitflow.features.habits.HabitViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.features.habits.ui.HabitItem
+import com.hooiv.habitflow.features.habits.ui.HabitItem
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,10 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
-import com.example.myapplication.core.ui.navigation.NavRoutes
-import com.example.myapplication.core.ui.animation.AnimeEasing
-import com.example.myapplication.core.ui.animation.ParticleWave
-import com.example.myapplication.core.ui.animation.animeEntrance
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.core.ui.animation.AnimeEasing
+import com.hooiv.habitflow.core.ui.animation.ParticleWave
+import com.hooiv.habitflow.core.ui.animation.animeEntrance
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -335,5 +335,33 @@ fun HabitListScreen(
                 }
             }
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitList — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun HabitListScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        // Preview with a fake NavController — actual data not needed for layout preview
+        HabitListScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitList — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun HabitListScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        HabitListScreen(navController = androidx.navigation.compose.rememberNavController())
     }
 }

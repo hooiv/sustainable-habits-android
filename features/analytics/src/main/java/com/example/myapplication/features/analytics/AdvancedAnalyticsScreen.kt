@@ -1,12 +1,12 @@
-package com.example.myapplication.features.analytics.ui
+package com.hooiv.habitflow.features.analytics.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import com.example.myapplication.features.analytics.AdvancedAnalyticsViewModel
-import com.example.myapplication.features.analytics.dayKeyOf
+import com.hooiv.habitflow.features.analytics.AdvancedAnalyticsViewModel
+import com.hooiv.habitflow.features.analytics.dayKeyOf
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,8 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitCompletion
 import java.util.Calendar
 
 /**
@@ -601,5 +601,43 @@ fun EmptyStateMessage(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Analytics — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun AdvancedAnalyticsScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        AdvancedAnalyticsScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Analytics — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun AdvancedAnalyticsScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        AdvancedAnalyticsScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Analytics — Tablet 10\"",
+    showBackground = true, widthDp = 800, heightDp = 1280
+)
+@androidx.compose.runtime.Composable
+private fun AdvancedAnalyticsScreenTabletPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme {
+        AdvancedAnalyticsScreen(navController = androidx.navigation.compose.rememberNavController())
     }
 }

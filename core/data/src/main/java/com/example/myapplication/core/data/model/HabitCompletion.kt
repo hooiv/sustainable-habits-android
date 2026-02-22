@@ -1,11 +1,11 @@
-package com.example.myapplication.core.data.model
+package com.hooiv.habitflow.core.data.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.myapplication.core.data.database.Converters
+import com.hooiv.habitflow.core.data.database.Converters
 import java.util.Date
 import java.util.UUID
 

@@ -1,77 +1,122 @@
-package com.example.myapplication.features.splash
+package com.hooiv.habitflow.features.splash
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.features.gamification.AchievementBadge
-import com.example.myapplication.features.gamification.ExperienceBar
-import com.example.myapplication.core.ui.animation.*
+import androidx.compose.ui.unit.sp
+import com.hooiv.habitflow.core.ui.R
+import com.hooiv.habitflow.core.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
 
+/**
+ * Splash screen shown while the app initialises.
+ *
+ * Design:
+ *  - Full-screen brand gradient (indigo → teal)
+ *  - HabitFlow logo icon scales in with a spring bounce
+ *  - App name slides up + fades in
+ *  - Tagline fades in below
+ *  - Three pulsing dots at the bottom indicate loading
+ */
 @Composable
 fun SplashScreen() {
-    // Remember animation states
-    var showParticles by remember { mutableStateOf(false) }
-    var showText by remember { mutableStateOf(false) }
-    var showBadges by remember { mutableStateOf(false) }
-    var showExperienceBar by remember { mutableStateOf(false) }
+    // --- Animation targets ---
+    val logoScale = remember { Animatable(0.4f) }
+    val logoAlpha = remember { Animatable(0f) }
+    val nameTranslationY = remember { Animatable(30f) }
+    val nameAlpha = remember { Animatable(0f) }
+    val taglineAlpha = remember { Animatable(0f) }
+    val dotsAlpha = remember { Animatable(0f) }
 
-    // Start animations after a short delay
     LaunchedEffect(Unit) {
+        // Logo springs in
+        logoAlpha.animateTo(1f, tween(300))
+        logoScale.animateTo(
+            targetValue = 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        )
+        // App name slides up
+        delay(80)
+        nameAlpha.animateTo(1f, tween(350, easing = FastOutSlowInEasing))
+        nameTranslationY.animateTo(0f, tween(350, easing = FastOutSlowInEasing))
+        // Tagline fades in
         delay(100)
-        showParticles = true
-        delay(300)
-        showText = true
-        delay(500)
-        showBadges = true
-        delay(300)
-        showExperienceBar = true
+        taglineAlpha.animateTo(1f, tween(400))
+        // Loading dots appear
+        delay(150)
+        dotsAlpha.animateTo(1f, tween(300))
     }
 
-    // Create a gradient background
-    val gradientColors = listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.primaryContainer,
-        MaterialTheme.colorScheme.secondary
+    // Pulsing dot animation (staggered)
+    val infiniteTransition = rememberInfiniteTransition(label = "dots")
+    val dot1Scale by infiniteTransition.animateFloat(
+        initialValue = 0.6f, targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(tween(600), androidx.compose.animation.core.RepeatMode.Reverse),
+        label = "dot1"
+    )
+    val dot2Scale by infiniteTransition.animateFloat(
+        initialValue = 0.6f, targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(tween(600, delayMillis = 150), androidx.compose.animation.core.RepeatMode.Reverse),
+        label = "dot2"
+    )
+    val dot3Scale by infiniteTransition.animateFloat(
+        initialValue = 0.6f, targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(tween(600, delayMillis = 300), androidx.compose.animation.core.RepeatMode.Reverse),
+        label = "dot3"
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(colors = gradientColors)
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF2E2B6A), // deep indigo
+                        Color(0xFF1A4B6E), // midnight blue
+                        Color(0xFF006B5E)  // deep teal
+                    )
+                )
             ),
         contentAlignment = Alignment.Center
     ) {
-        // Add advanced particle effects in the background
-        if (showParticles) {
-            ParticleSystem(
-                modifier = Modifier.fillMaxSize(),
-                particleCount = 100,
-                particleColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                maxSpeed = 1f,
-                fadeDistance = 0.9f,
-                particleShape = ParticleShape.STAR,
-                particleEffect = ParticleEffect.VORTEX,
-                colorVariation = true,
-                glowEffect = true
-            )
-        }
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -79,141 +124,80 @@ fun SplashScreen() {
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            // Add animated text with 3D effect and morphing blob
+            // Logo icon
             Box(
                 modifier = Modifier
-                    .padding(bottom = 32.dp)
-                    .size(300.dp),
+                    .size(120.dp)
+                    .graphicsLayer {
+                        scaleX = logoScale.value
+                        scaleY = logoScale.value
+                        alpha = logoAlpha.value
+                    }
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
-                // Add morphing blob behind the text
-                if (showText) {
-                    MorphingBlob(
-                        modifier = Modifier
-                            .size(280.dp)
-                            .alpha(0.7f),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        pointCount = 12,
-                        minRadius = 0.7f,
-                        maxRadius = 0.9f
-                    )
-                }
-
-                // 3D text effect
-                ThreeJSScene(
-                    modifier = Modifier
-                        .size(240.dp)
-                        .graphicsLayer {
-                            alpha = if (showText) 1f else 0f
-                            scaleX = if (showText) 1f else 0.8f
-                            scaleY = if (showText) 1f else 0.8f
-                        },
-                    rotationEnabled = true,
-                    initialRotationY = 10f,
-                    cameraDistance = 12f,
-                    enableParallax = true,
-                    enableShadows = true,
-                    backgroundColor = Color.Transparent
-                ) { sceneModifier ->
-                    Box(
-                        modifier = sceneModifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Use glowing text for enhanced effect
-                        GlowingText(
-                            text = "HabitFlow",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            glowColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                            glowRadius = 15.dp,
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            particlesEnabled = true
-                        )
-                    }
-                }
-            }
-
-            // Add achievement badges with animation
-            AnimatedVisibility(
-                visible = showBadges,
-                enter = fadeIn() + expandVertically()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    AchievementBadge(
-                        title = "Starter",
-                        description = "Begin your journey",
-                        isUnlocked = true,
-                        iconVector = Icons.Default.Star,
-                        modifier = Modifier.padding(8.dp),
-                        onBadgeClick = {}
-                    )
-
-                    AchievementBadge(
-                        title = "Consistent",
-                        description = "7 day streak",
-                        isUnlocked = true,
-                        iconVector = Icons.Default.Check,
-                        modifier = Modifier.padding(8.dp),
-                        onBadgeClick = {}
-                    )
-
-                    AchievementBadge(
-                        title = "Champion",
-                        description = "30 day streak",
-                        isUnlocked = false,
-                        iconVector = Icons.Default.EmojiEvents,
-                        modifier = Modifier.padding(8.dp),
-                        onBadgeClick = {}
-                    )
-                }
+                androidx.compose.foundation.Image(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "HabitFlow logo",
+                    modifier = Modifier.size(92.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Add experience bar with animation
-            AnimatedVisibility(
-                visible = showExperienceBar,
-                enter = fadeIn() + expandVertically()
+            // App name
+            Text(
+                text = "HabitFlow",
+                style = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp
+                ),
+                color = Color.White,
+                modifier = Modifier.graphicsLayer {
+                    alpha = nameAlpha.value
+                    translationY = nameTranslationY.value
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Tagline
+            Text(
+                text = "Build habits that last",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White.copy(alpha = 0.72f),
+                modifier = Modifier.alpha(taglineAlpha.value)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Loading dots
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(bottom = 48.dp)
+                    .alpha(dotsAlpha.value)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .padding(bottom = 32.dp)
-                ) {
-                    var currentXp by remember { mutableStateOf(0) }
-                    var level by remember { mutableStateOf(1) }
-
-                    LaunchedEffect(showExperienceBar) {
-                        delay(500)
-                        // Animate XP increase directly in the LaunchedEffect scope
-                        repeat(5) {
-                            currentXp += 20
-                            delay(300)
-                        }
-                    }
-
-                    ExperienceBar(
-                        currentXp = currentXp,
-                        maxXp = 100,
-                        level = level,
-                        primaryColor = MaterialTheme.colorScheme.tertiary,
-                        backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                        onLevelUp = {
-                            level++
-                            currentXp = 0
-                        }
+                listOf(dot1Scale, dot2Scale, dot3Scale).forEach { dotScale ->
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .scale(dotScale)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.7f))
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
         }
+    }
+}
+
+@Preview(name = "Splash — Phone", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun SplashScreenPreview() {
+    MyApplicationTheme {
+        SplashScreen()
     }
 }

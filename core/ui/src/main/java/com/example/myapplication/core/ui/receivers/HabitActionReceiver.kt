@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.receivers
+package com.hooiv.habitflow.core.ui.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context

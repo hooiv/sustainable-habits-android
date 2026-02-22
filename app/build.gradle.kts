@@ -12,11 +12,11 @@ baselineProfile {
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.hooiv.habitflow"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.hooiv.habitflow"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

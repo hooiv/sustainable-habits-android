@@ -1,7 +1,7 @@
-package com.example.myapplication.features.gamification
+package com.hooiv.habitflow.features.gamification
 
 import android.util.Log
-import com.example.myapplication.core.data.repository.HabitRepository
+import com.hooiv.habitflow.core.data.repository.HabitRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.hooiv.habitflow
 
 import org.junit.Test
 

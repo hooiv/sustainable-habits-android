@@ -1,4 +1,4 @@
-package com.example.myapplication.features.habits
+package com.hooiv.habitflow.features.habits
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -6,14 +6,14 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import com.example.myapplication.core.ui.theme.AnimatedTheme
-import com.example.myapplication.core.ui.theme.AnimationSpec
-import com.example.myapplication.core.ui.theme.AppShapes
-import com.example.myapplication.core.ui.theme.ElevationValues
-import com.example.myapplication.core.ui.theme.Gradients
-import com.example.myapplication.core.ui.theme.LocalAnimatedTheme
-import com.example.myapplication.core.ui.theme.LocalAnimationSpec
-import com.example.myapplication.core.ui.theme.Typography
+import com.hooiv.habitflow.core.ui.theme.AnimatedTheme
+import com.hooiv.habitflow.core.ui.theme.AnimationSpec
+import com.hooiv.habitflow.core.ui.theme.AppShapes
+import com.hooiv.habitflow.core.ui.theme.ElevationValues
+import com.hooiv.habitflow.core.ui.theme.Gradients
+import com.hooiv.habitflow.core.ui.theme.LocalAnimatedTheme
+import com.hooiv.habitflow.core.ui.theme.LocalAnimationSpec
+import com.hooiv.habitflow.core.ui.theme.Typography
 
 // Copied from Theme.kt (simplified for test)
 val GreenPrimary = Color(0xFF00E676)

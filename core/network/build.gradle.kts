@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.core.network"
+    namespace = "com.hooiv.habitflow.core.network"
     compileSdk = 36
 
     defaultConfig {

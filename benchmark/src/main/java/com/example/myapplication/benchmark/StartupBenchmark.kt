@@ -1,4 +1,4 @@
-package com.example.myapplication.benchmark
+package com.hooiv.habitflow.benchmark
 
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
@@ -21,7 +21,7 @@ class StartupBenchmark {
     fun startupCompilationBaselineProfiles() = startup(CompilationMode.Partial())
 
     fun startup(mode: CompilationMode) = benchmarkRule.measureRepeated(
-        packageName = "com.example.myapplication",
+        packageName = "com.hooiv.habitflow",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
         startupMode = StartupMode.COLD,

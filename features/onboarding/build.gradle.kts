@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapplication.features.onboarding"
+    namespace = "com.hooiv.habitflow.features.onboarding"
     compileSdk = 36
 
     defaultConfig {

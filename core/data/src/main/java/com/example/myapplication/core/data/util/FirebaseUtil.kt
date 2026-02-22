@@ -1,6 +1,6 @@
-package com.example.myapplication.core.data.util
+package com.hooiv.habitflow.core.data.util
 
-import com.example.myapplication.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.Habit
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

@@ -1,4 +1,4 @@
-package com.example.myapplication.features.ai.ui
+package com.hooiv.habitflow.features.ai.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -28,10 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.core.data.model.AISuggestion
-import com.example.myapplication.core.data.model.SuggestionType
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.ui.animation.*
+import com.hooiv.habitflow.core.data.model.AISuggestion
+import com.hooiv.habitflow.core.data.model.SuggestionType
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.ui.animation.*
 import kotlin.math.*
 
 @OptIn(ExperimentalMaterial3Api::class)

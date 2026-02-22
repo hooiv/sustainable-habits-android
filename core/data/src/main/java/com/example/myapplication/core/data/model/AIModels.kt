@@ -1,4 +1,4 @@
-package com.example.myapplication.core.data.model
+package com.hooiv.habitflow.core.data.model
 
 import java.util.Date
 import java.util.UUID

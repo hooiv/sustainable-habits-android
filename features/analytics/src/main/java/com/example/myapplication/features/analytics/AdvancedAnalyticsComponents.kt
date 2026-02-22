@@ -1,4 +1,4 @@
-package com.example.myapplication.features.analytics.ui
+package com.hooiv.habitflow.features.analytics.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.animation.animateContentSize
@@ -23,7 +23,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import com.example.myapplication.core.ui.theme.Orange
+import com.hooiv.habitflow.core.ui.theme.Orange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -32,8 +32,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.ui.animation.AnimeEasing
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.ui.animation.AnimeEasing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

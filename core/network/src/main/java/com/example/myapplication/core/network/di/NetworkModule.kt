@@ -1,9 +1,9 @@
-package com.example.myapplication.core.network.di
+package com.hooiv.habitflow.core.network.di
 
-import com.example.myapplication.core.network.ai.AIService
-import com.example.myapplication.core.network.ai.LocalAIService
-import com.example.myapplication.core.network.ai.OpenAIApiClient
-import com.example.myapplication.core.network.ai.OpenAIService
+import com.hooiv.habitflow.core.network.ai.AIService
+import com.hooiv.habitflow.core.network.ai.LocalAIService
+import com.hooiv.habitflow.core.network.ai.OpenAIApiClient
+import com.hooiv.habitflow.core.network.ai.OpenAIService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -15,7 +15,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.content.Context
-import com.example.myapplication.core.network.BuildConfig
+import com.hooiv.habitflow.core.network.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Cache
 import okhttp3.Interceptor

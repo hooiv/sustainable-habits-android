@@ -1,8 +1,8 @@
-package com.example.myapplication.features.auth
+package com.hooiv.habitflow.features.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.core.data.util.FirebaseUtil
+import com.hooiv.habitflow.core.data.util.FirebaseUtil
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel

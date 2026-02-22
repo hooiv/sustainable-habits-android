@@ -1,4 +1,4 @@
-package com.example.myapplication.core.network.ai
+package com.hooiv.habitflow.core.network.ai
 
 import com.google.gson.annotations.SerializedName
 

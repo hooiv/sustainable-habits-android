@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.theme
+package com.hooiv.habitflow.core.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

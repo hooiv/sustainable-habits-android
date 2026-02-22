@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.components
+package com.hooiv.habitflow.core.ui.components
 
 import android.graphics.PointF
 import androidx.compose.animation.core.Animatable

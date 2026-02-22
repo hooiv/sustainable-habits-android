@@ -1,4 +1,4 @@
-package com.example.myapplication.features.onboarding
+package com.hooiv.habitflow.features.onboarding
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.*
@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.core.ui.animation.*
+import com.hooiv.habitflow.core.ui.animation.*
 
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
@@ -299,5 +299,32 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Onboarding — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun OnboardingScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        OnboardingScreen(onFinish = {})
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Onboarding — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun OnboardingScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        OnboardingScreen(onFinish = {})
     }
 }

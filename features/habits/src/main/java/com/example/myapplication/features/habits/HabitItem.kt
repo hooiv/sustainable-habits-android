@@ -1,11 +1,8 @@
-package com.example.myapplication.features.habits.ui
+package com.hooiv.habitflow.features.habits.ui
 
-import android.content.Context
-import android.os.PowerManager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,12 +22,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
@@ -42,90 +37,17 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import com.example.myapplication.core.data.model.Habit
-import com.example.myapplication.core.data.model.HabitFrequency
+import com.hooiv.habitflow.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.HabitFrequency
 
-import com.example.myapplication.core.ui.animation.*
-import com.example.myapplication.core.ui.components.ThreeDCard
-import com.example.myapplication.core.ui.theme.*
+import com.hooiv.habitflow.core.ui.animation.*
+import com.hooiv.habitflow.core.ui.components.ThreeDCard
+import com.hooiv.habitflow.core.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-/**
- * Composable for native Compose animations within habit items replacing Anime.js
- */
-@Composable
-fun HabitItemNativeAnimation(
-    modifier: Modifier = Modifier,
-    animationType: String = "pulse"
-) {
-    val context = LocalContext.current
-    val powerManager = remember(context) { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
-    val isPowerSaveMode = powerManager.isPowerSaveMode
-
-    if (isPowerSaveMode) return
-
-    val infiniteTransition = rememberInfiniteTransition(label = "habit_anim")
-    
-    val scale = if (animationType == "pulse") {
-        infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.3f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1000, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "pulse"
-        ).value
-    } else 1f
-
-    val rotation = if (animationType == "rotate") {
-        infiniteTransition.animateFloat(
-            initialValue = 0f,
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "rotate"
-        ).value
-    } else 0f
-
-    val alpha = if (animationType == "fade") {
-        infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 0.3f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1500, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "fade"
-        ).value
-    } else 1f
-
-    Box(
-        modifier = modifier.height(60.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .graphicsLayer {
-                    this.scaleX = scale
-                    this.scaleY = scale
-                    this.rotationZ = rotation
-                    this.alpha = alpha
-                }
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-                    shape = CircleShape
-                )
-        )
-    }
-}
 
 @Composable
 fun HabitItem(
@@ -178,16 +100,6 @@ fun HabitItem(
         else
             MaterialTheme.colorScheme.surface,
         label = "backgroundColor"
-    )
-
-    val cardElevation by animateFloatAsState(
-        targetValue = if (habit.isEnabled) 8f else 2f,
-        label = "elevation"
-    )
-
-    val contentAlpha by animateFloatAsState(
-        targetValue = if (habit.isEnabled) 1f else 0.7f,
-        label = "contentAlpha"
     )
 
     val scale by animateFloatAsState(
@@ -264,14 +176,6 @@ fun HabitItem(
                 initialScale = 0.9f
             )
     ) {
-        // Native animation when habit is completed
-        if (isCompletedToday && useAdvancedAnimations) {
-            HabitItemNativeAnimation(
-                modifier = Modifier.matchParentSize(),
-                animationType = if (habit.streak > 5) "rotate" else "pulse"
-            )
-        }
-
         // Particle effects when habit is completed (visible only when completed)
         if (particleAlpha > 0) {
             Box(
@@ -701,5 +605,62 @@ fun HabitItem(
                 }
             }
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitItem — Light",
+    showBackground = true, widthDp = 360
+)
+@androidx.compose.runtime.Composable
+private fun HabitItemPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        HabitItem(
+            habit = com.hooiv.habitflow.core.data.model.Habit(
+                id = "1",
+                name = "Morning Run",
+                description = "30 min jog before breakfast",
+                frequency = com.hooiv.habitflow.core.data.model.HabitFrequency.DAILY,
+                goal = 5,
+                goalProgress = 3,
+                streak = 7
+            ),
+            onItemClick = {},
+            onCompletedClick = {},
+            onDeleteClick = {},
+            onToggleEnabled = {},
+            onCompletionHistoryClick = {}
+        )
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "HabitItem — Dark",
+    showBackground = true, widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun HabitItemDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        HabitItem(
+            habit = com.hooiv.habitflow.core.data.model.Habit(
+                id = "2",
+                name = "Read 20 pages",
+                description = null,
+                frequency = com.hooiv.habitflow.core.data.model.HabitFrequency.DAILY,
+                goal = 1,
+                goalProgress = 0,
+                streak = 14
+            ),
+            onItemClick = {},
+            onCompletedClick = {},
+            onDeleteClick = {},
+            onToggleEnabled = {},
+            onCompletionHistoryClick = {}
+        )
     }
 }

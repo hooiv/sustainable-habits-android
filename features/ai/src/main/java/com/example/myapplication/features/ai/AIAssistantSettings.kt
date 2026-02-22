@@ -1,4 +1,4 @@
-package com.example.myapplication.features.ai.ui
+package com.hooiv.habitflow.features.ai.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.core.data.model.AIAssistantPersonalization
+import com.hooiv.habitflow.core.data.model.AIAssistantPersonalization
 
 /**
  * AI Assistant Settings Screen

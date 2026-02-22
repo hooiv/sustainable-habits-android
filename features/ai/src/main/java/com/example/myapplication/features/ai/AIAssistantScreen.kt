@@ -1,4 +1,4 @@
-package com.example.myapplication.features.ai.ui
+package com.hooiv.habitflow.features.ai.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myapplication.features.ai.viewmodel.AIAssistantViewModel
-import com.example.myapplication.core.ui.navigation.NavRoutes
+import com.hooiv.habitflow.features.ai.viewmodel.AIAssistantViewModel
+import com.hooiv.habitflow.core.ui.navigation.NavRoutes
 import android.content.Context
 import android.os.PowerManager
 import androidx.compose.ui.graphics.graphicsLayer
@@ -289,3 +289,30 @@ fun BlinkingCursor() {
     )
 }
 
+
+// ---------------------------------------------------------------------------
+// Previews
+// ---------------------------------------------------------------------------
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "AI Assistant — Phone Light",
+    showBackground = true, widthDp = 360, heightDp = 800
+)
+@androidx.compose.runtime.Composable
+private fun AIAssistantScreenPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = false) {
+        AIAssistantScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "AI Assistant — Phone Dark",
+    showBackground = true, widthDp = 360, heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@androidx.compose.runtime.Composable
+private fun AIAssistantScreenDarkPreview() {
+    com.hooiv.habitflow.core.ui.theme.MyApplicationTheme(darkTheme = true) {
+        AIAssistantScreen(navController = androidx.navigation.compose.rememberNavController())
+    }
+}

@@ -1,7 +1,7 @@
-package com.example.myapplication.core.data.database
+package com.hooiv.habitflow.core.data.database
 
 import androidx.room.*
-import com.example.myapplication.core.data.model.HabitCompletion
+import com.hooiv.habitflow.core.data.model.HabitCompletion
 import kotlinx.coroutines.flow.Flow
 
 /**

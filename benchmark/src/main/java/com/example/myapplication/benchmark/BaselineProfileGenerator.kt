@@ -1,4 +1,4 @@
-package com.example.myapplication.benchmark
+package com.hooiv.habitflow.benchmark
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,7 +17,7 @@ class BaselineProfileGenerator {
     @Test
     fun generate() {
         rule.collect(
-            packageName = "com.example.myapplication",
+            packageName = "com.hooiv.habitflow",
             includeInStartupProfile = true
         ) {
             // Start the default activity

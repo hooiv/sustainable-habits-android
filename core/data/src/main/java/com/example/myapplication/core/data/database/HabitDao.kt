@@ -1,4 +1,4 @@
-package com.example.myapplication.core.data.database
+package com.hooiv.habitflow.core.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.myapplication.core.data.model.Habit
+import com.hooiv.habitflow.core.data.model.Habit
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
 

@@ -1,10 +1,10 @@
-package com.example.myapplication.core.data.di
+package com.hooiv.habitflow.core.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.myapplication.core.data.database.AppDatabase
-import com.example.myapplication.core.data.database.HabitDao
-import com.example.myapplication.core.data.database.HabitCompletionDao
+import com.hooiv.habitflow.core.data.database.AppDatabase
+import com.hooiv.habitflow.core.data.database.HabitDao
+import com.hooiv.habitflow.core.data.database.HabitCompletionDao
 
 import dagger.Module
 import dagger.Provides

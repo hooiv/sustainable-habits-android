@@ -1,4 +1,4 @@
-package com.example.myapplication.core.ui.util
+package com.hooiv.habitflow.core.ui.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
