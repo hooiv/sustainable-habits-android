@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import java.util.*
 import javax.inject.Inject
 import com.example.myapplication.core.di.IoDispatcher
@@ -26,7 +25,7 @@ import com.example.myapplication.core.di.IoDispatcher
 class AIAssistantViewModel @Inject constructor(
     private val habitRepository: HabitRepository,
     private val aiService: AIService,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     // Suggestions for the user
