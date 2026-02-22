@@ -7,6 +7,7 @@ import javax.inject.Inject
 /**
  * Use case for bulk inserting or replacing habits.
  * Used when restoring habits from cloud backup — preserves original IDs.
+ * Atomicity is guaranteed by Room, which wraps List @Insert operations in a transaction.
  */
 class InsertOrReplaceHabitsUseCase @Inject constructor(
     private val repository: HabitRepository

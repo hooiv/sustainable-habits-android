@@ -5,7 +5,6 @@ import com.example.myapplication.core.data.database.HabitCompletionDao
 import com.example.myapplication.core.data.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -44,11 +43,6 @@ class HabitRepository @Inject constructor(
 
     suspend fun insertOrReplaceHabits(habits: List<Habit>) {
         habitDao.insertOrReplaceHabits(habits)
-    }
-
-    // Example: Exposing the getHabitsByFrequency from DAO through repository
-    fun getHabitsByFrequency(frequency: String): Flow<List<Habit>> {
-        return habitDao.getHabitsByFrequency(frequency)
     }
 
     suspend fun markHabitCompleted(habitId: String, completionDate: Date = Date(), note: String? = null, mood: Int? = null, location: String? = null, photoUri: String? = null) {
@@ -246,19 +240,6 @@ class HabitRepository @Inject constructor(
         }
     }
 
-    suspend fun resetHabitProgressIfNeeded(habitId: String, currentDate: Date = Date()) {
-        val habit = habitDao.getHabitById(habitId).firstOrNull() ?: return
-        if (habit.lastCompletedDate == null) return
-
-        if (!isSamePeriod(habit.lastCompletedDate, currentDate, habit.frequency)) {
-            if (habit.goalProgress < habit.goal && habit.streak > 0) {
-                habitDao.updateHabit(habit.copy(goalProgress = 0, streak = 0))
-            } else {
-                habitDao.updateHabit(habit.copy(goalProgress = 0))
-            }
-        }
-    }
-
     // Fetch habits for the current day
     fun getTodayHabits(): Flow<List<Habit>> {
         return habitDao.getTodayHabits()
@@ -331,26 +312,6 @@ class HabitRepository @Inject constructor(
         workManager.enqueueUniqueWork(
             "HabitSyncWork",
             androidx.work.ExistingWorkPolicy.KEEP,
-            syncRequest
-        )
-    }
-
-    /**
-     * Forces a sync (REPLACE policy).
-     */
-    fun forceSync() {
-         val syncRequest = androidx.work.OneTimeWorkRequestBuilder<com.example.myapplication.core.data.sync.HabitSyncWorker>()
-            .setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .setConstraints(
-                androidx.work.Constraints.Builder()
-                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                    .build()
-            )
-            .build()
-
-        workManager.enqueueUniqueWork(
-            "HabitSyncWork_Force",
-            androidx.work.ExistingWorkPolicy.REPLACE,
             syncRequest
         )
     }
