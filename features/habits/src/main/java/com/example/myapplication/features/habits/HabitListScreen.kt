@@ -271,7 +271,7 @@ fun HabitListScreen(
                                 onClick = { navController.navigate(NavRoutes.ADD_HABIT) },
                                 modifier = Modifier
                                     .padding(top = 16.dp),
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )

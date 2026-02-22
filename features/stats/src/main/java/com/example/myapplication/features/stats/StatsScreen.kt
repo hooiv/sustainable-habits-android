@@ -190,7 +190,7 @@ fun StatsScreen(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 Icons.AutoMirrored.Filled.List,
                                 contentDescription = "Total Habits",
                                 tint = MaterialTheme.colorScheme.primary,
@@ -237,7 +237,7 @@ fun StatsScreen(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 Icons.Default.CheckCircle,
                                 contentDescription = "Completed Habits",
                                 tint = MaterialTheme.colorScheme.secondary,
@@ -337,7 +337,7 @@ fun StatsScreen(navController: NavController) {
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        androidx.compose.material3.Icon(
+                                        Icon(
                                             imageVector = icon,
                                             contentDescription = title,
                                             tint = if (isSelected)
@@ -455,7 +455,7 @@ fun StatsScreen(navController: NavController) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (index < 3) {
-                                    androidx.compose.material3.Icon(
+                                    Icon(
                                         imageVector = when (index) {
                                             0 -> Icons.Default.EmojiEvents
                                             1 -> Icons.Default.EmojiEvents
@@ -490,7 +490,7 @@ fun StatsScreen(navController: NavController) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    androidx.compose.material3.Icon(
+                                    Icon(
                                         imageVector = Icons.Default.LocalFireDepartment,
                                         contentDescription = "Streak",
                                         tint = when {
@@ -695,7 +695,7 @@ fun CompletionPieChart(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                androidx.compose.material3.Icon(
+                Icon(
                     imageVector = Icons.Default.PieChart,
                     contentDescription = "No Data",
                     modifier = Modifier

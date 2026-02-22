@@ -2,6 +2,8 @@ package com.example.myapplication.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -35,7 +37,7 @@ import com.example.myapplication.core.data.util.ThemePreferenceManager
 // Create composition locals for our anime-inspired theme properties
 data class AnimationSpec(
     val duration: Int = 500,
-    val easing: androidx.compose.animation.core.Easing = androidx.compose.animation.core.FastOutSlowInEasing
+    val easing: Easing = FastOutSlowInEasing
 )
 
 data class Gradients(
@@ -248,7 +250,7 @@ fun animatedGradient(
     
     return Brush.linearGradient(
         colors = colors,
-        start = androidx.compose.ui.geometry.Offset(translateAnim, 0f),
-        end = androidx.compose.ui.geometry.Offset(translateAnim + 1000f, 1000f)
+        start = Offset(translateAnim, 0f),
+        end = Offset(translateAnim + 1000f, 1000f)
     )
 }

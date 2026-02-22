@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -181,7 +182,7 @@ fun AIAssistantCard(
 
                 // Quick suggestions
                 @OptIn(ExperimentalLayoutApi::class)
-                androidx.compose.foundation.layout.FlowRow(
+                FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
@@ -234,7 +235,7 @@ fun AIAnimatedAvatar(
         initialValue = 1f,
         targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = androidx.compose.animation.core.EaseInOutQuad),
+            animation = tween(1000, easing = EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
         label = "avatarScale"

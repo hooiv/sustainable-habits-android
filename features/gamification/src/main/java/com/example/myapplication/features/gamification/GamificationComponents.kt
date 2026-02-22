@@ -66,7 +66,7 @@ fun ExperienceBar(
                 val progress = (elapsedTime / duration.toFloat()).coerceIn(0f, 1f)
 
                 // Use easing for smoother animation
-                val easedProgress = androidx.compose.animation.core.EaseOutQuart.transform(progress)
+                val easedProgress = EaseOutQuart.transform(progress)
                 animatedXp = startXp + ((targetXp - startXp) * easedProgress).toInt()
 
                 if (animatedXp >= maxXp) {
@@ -87,7 +87,7 @@ fun ExperienceBar(
         targetValue = if (showLevelUpEffect) 1.2f else 1f,
         animationSpec = tween(
             durationMillis = 500,
-            easing = androidx.compose.animation.core.EaseOutBack
+            easing = EaseOutBack
         ),
         finishedListener = {
             if (showLevelUpEffect) {
@@ -206,7 +206,7 @@ fun AchievementBadge(
         initialValue = 0.2f,
         targetValue = 0.8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = androidx.compose.animation.core.EaseInOutSine),
+            animation = tween(2000, easing = EaseInOutSine),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glowAlpha"
@@ -216,7 +216,7 @@ fun AchievementBadge(
         initialValue = -5f,
         targetValue = 5f,
         animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = androidx.compose.animation.core.EaseInOutSine),
+            animation = tween(4000, easing = EaseInOutSine),
             repeatMode = RepeatMode.Reverse
         ),
         label = "badgeRotation"
@@ -373,7 +373,7 @@ fun BadgeUnlockAnimation(
         },
         animationSpec = tween(
             durationMillis = 500,
-            easing = androidx.compose.animation.core.EaseOutBack
+            easing = EaseOutBack
         ),
         label = "badgeScale"
     )
@@ -387,7 +387,7 @@ fun BadgeUnlockAnimation(
         },
         animationSpec = tween(
             durationMillis = 300,
-            easing = androidx.compose.animation.core.LinearEasing
+            easing = LinearEasing
         ),
         label = "badgeAlpha"
     )
@@ -401,7 +401,7 @@ fun BadgeUnlockAnimation(
         },
         animationSpec = tween(
             durationMillis = 300,
-            easing = androidx.compose.animation.core.LinearEasing
+            easing = LinearEasing
         ),
         label = "xpAlpha"
     )
