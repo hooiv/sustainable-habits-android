@@ -80,6 +80,7 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val authState by authViewModel.authState.collectAsState()
     val userId = authState.userId
+    val habits by habitViewModel.habits.collectAsState()
     var notificationsEnabled by remember { mutableStateOf(true) }
     var notificationHour by remember { mutableStateOf(8) }
     var notificationMinute by remember { mutableStateOf(0) }
@@ -180,16 +181,12 @@ fun SettingsScreen(
                     value = if (authState.isSignedIn) "Signed in" else "Sign in required",
                     onClick = {
                         if (userId == null) { navController.navigate(NavRoutes.SIGN_IN); return@SettingsActionRow }
-                        val habitToBackup = Habit(
-                            id = "settings_example_" + System.currentTimeMillis(),
-                            name = "Example Habit",
-                            description = "Sample",
-                            category = "Health",
-                            frequency = HabitFrequency.DAILY,
-                            goal = 1
-                        )
-                        FirebaseUtil.backupHabitData(userId, listOf(habitToBackup),
-                            onSuccess = { Toast.makeText(context, "Backup successful ✓", Toast.LENGTH_SHORT).show() },
+                        if (habits.isEmpty()) {
+                            Toast.makeText(context, "No habits to back up.", Toast.LENGTH_SHORT).show()
+                            return@SettingsActionRow
+                        }
+                        FirebaseUtil.backupHabitData(userId, habits,
+                            onSuccess = { Toast.makeText(context, "Backed up ${habits.size} habit(s) ✓", Toast.LENGTH_SHORT).show() },
                             onFailure = { Toast.makeText(context, "Backup failed: ${it.message}", Toast.LENGTH_SHORT).show() }
                         )
                     }

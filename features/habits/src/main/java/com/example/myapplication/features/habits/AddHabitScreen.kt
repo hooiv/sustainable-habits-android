@@ -154,7 +154,7 @@ fun AddHabitScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Animated title with pulsing effect
+                // Subtle pulse used for mic button (when empty) and reminder time button
                 val infiniteTransition = rememberInfiniteTransition(label = "pulse")
                 val scale by infiniteTransition.animateFloat(
                     initialValue = 1f,
@@ -164,15 +164,6 @@ fun AddHabitScreen(
                         repeatMode = RepeatMode.Reverse
                     ),
                     label = "pulseScale"
-                )
-
-                Text(
-                    "Create Your New Habit",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .scale(scale)
                 )
 
                 // Animated form fields with staggered entrance
@@ -306,7 +297,7 @@ fun AddHabitScreen(
                         )
                 ) {
                     OutlinedTextField(
-                        value = selectedFrequency.name,
+                        value = selectedFrequency.name.lowercase().replaceFirstChar { it.uppercase() },
                         onValueChange = {}, // Not directly editable
                         readOnly = true,
                         label = { Text("Frequency") },
@@ -321,7 +312,7 @@ fun AddHabitScreen(
                     ) {
                         HabitFrequency.values().forEach { frequency ->
                             DropdownMenuItem(
-                                text = { Text(frequency.name) },
+                                text = { Text(frequency.name.lowercase().replaceFirstChar { it.uppercase() }) },
                                 onClick = {
                                     selectedFrequency = frequency
                                     isFrequencyDropdownExpanded = false
