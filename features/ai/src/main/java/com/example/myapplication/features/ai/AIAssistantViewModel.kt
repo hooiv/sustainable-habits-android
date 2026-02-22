@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -69,9 +68,6 @@ class AIAssistantViewModel @Inject constructor(
     // Habit completions for additional context
     private val _habitCompletions = MutableStateFlow<List<HabitCompletion>>(emptyList())
 
-    // Mood data for emotional context
-    // Location data for spatial context
-    // Time patterns for temporal context
     // Personalization settings
     private val _personalizationSettings = MutableStateFlow(AIAssistantPersonalization())
     val personalizationSettings: StateFlow<AIAssistantPersonalization> = _personalizationSettings.asStateFlow()
@@ -194,8 +190,6 @@ class AIAssistantViewModel @Inject constructor(
                         _habitCompletions.value,
                         _personalizationSettings.value
                     )
-
-                    // Responses and UI are updated but voice feature is removed
                 }
             } catch (e: Exception) {
                 // Handle errors gracefully
