@@ -1,7 +1,6 @@
 package com.example.myapplication.features.ar
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.ui.geometry.Offset
